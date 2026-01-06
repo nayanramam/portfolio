@@ -72,15 +72,40 @@
             transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
+            cursor: pointer;
+            padding: 1rem;
+            margin: -1rem;
+            border-radius: 8px;
+            border: 2px solid transparent;
         }
         .experience-link:hover {
             transform: translateX(4px);
+            background-color: rgba(235, 230, 222, 0.3);
+            border-color: rgba(74, 82, 64, 0.2);
         }
         .experience-link:hover article::before {
             background-color: #1a1a1a;
             transform: scale(1.2);
         }
         .experience-link:hover h3 {
+            color: #4a5240;
+        }
+        .experience-link::after {
+            content: 'View details →';
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b6b6b;
+            opacity: 0.5;
+            transition: all 0.2s ease;
+            transform: translateX(-8px);
+            white-space: nowrap;
+        }
+        .experience-link:hover::after {
+            opacity: 1;
+            transform: translateX(0);
             color: #4a5240;
         }
     </style>
@@ -136,7 +161,12 @@
         <!-- Page Title -->
         <div class="mb-16">
             <h1 class="text-3xl font-serif font-bold mb-2">Experience</h1>
-            <p class="text-ink-muted">Click any item to learn more!</p>
+            <p class="text-ink-muted flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                </svg>
+                Click any experience below to view details
+            </p>
         </div>
 
         <!-- Research Experience -->
@@ -146,7 +176,7 @@
             <div class="space-y-10 pl-8 border-l border-ink/10">
                 <!-- ICE Lab -->
                 <a href="ice-lab.html" class="experience-link">
-                    <article class="relative timeline-item">
+                    <article class="relative timeline-item" style="padding-right: 2rem;">
                         <div class="timeline-item-content">
                             <h3 class="font-semibold text-lg">Integrated Computational Electronics (ICE) Lab</h3>
                             <p class="text-sm text-olive font-medium mt-1">Analog Mixed-Signal Researcher | Oct 2025 – Present</p>
@@ -173,7 +203,7 @@
 
                 <!-- IVA Lab -->
                 <a href="iva-lab.html" class="experience-link">
-                    <article class="relative timeline-item">
+                    <article class="relative timeline-item" style="padding-right: 2rem;">
                         <div class="timeline-item-content">
                             <h3 class="font-semibold text-lg">Intelligent Vision Automation (IVA) Lab</h3>
                             <p class="text-sm text-olive font-medium mt-1">Image Processing/Deep Learning Researcher | Aug 2025 – Present</p>
@@ -200,7 +230,7 @@
 
                 <!-- San José State -->
                 <a href="sjsu.html" class="experience-link">
-                    <article class="relative timeline-item">
+                    <article class="relative timeline-item" style="padding-right: 2rem;">
                         <div class="timeline-item-content">
                             <h3 class="font-semibold text-lg">San José State University</h3>
                             <p class="text-sm text-olive font-medium mt-1">Digital Design/Hardware Systems Researcher | May 2025 – Aug 2025</p>
@@ -234,7 +264,7 @@
             <div class="space-y-10 pl-8 border-l border-ink/10">
                 <!-- Silicon Jackets -->
                 <a href="silicon-jackets.html" class="experience-link">
-                    <article class="relative timeline-item">
+                    <article class="relative timeline-item" style="padding-right: 2rem;">
                         <div class="timeline-item-content">
                             <h3 class="font-semibold text-lg">Silicon Jackets</h3>
                             <p class="text-sm text-olive font-medium mt-1">Georgia Tech's Chip Design Club</p>
@@ -272,7 +302,7 @@
             <div class="space-y-10 pl-8 border-l border-ink/10">
                 <!-- Interactive Music Group -->
                 <a href="interactive-music-group.html" class="experience-link">
-                    <article class="relative timeline-item">
+                    <article class="relative timeline-item" style="padding-right: 2rem;">
                         <div class="timeline-item-content">
                             <h3 class="font-semibold text-lg">Interactive Music Group</h3>
                             <p class="text-sm text-olive font-medium mt-1">Project Manager | Aug 2025 – Present</p>
@@ -303,7 +333,7 @@
 
                 <!-- Math Modeling -->
                 <a href="math-modeling.html" class="experience-link">
-                    <article class="relative timeline-item">
+                    <article class="relative timeline-item" style="padding-right: 2rem;">
                         <div class="timeline-item-content">
                             <h3 class="font-semibold text-lg">Math Modeling Student Research Group</h3>
                             <p class="text-sm text-olive font-medium mt-1">Team Lead + Lead Researcher | Aug 2024 – Present</p>
