@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#EBE6DE"/>
+  <rect x="50" y="50" width="300" height="200" rx="8" fill="none" stroke="#4a5240" stroke-width="2" stroke-dasharray="8 4"/>
+  <text x="200" y="155" text-anchor="middle" fill="#4a5240" font-family="system-ui" font-size="16">Project Image</text>
+</svg>
+

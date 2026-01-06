@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nayan Ramam | Electrical Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#F5F0E8',
+                        'cream-dark': '#EBE6DE',
+                        ink: '#1a1a1a',
+                        'ink-light': '#4a4a4a',
+                        'ink-muted': '#6b6b6b',
+                        gold: '#F5D76E',
+                        'gold-dark': '#E8C85A',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F5F0E8;
+        }
+        .hero-bg {
+            position: relative;
+            background: linear-gradient(135deg, rgba(245, 240, 232, 0.95) 0%, rgba(245, 240, 232, 0.98) 100%);
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23EBE6DE" width="400" height="300"/><path d="M0 150 Q100 100 200 150 T400 150" stroke="%23D4C9B8" stroke-width="2" fill="none" opacity="0.3"/><circle cx="50" cy="50" r="3" fill="%23D4C9B8" opacity="0.2"/><circle cx="350" cy="250" r="3" fill="%23D4C9B8" opacity="0.2"/></svg>');
+            background-size: cover;
+            background-position: center;
+            filter: blur(40px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary {
+            background-color: #F5D76E;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #E8C85A;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 215, 110, 0.4);
+        }
+        .btn-outline {
+            border: 2px solid #1a1a1a;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            background-color: #1a1a1a;
+            color: #F5F0E8;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans text-ink antialiased">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur-sm border-b border-ink/10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Left: Profile + Name -->
+                <div class="flex items-center gap-3">
+                    <img src="assets/nayan_pfp.png" alt="Nayan Ramam" class="w-10 h-10 rounded-full object-cover border-2 border-cream-dark">
+                    <div>
+                        <h2 class="text-sm font-semibold">Nayan Ramam</h2>
+                        <p class="text-xs text-ink-muted">Electrical Engineer</p>
+                    </div>
+                </div>
+                
+                <!-- Right: Navigation Links -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#home" class="text-sm hover:text-ink-light transition-colors">Home</a>
+                    <a href="about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
+                    <a href="experiences/index.html" class="text-sm hover:text-ink-light transition-colors">Experience</a>
+                    <a href="projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
+                    <a href="assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors">Resume</a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-ink/10">
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="#home" class="text-sm hover:text-ink-light transition-colors">Home</a>
+                    <a href="about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
+                    <a href="experiences/index.html" class="text-sm hover:text-ink-light transition-colors">Experience</a>
+                    <a href="projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
+                    <a href="assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors text-center">Resume</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg py-16 lg:py-24">
+        <div class="max-w-6xl mx-auto px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                <!-- Profile Picture -->
+                <div class="flex-shrink-0">
+                    <img src="assets/nats cropped.jpg" alt="Nayan Ramam" class="w-48 h-48 lg:w-64 lg:h-64 rounded-2xl object-cover shadow-lg border-cream-dark">
+                </div>
+                
+                <!-- Name, Title, Bio, Buttons -->
+                <div class="flex-1 text-center lg:text-left">
+                    <h1 class="text-4xl lg:text-5xl font-bold mb-2">Nayan Ramam</h1>
+                    <p class="text-xl lg:text-2xl text-ink-muted mb-6">Electrical Engineering @ Georgia Tech</p>
+                    <p class="text-ink-light leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+                        I'm a second year EE undergrad at Georgia Tech with a focus on analog mixed-signal design and machine learning. I am passionate about analog IC design and neuromorphic analog circuitry.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="projects/index.html" class="btn-outline px-6 py-3 rounded-lg font-medium text-center">View Projects</a>
+                        <a href="experiences/index.html" class="btn-outline px-6 py-3 rounded-lg font-medium text-center">View Experiences</a>
+                        <a href="about.html" class="btn-outline px-6 py-3 rounded-lg font-medium text-center">About Me</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Email Contact -->
+    <section class="py-6 border-b border-ink/10">
+        <div class="max-w-6xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-center gap-2 text-ink-muted">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <a href="mailto:nramam3@gatech.edu" class="hover:text-ink transition-colors">nramam3@gatech.edu</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Projects Section -->
+    <section id="projects" class="py-16 lg:py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold mb-4">Featured Projects</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+                <!-- Project 1: Ring VCO -->
+                <a href="projects/ring-vco.html" class="card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="aspect-video bg-cream-dark overflow-hidden">
+                        <img src="assets/projects/ring-vco.jpg" alt="Ring VCO Design" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Ring VCO Design + Layout</h3>
+                        <p class="text-ink-light text-sm mb-4 leading-relaxed">
+                            Designed an analog ring oscillator in Cadence Virtuoso, focusing on layout for mixed-signal applications and clock generation.
+                        </p>
+                        <span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span>
+                    </div>
+                </a>
+
+                <!-- Project 2: AI Synth -->
+                <a href="projects/ai-synth.html" class="card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="aspect-video bg-cream-dark overflow-hidden">
+                        <img src="assets/projects/ai-synth.jpg" alt="AI Powered Virtual Synthesizer" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">AI Powered Virtual Synthesizer</h3>
+                        <p class="text-ink-light text-sm mb-4 leading-relaxed">
+                            Developed a virtual synthesizer witth integrated AI-powered preset generation for real-time music synthesis and sound exploration.
+                        </p>
+                        <span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span>
+                    </div>
+                </a>
+
+                <!-- Project 3: OD Pedal -->
+                <a href="projects/od-pedal.html" class="card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="aspect-video bg-cream-dark overflow-hidden">
+                        <img src="assets/projects/od-pedal.jpg" alt="Overdrive Guitar Pedal" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Overdrive Guitar Pedal</h3>
+                        <p class="text-ink-light text-sm mb-4 leading-relaxed">
+                            Designing and fabricating a guitar overdrive pedal based on the JHS Morning Glory circuit, including PCB design, assembly, and custom housing.
+                        </p>
+                        <span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- View All Projects Button -->
+            <div class="text-center">
+                <a href="projects/index.html" class="btn-primary inline-block px-8 py-3 rounded-lg font-medium text-ink">See All</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="about" class="py-16 lg:py-24 bg-cream-dark/30">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold mb-4">Experience</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                <!-- Experience Card 1: ICE Lab -->
+                <a href="experiences/ice-lab.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
+                        <img src="assets/experiences/ice lab thumb.png" alt="ICE Lab" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Analog Design Researcher</h3>
+                        <p class="text-xs text-ink-muted mb-1">Oct 2025 - Present</p>
+                        <p class="text-sm text-ink-light">Integrated Computational Electronics Lab</p>
+                    </div>
+                </a>
+
+                <!-- Experience Card 2: IVA Lab -->
+                <a href="experiences/iva-lab.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
+                        <img src="assets/experiences/iva lab thumb.png" alt="IVA Lab" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Image Processing & AI/ML Researcher</h3>
+                        <p class="text-xs text-ink-muted mb-1">Aug 2025 - Present</p>
+                        <p class="text-sm text-ink-light">Intelligent Vision Automation Lab</p>
+                    </div>
+                </a>
+
+                <!-- Experience Card 3: San José State -->
+                <a href="experiences/sjsu.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
+                        <img src="assets/experiences/sjsu thumb.png" alt="San José State" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Digital Design Researcher</h3>
+                        <p class="text-xs text-ink-muted mb-1">May 2025 - Aug 2025</p>
+                        <p class="text-sm text-ink-light">San José State University</p>
+                    </div>
+                </a>
+
+                <!-- Experience Card 4: Math Modeling -->
+                <a href="experiences/math-modeling.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
+                        <img src="assets/experiences/math modeling thumb.png" alt="Math Modeling" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Team Lead & Researcher</h3>
+                        <p class="text-xs text-ink-muted mb-1">Aug 2024 - Present</p>
+                        <p class="text-sm text-ink-light">Math Modeling Research Group</p>
+                    </div>
+                </a>
+
+                <!-- Experience Card 5: Interactive Music Group -->
+                <a href="experiences/interactive-music-group.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
+                        <img src="assets/experiences/interactive music group thumb.png" alt="Interactive Music Group" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Project Manager</h3>
+                        <p class="text-xs text-ink-muted mb-1">Aug 2025 - Present</p>
+                        <p class="text-sm text-ink-light">Interactive Music Group</p>
+                    </div>
+                </a>
+
+                <!-- Experience Card 6: Silicon Jackets -->
+                <a href="experiences/silicon-jackets.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
+                        <img src="assets/experiences/sj tapeout.jpg" alt="Silicon Jackets" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1">Chip Design Engineer</h3>
+                        <p class="text-xs text-ink-muted mb-1">Jan 2025 - Present</p>
+                        <p class="text-sm text-ink-light">Silicon Jackets</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- See All Button -->
+            <div class="text-center mt-8">
+                <a href="experiences/index.html" class="btn-primary inline-block px-8 py-3 rounded-lg font-medium text-ink">See All</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="py-12 border-t border-ink/10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center gap-6 relative">
+                <!-- Left: Navigation Links -->
+                <div class="flex flex-wrap items-center gap-4 text-sm">
+                    <a href="#home" class="hover:text-ink-light transition-colors">Home</a>
+                    <a href="about.html" class="hover:text-ink-light transition-colors">About Me</a>
+                    <a href="experiences/index.html" class="hover:text-ink-light transition-colors">Experience</a>
+                    <a href="projects/index.html" class="hover:text-ink-light transition-colors">Projects</a>
+                </div>
+                
+                <!-- Center: Copyright -->
+                <div class="text-sm text-ink-muted text-center absolute left-1/2 transform -translate-x-1/2">
+                    © 2026 Nayan Ramam
+                </div>
+                
+                <!-- Right: Resume Button and Social Icons -->
+                <div class="flex items-center gap-4 ml-auto">
+                    <a href="mailto:nramam3@gatech.edu" class="hover:opacity-70 transition-opacity">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/nayan-ramam-788334279/" target="_blank" rel="noopener" class="hover:opacity-70 transition-opacity">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                    <a href="assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors">Resume</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Smooth Scroll & Mobile Menu -->
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile menu if open
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
