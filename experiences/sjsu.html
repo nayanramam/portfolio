@@ -42,6 +42,19 @@
         .prose strong { font-weight: 600; color: #1a1a1a; }
         .prose hr { border-color: rgba(26, 26, 26, 0.1); margin: 2rem 0; }
         .prose em { font-style: italic; }
+        .prose a {
+            color: #4a5240;
+            text-decoration: underline;
+            text-decoration-color: #4a5240;
+            text-underline-offset: 3px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .prose a:hover {
+            color: #1a1a1a;
+            text-decoration-color: #1a1a1a;
+            text-decoration-thickness: 2px;
+        }
         .prose img { max-width: 100%; height: auto; border-radius: 8px; margin: 1.5rem 0; }
         .prose table { width: 100%; max-width: 600px; margin: 1.5rem 0; border-collapse: collapse; }
         .prose table th { background-color: #EBE6DE; color: #1a1a1a; font-weight: 600; padding: 0.75rem 1rem; text-align: left; border: 1px solid rgba(26, 26, 26, 0.1); }
@@ -108,12 +121,6 @@
                     </div>
                     <h1 class="text-3xl font-serif font-bold mb-2" id="experience-position">Digital Design/Hardware Systems Researcher</h1>
                     <p class="text-2xl text-ink-muted mb-6" id="experience-place">San José State University</p>
-                    <div>
-                        <h2 class="text-xl font-semibold mb-3 text-olive">Synopsis</h2>
-                        <p class="text-lg text-ink-light leading-relaxed" id="experience-synopsis">
-                            Adapted Analog Devices' IP for JESD204B to Lattice's Holoscan sensor bridge FPGA board. Wrote Verilog link + physical layer to stream sensor data @ 6.125 Gbps to host GPU for autonomous driving inference. Used Lattice Radiant for comprehensive EDA toolflow (synthesis, place-&-route, timing analysis, simulation).
-                        </p>
-                    </div>
                 </div>
 
                 <!-- Markdown Content -->

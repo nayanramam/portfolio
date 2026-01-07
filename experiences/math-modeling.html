@@ -42,6 +42,19 @@
         .prose strong { font-weight: 600; color: #1a1a1a; }
         .prose hr { border-color: rgba(26, 26, 26, 0.1); margin: 2rem 0; }
         .prose em { font-style: italic; }
+        .prose a {
+            color: #4a5240;
+            text-decoration: underline;
+            text-decoration-color: #4a5240;
+            text-underline-offset: 3px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .prose a:hover {
+            color: #1a1a1a;
+            text-decoration-color: #1a1a1a;
+            text-decoration-thickness: 2px;
+        }
         .prose img { max-width: 100%; height: auto; border-radius: 8px; margin: 1.5rem 0; }
         .prose table { width: 100%; max-width: 600px; margin: 1.5rem 0; border-collapse: collapse; }
         .prose table th { background-color: #EBE6DE; color: #1a1a1a; font-weight: 600; padding: 0.75rem 1rem; text-align: left; border: 1px solid rgba(26, 26, 26, 0.1); }
