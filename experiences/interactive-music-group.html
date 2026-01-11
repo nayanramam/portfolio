@@ -121,12 +121,7 @@
                     </div>
                     <h1 class="text-3xl font-serif font-bold mb-2" id="experience-position">Project Manager</h1>
                     <p class="text-2xl text-ink-muted mb-6" id="experience-place">Interactive Music Group</p>
-                    <div>
-                        <h2 class="text-xl font-semibold mb-3 text-olive">Synopsis</h2>
-                        <p class="text-lg text-ink-light leading-relaxed" id="experience-synopsis">
-                            Leading development of Daisy Seed based drum machine/synthesizer. Prototyping PCBs in KiCAD for MCU, SPI/I2C networked I/O (potentiometers, audio jacks, LCD, etc), and power circuitry. Designing novel force sensitive drum pad using mechanical keyboard switches and hall effect ICs. Overseeing development of AI based patch generation software with integrated Daisy compiler.
-                        </p>
-                    </div>
+
                 </div>
 
                 <!-- Markdown Content -->
@@ -244,7 +239,9 @@
         });
         
         // Load and render markdown content
-        fetch('../content/experiences/interactive-music-group.md')
+        fetch('../content/experiences/interactive-music-group.md', {
+            cache: 'no-store'
+        })
             .then(response => response.text())
             .then(markdown => {
                 // Extract title (first line after #) and split into position and place

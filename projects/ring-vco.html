@@ -227,7 +227,9 @@
         });
         
         // Load and render markdown content
-        fetch('../content/projects/ring-vco.md')
+        fetch('../content/projects/ring-vco.md', {
+            cache: 'no-store'
+        })
             .then(response => response.text())
             .then(markdown => {
                 // Extract title (first line after #)

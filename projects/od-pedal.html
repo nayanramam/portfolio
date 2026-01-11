@@ -235,7 +235,9 @@
         });
         
         // Load and render markdown content
-        fetch('../content/projects/od-pedal.md')
+        fetch('../content/projects/od-pedal.md', {
+            cache: 'no-store'
+        })
             .then(response => response.text())
             .then(markdown => {
                 // Extract title (first line after #)

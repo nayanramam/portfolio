@@ -238,7 +238,9 @@
         });
         
         // Load and render markdown content
-        fetch('../content/experiences/iva-lab.md')
+        fetch('../content/experiences/iva-lab.md', {
+            cache: 'no-store'
+        })
             .then(response => response.text())
             .then(markdown => {
                 // Extract title (first line after #) and split into position and place

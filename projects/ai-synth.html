@@ -239,7 +239,9 @@
         });
         
         // Load and render markdown content
-        fetch('../content/projects/ai-synth.md')
+        fetch('../content/projects/ai-synth.md', {
+            cache: 'no-store'
+        })
             .then(response => response.text())
             .then(markdown => {
                 // Extract title (first line after #)
