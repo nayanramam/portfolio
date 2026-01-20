@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -19,12 +19,14 @@
                         ink: '#1a1a1a',
                         'ink-light': '#4a4a4a',
                         'ink-muted': '#6b6b6b',
+                        olive: '#4a5240',
                         gold: '#F5D76E',
                         'gold-dark': '#E8C85A',
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
+                        serif: ['Libre Baskerville', 'Georgia', 'serif'],
                     }
                 }
             }
@@ -32,7 +34,7 @@
     </script>
     <style>
         body { background-color: #F5F0E8; }
-        #coursework-content h3 { font-size: 1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #1a1a1a; }
+        #coursework-content h2 { font-size: 1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #1a1a1a; }
         #coursework-content p { color: #4a4a4a; line-height: 1.75; margin-bottom: 1rem; }
     </style>
 </head>
@@ -41,9 +43,11 @@
     <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur-sm border-b border-ink/10">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4">
             <div class="flex items-center justify-between">
-                <!-- Left: Profile + Name -->
+                <!-- Left: Name -->
                 <a href="index.html" class="flex items-center gap-3">
-                    <img src="assets/nayan_pfp.png" alt="Nayan Ramam" class="w-10 h-10 rounded-full object-cover border-2 border-cream-dark">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: #1a1a1a;">
+                        <span class="font-serif font-bold text-sm tracking-tight" style="color: #F5F0E8;">NR</span>
+                    </div>
                     <div>
                         <h2 class="text-sm font-semibold">Nayan Ramam</h2>
                         <p class="text-xs text-ink-muted">Electrical Engineer</p>
@@ -56,6 +60,7 @@
                     <a href="about.html" class="text-sm font-medium">About Me</a>
                     <a href="experiences/index.html" class="text-sm hover:text-ink-light transition-colors">Experience</a>
                     <a href="projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="hobbies/index.html" class="text-sm hover:text-ink-light transition-colors">Hobbies</a>
                     <a href="index.html#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
                     <a href="assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors">Resume</a>
                 </div>
@@ -74,6 +79,7 @@
                     <a href="index.html" class="text-sm hover:text-ink-light transition-colors">Home</a>
                     <a href="about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
                     <a href="projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="hobbies/index.html" class="text-sm hover:text-ink-light transition-colors">Hobbies</a>
                     <a href="index.html#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
                     <a href="assets/cv.pdf" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors text-center">Resume</a>
                 </div>
@@ -150,23 +156,60 @@
 
     <!-- Load Coursework Content -->
     <script>
-        // Configure marked
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
+        // Function to wait for marked library to load
+        function waitForMarked(callback, maxAttempts = 50) {
+            let attempts = 0;
+            const checkMarked = setInterval(function() {
+                attempts++;
+                if (typeof marked !== 'undefined') {
+                    clearInterval(checkMarked);
+                    callback();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkMarked);
+                    console.error('Marked library failed to load after ' + maxAttempts + ' attempts');
+                    const contentDiv = document.getElementById('coursework-content');
+                    if (contentDiv) {
+                        contentDiv.innerHTML = '<p class="text-ink-light">Error: Markdown parser not available. Please refresh the page.</p>';
+                    }
+                }
+            }, 100);
+        }
         
-        // Load and render coursework markdown
-        fetch('content/coursework.md')
-            .then(response => response.text())
-            .then(markdown => {
-                const html = marked.parse(markdown);
-                document.getElementById('coursework-content').innerHTML = html;
-            })
-            .catch(err => {
-                console.error('Error loading coursework:', err);
-                document.getElementById('coursework-content').innerHTML = '<p class="text-ink-light">Coursework information coming soon.</p>';
+        // Wait for DOM and marked library to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            waitForMarked(function() {
+                // Configure marked
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true
+                });
+                
+                // Load and render coursework markdown (with cache busting)
+                fetch('content/coursework.md?v=' + new Date().getTime(), {
+                    cache: 'no-cache'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(markdown => {
+                        const html = marked.parse(markdown);
+                        const contentDiv = document.getElementById('coursework-content');
+                        if (contentDiv) {
+                            contentDiv.innerHTML = html;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error loading coursework:', err);
+                        const contentDiv = document.getElementById('coursework-content');
+                        if (contentDiv) {
+                            contentDiv.innerHTML = '<p class="text-ink-light">Error loading coursework: ' + err.message + '. Make sure you are using a local web server (not file:// protocol).</p>';
+                        }
+                    });
             });
+        });
     </script>
 
     <!-- Footer -->

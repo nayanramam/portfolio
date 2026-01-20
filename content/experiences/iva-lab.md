@@ -1,6 +1,6 @@
 # Image Processing/Deep Learning Researcher | Intelligent Vision Automation (IVA) Lab
 
-## The Project
+## About
 
 My team was brought on to migrate and expand a MATLAB application that parses and processes floorplans. It detects door, rooms, elevators, etc. with the intent of creating a mapping application for the indoors. A primary usecase would be for people with accessibility requirements (e.g. unable to use stairs), but is also extremely useful for navigating large, complex buildings like malls. We are developing the same application, but using Python and Flet as opposed to MATLAB. We have now nearly matched all functionality in the MATLAB application, and have started developing new image processing capabilities.
 

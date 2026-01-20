@@ -34,13 +34,11 @@ The final portion of the project was to create a design review slideshow documen
 ## Tools Used
 - Cadence Virtuoso Schematic Editor
 - Cadence Virtuoso Layout Editor
-- Spectre Circuit Simulator
 - Sky130 PDK (Process Design Kit)
 
 ## Skills Demonstrated
 - Analog IC design fundamentals
-- Current-starved inverter design
-- Full custom layout techniques
+- Custom layout techniques
 - Design verification (DRC/LVS)
 - Corner and temperature analysis
 - Buffer design for load driving

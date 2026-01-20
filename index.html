@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -24,6 +24,7 @@
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
+                        serif: ['Libre Baskerville', 'Georgia', 'serif'],
                     }
                 }
             }
@@ -75,6 +76,19 @@
             background-color: #1a1a1a;
             color: #F5F0E8;
         }
+        .hobby-card {
+            transition: transform 0.2s ease;
+        }
+        .hobby-card:hover img {
+            filter: blur(8px);
+            transform: scale(1.05);
+        }
+        .hobby-card:hover img[src*="cooking"] {
+            transform: scale(1.05);
+        }
+        .hobby-card:hover .hobby-overlay {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans text-ink antialiased">
@@ -82,9 +96,11 @@
     <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur-sm border-b border-ink/10">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4">
             <div class="flex items-center justify-between">
-                <!-- Left: Profile + Name -->
+                <!-- Left: Name -->
                 <div class="flex items-center gap-3">
-                    <img src="assets/nayan_pfp.png" alt="Nayan Ramam" class="w-10 h-10 rounded-full object-cover border-2 border-cream-dark">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: #1a1a1a;">
+                        <span class="font-serif font-bold text-sm tracking-tight" style="color: #F5F0E8;">NR</span>
+                    </div>
                     <div>
                         <h2 class="text-sm font-semibold">Nayan Ramam</h2>
                         <p class="text-xs text-ink-muted">Electrical Engineer</p>
@@ -97,6 +113,7 @@
                     <a href="about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
                     <a href="experiences/index.html" class="text-sm hover:text-ink-light transition-colors">Experience</a>
                     <a href="projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="hobbies/index.html" class="text-sm hover:text-ink-light transition-colors">Hobbies</a>
                     <a href="#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
                     <a href="assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors">Resume</a>
                 </div>
@@ -116,6 +133,7 @@
                     <a href="about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
                     <a href="experiences/index.html" class="text-sm hover:text-ink-light transition-colors">Experience</a>
                     <a href="projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="hobbies/index.html" class="text-sm hover:text-ink-light transition-colors">Hobbies</a>
                     <a href="#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
                     <a href="assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors text-center">Resume</a>
                 </div>
@@ -129,7 +147,7 @@
             <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
                 <!-- Profile Picture -->
                 <div class="flex-shrink-0 w-48 h-48 lg:w-64 lg:h-64 rounded-2xl overflow-hidden shadow-lg border border-cream-dark">
-                    <img src="assets/river.png" alt="Nayan Ramam" class="w-full h-full object-cover" style="transform: scale(1.5) translateY(-15%) translateX(-16%);">
+                    <img src="assets/nayan_headshot_1_crop.png" alt="Nayan Ramam" class="w-full h-full object-cover";">
                 </div>
                 
                 <!-- Name, Title, Bio, Buttons -->
@@ -162,7 +180,7 @@
     </section>
 
     <!-- Featured Projects Section -->
-    <section id="projects" class="py-16 lg:py-24">
+    <section id="projects" class="py-16 lg:py-24 border-t border-ink/10">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl lg:text-4xl font-bold mb-4">Featured Projects</h2>
@@ -220,7 +238,7 @@
     </section>
 
     <!-- Experience Section -->
-    <section id="about" class="py-16 lg:py-24 bg-cream-dark/30">
+    <section id="about" class="py-16 lg:py-24 bg-cream-dark/30 border-t border-ink/10">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl lg:text-4xl font-bold mb-4">Experience</h2>
@@ -293,7 +311,7 @@
                         <img src="assets/experiences/sj tapeout.jpg" alt="Silicon Jackets" class="w-full h-full object-cover">
                     </div>
                     <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Chip Design Engineer</h3>
+                        <h3 class="text-lg font-semibold mb-1">Digital & Analog Mixed-Signal Design</h3>
                         <p class="text-xs text-ink-muted mb-1">Jan 2025 - Present</p>
                         <p class="text-sm text-ink-light">Silicon Jackets</p>
                     </div>
@@ -303,6 +321,37 @@
             <!-- See All Button -->
             <div class="text-center mt-8">
                 <a href="experiences/index.html" class="btn-primary inline-block px-8 py-3 rounded-lg font-medium text-ink">See All</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hobbies Section -->
+    <section id="hobbies" class="py-16 lg:py-24 border-t border-ink/10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold mb-4">Hobbies</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                <!-- Cooking Card -->
+                <a href="hobbies/index.html#cooking" class="hobby-card relative rounded-2xl overflow-hidden block bg-cream-dark" style="aspect-ratio: 21/9;">
+                    <img src="assets/hobbies/cooking/chicken piccata.jpg" alt="Cooking" class="absolute inset-0 w-full h-full object-cover transition-all duration-300" style="width: 160%; height: 160%; transform: translate(0%, -11%); object-position: center;">
+                    <div class="hobby-overlay absolute inset-0 bg-ink/80 opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                        <div class="text-center text-cream px-6">
+                            <h3 class="text-2xl lg:text-3xl font-serif font-bold mb-2">Cooking</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Cubing Card -->
+                <a href="hobbies/index.html#cubing" class="hobby-card relative rounded-2xl overflow-hidden block bg-cream-dark" style="aspect-ratio: 21/9;">
+                    <img src="assets/hobbies/cubing/cubing thumb.png" alt="Rubik's Cube Speedsolving" class="w-full h-full object-cover transition-all duration-300">
+                    <div class="hobby-overlay absolute inset-0 bg-ink/80 opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                        <div class="text-center text-cream px-6">
+                            <h3 class="text-2xl lg:text-3xl font-serif font-bold mb-2">Rubik's Cube Speedsolving</h3>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </section>
@@ -351,6 +400,7 @@
                     <a href="about.html" class="hover:text-ink-light transition-colors">About Me</a>
                     <a href="experiences/index.html" class="hover:text-ink-light transition-colors">Experience</a>
                     <a href="projects/index.html" class="hover:text-ink-light transition-colors">Projects</a>
+                    <a href="hobbies/index.html" class="hover:text-ink-light transition-colors">Hobbies</a>
                 </div>
                 
                 <!-- Center: Copyright -->

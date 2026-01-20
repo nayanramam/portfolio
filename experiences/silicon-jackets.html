@@ -60,6 +60,20 @@
         .prose table th { background-color: #EBE6DE; color: #1a1a1a; font-weight: 600; padding: 0.75rem 1rem; text-align: left; border: 1px solid rgba(26, 26, 26, 0.1); }
         .prose table td { padding: 0.75rem 1rem; border: 1px solid rgba(26, 26, 26, 0.1); color: #4a4a4a; }
         .prose table tr:nth-child(even) { background-color: rgba(235, 230, 222, 0.3); }
+        #roles-container { width: 100%; max-width: 100%; }
+        #roles-container .grid { 
+            display: grid !important; 
+            width: 100%; 
+            max-width: 100%; 
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        @media (min-width: 1024px) {
+            #roles-container .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+        }
+        #roles-container .prose { max-width: 100% !important; width: 100%; }
+        #roles-container .prose * { max-width: 100%; }
     </style>
 </head>
 <body class="min-h-screen font-sans text-ink antialiased">
@@ -67,9 +81,11 @@
     <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur-sm border-b border-ink/10">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 py-4">
             <div class="flex items-center justify-between">
-                <!-- Left: Profile + Name -->
+                <!-- Left: Name -->
                 <a href="../index.html" class="flex items-center gap-3">
-                    <img src="../assets/nayan_pfp.png" alt="Nayan Ramam" class="w-10 h-10 rounded-full object-cover border-2 border-cream-dark">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: #1a1a1a;">
+                        <span class="font-serif font-bold text-sm tracking-tight" style="color: #F5F0E8;">NR</span>
+                    </div>
                     <div>
                         <h2 class="text-sm font-semibold">Nayan Ramam</h2>
                         <p class="text-xs text-ink-muted">Electrical Engineer</p>
@@ -82,6 +98,7 @@
                     <a href="../about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
                     <a href="index.html" class="text-sm font-medium">Experience</a>
                     <a href="../projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="../hobbies/index.html" class="text-sm hover:text-ink-light transition-colors">Hobbies</a>
                     <a href="../index.html#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
                     <a href="../assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors">Resume</a>
                 </div>
@@ -101,6 +118,7 @@
                     <a href="../about.html" class="text-sm hover:text-ink-light transition-colors">About Me</a>
                     <a href="index.html" class="text-sm font-medium">Experience</a>
                     <a href="../projects/index.html" class="text-sm hover:text-ink-light transition-colors">Projects</a>
+                    <a href="../hobbies/index.html" class="text-sm hover:text-ink-light transition-colors">Hobbies</a>
                     <a href="../index.html#contact" class="text-sm hover:text-ink-light transition-colors">Contact</a>
                     <a href="../assets/resume.pdf" target="_blank" rel="noopener" class="px-4 py-2 bg-ink text-cream rounded-lg text-sm font-medium hover:bg-ink-light transition-colors text-center">Resume</a>
                 </div>
@@ -113,26 +131,26 @@
         <!-- Two Column Layout -->
         <div class="flex flex-col lg:flex-row items-start">
             <!-- Main Content -->
-            <div class="flex-1 lg:max-w-2xl lg:mr-16">
+            <div class="flex-1 lg:mr-16">
                 <!-- Synopsis Section -->
-                <div class="mb-12">
+                <div class="mb-12 lg:max-w-2xl">
                     <div class="mb-4">
                         <span class="text-xs font-mono tracking-wider text-olive uppercase">Academic Extracurriculars</span>
                     </div>
-                    <h1 class="text-3xl font-serif font-bold mb-2" id="experience-position">Chip Design Engineer</h1>
+                    <h1 class="text-3xl font-serif font-bold mb-2" id="experience-position">Digital & Analog Mixed-Signal Design</h1>
                     <p class="text-2xl text-ink-muted mb-6" id="experience-place">Silicon Jackets</p>
-                    <div>
-                        <h2 class="text-xl font-semibold mb-3 text-olive">Synopsis</h2>
-                        <p class="text-lg text-ink-light leading-relaxed" id="experience-synopsis">
-                            Analog Mixed-Signal Design Engineer (Oct 2025 – Present): Built and verified digital inverter and single-stage amplifier in Cadence Virtuoso (schematic, layout, DRC/LVS). Designed, simulated, and verified ring oscillator meeting power and frequency specs (<1 mW avg. power, 500 MHz) with inverter-based buffer. Digital Design Engineer (Jan 2025 – Present): Engineered SystemVerilog GCD module through full stack achieving 99.62% DUT coverage. Designing fast divider module using Newton-Raphson & Goldschmidt algorithms.
-                        </p>
-                    </div>
+
                 </div>
 
                 <!-- Markdown Content -->
-                <article class="prose" id="content">
+                <article class="prose lg:max-w-2xl" id="content">
                     <!-- Content loaded from markdown -->
                 </article>
+                
+                <!-- Two Column Roles Section -->
+                <div id="roles-container" class="mt-8 mb-8 w-full" style="max-width: 100%;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
             </div>
 
             <!-- Sidebar -->
@@ -262,18 +280,155 @@
                     }
                 }
                 
-                // Parse and render full markdown (skip the first h1 as we already have it)
-                const html = marked.parse(markdown);
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
+                // Split markdown into sections
+                const sections = markdown.split(/^##\s+/m);
+                const beforeRoles = [];
+                let role1Content = [];
+                let role2Content = [];
                 
-                // Remove the first h1 if it exists
-                const firstH1 = tempDiv.querySelector('h1');
-                if (firstH1) {
-                    firstH1.remove();
+                let currentRole = null;
+                let toolsSection = null;
+                let skillsSection = null;
+                
+                // Define which tools/skills belong to which role
+                const analogTools = ['Cadence Virtuoso', 'Spectre', 'DRC', 'LVS'];
+                const digitalTools = ['SystemVerilog', 'Verdi', 'Coverage'];
+                const analogSkills = ['Analog', 'MOSFET', 'Schematic', 'Layout', 'Custom layout'];
+                const digitalSkills = ['SystemVerilog', 'RTL', 'Testbench', 'Constrained random', 'Coverage-driven', 'division algorithms', 'lookup table', 'Physical design'];
+                
+                sections.forEach((section, index) => {
+                    if (index === 0) {
+                        // Skip the title section
+                        return;
+                    }
+                    
+                    const trimmed = section.trim();
+                    if (!trimmed) return;
+                    
+                    // Stop at Resources section
+                    if (trimmed.startsWith('Resources')) {
+                        return;
+                    }
+                    
+                    // Check if this is one of the role sections
+                    if (trimmed.startsWith('Analog Mixed-Signal') || trimmed.startsWith('Analog Mixed-Signal (AMS)')) {
+                        currentRole = 1;
+                        role1Content.push('## ' + trimmed);
+                    } else if (trimmed.startsWith('Digital Design')) {
+                        currentRole = 2;
+                        role2Content.push('## ' + trimmed);
+                    } else if (trimmed.startsWith('About')) {
+                        // Content before roles
+                        beforeRoles.push('## ' + trimmed);
+                    } else if (trimmed.startsWith('Tools Used')) {
+                        // Store tools section to split later
+                        toolsSection = trimmed;
+                    } else if (trimmed.startsWith('Skills Demonstrated')) {
+                        // Store skills section to split later
+                        skillsSection = trimmed;
+                    } else {
+                        // Other content before roles
+                        beforeRoles.push('## ' + trimmed);
+                    }
+                });
+                
+                // Split Tools section
+                if (toolsSection) {
+                    const toolsLines = toolsSection.split('\n').filter(line => line.trim() && line.trim().startsWith('-'));
+                    const analogToolsList = [];
+                    const digitalToolsList = [];
+                    
+                    toolsLines.forEach(line => {
+                        const tool = line.toLowerCase();
+                        const isAnalog = analogTools.some(a => tool.includes(a.toLowerCase()));
+                        const isDigital = digitalTools.some(d => tool.includes(d.toLowerCase()));
+                        
+                        if (isAnalog && !isDigital) {
+                            analogToolsList.push(line.trim());
+                        } else if (isDigital || (!isAnalog && !isDigital && (tool.includes('verdi') || tool.includes('coverage')))) {
+                            digitalToolsList.push(line.trim());
+                        } else if (isAnalog) {
+                            // If it matches both or is ambiguous, put in analog
+                            analogToolsList.push(line.trim());
+                        }
+                    });
+                    
+                    if (analogToolsList.length > 0) {
+                        role1Content.push('## Tools Used\n' + analogToolsList.join('\n'));
+                    }
+                    if (digitalToolsList.length > 0) {
+                        role2Content.push('## Tools Used\n' + digitalToolsList.join('\n'));
+                    }
                 }
                 
-                document.getElementById('content').innerHTML = tempDiv.innerHTML;
+                // Split Skills section
+                if (skillsSection) {
+                    const skillsLines = skillsSection.split('\n').filter(line => line.trim() && line.trim().startsWith('-'));
+                    const analogSkillsList = [];
+                    const digitalSkillsList = [];
+                    
+                    skillsLines.forEach(line => {
+                        const skill = line.toLowerCase();
+                        const isAnalog = analogSkills.some(a => skill.includes(a.toLowerCase()));
+                        const isDigital = digitalSkills.some(d => skill.includes(d.toLowerCase()));
+                        
+                        if (isAnalog && !isDigital) {
+                            analogSkillsList.push(line.trim());
+                        } else if (isDigital || (!isAnalog && !isDigital && (skill.includes('rtl') || skill.includes('testbench') || skill.includes('verification') || skill.includes('algorithm') || skill.includes('lookup') || skill.includes('physical')))) {
+                            digitalSkillsList.push(line.trim());
+                        } else if (isAnalog) {
+                            // If it matches both or is ambiguous, put in analog
+                            analogSkillsList.push(line.trim());
+                        }
+                    });
+                    
+                    if (analogSkillsList.length > 0) {
+                        role1Content.push('## Skills Demonstrated\n' + analogSkillsList.join('\n'));
+                    }
+                    if (digitalSkillsList.length > 0) {
+                        role2Content.push('## Skills Demonstrated\n' + digitalSkillsList.join('\n'));
+                    }
+                }
+                
+                // Render content before roles (About section)
+                if (beforeRoles.length > 0) {
+                    const beforeHtml = marked.parse(beforeRoles.join('\n\n'));
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = beforeHtml;
+                    document.getElementById('content').innerHTML = tempDiv.innerHTML;
+                }
+                
+                // Render roles in two columns with their own Tools and Skills
+                const rolesContainer = document.getElementById('roles-container');
+                console.log('Role1 content:', role1Content);
+                console.log('Role2 content:', role2Content);
+                
+                if (role1Content.length > 0 && role2Content.length > 0) {
+                    const role1Html = marked.parse(role1Content.join('\n\n'));
+                    const role2Html = marked.parse(role2Content.join('\n\n'));
+                    rolesContainer.innerHTML = `
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8" style="width: 100%; display: grid !important; grid-template-columns: repeat(1, minmax(0, 1fr));">
+                            <div class="prose" style="max-width: 100% !important; width: 100%;">
+                                ${role1Html}
+                            </div>
+                            <div class="prose" style="max-width: 100% !important; width: 100%;">
+                                ${role2Html}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Force grid on large screens
+                    if (window.innerWidth >= 1024) {
+                        const grid = rolesContainer.querySelector('.grid');
+                        if (grid) {
+                            grid.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+                        }
+                    }
+                } else if (role1Content.length > 0 || role2Content.length > 0) {
+                    // Fallback if only one role
+                    const content = role1Content.length > 0 ? role1Content : role2Content;
+                    rolesContainer.innerHTML = marked.parse(content.join('\n\n'));
+                }
             })
             .catch(err => {
                 console.error('Error loading markdown:', err);

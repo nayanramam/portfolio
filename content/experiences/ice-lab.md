@@ -1,6 +1,6 @@
 # Analog Mixed-Signal Researcher | Integrated Computational Electronics (ICE) Lab
 
-## Background
+## About
 
 Paraphrasing the website, the ICE Lab focuses on configurable electronics/circuits and neuromorphic engineering. The project I currently work on falls into the configurable hardware bucket. The team I am on is developing a toolchain for programming circuits on Field Programmable Analog Arrays (FPAAs). At the bottom of this page I linked some resources explaining most of the concepts, but here is a TLDR:
 
