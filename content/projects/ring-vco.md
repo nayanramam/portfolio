@@ -25,16 +25,19 @@ I simulated over the ff, tt and ss corners, did a temperature sweep from 0-70 C,
 
 After simulating my schematic, I moved on to the layout phase of the project. I went through several design iterations, both to avoid spacing issues and to optimize the footprint. Only after nearing the completion of my second iteration did I realize the mistake with the bulks. It just so happened that I had placed my transistors in a way that made it faster to restart the layout than to try and salvage what I had. The third time around was far more successful; my layout passed DRC and LVS with much less trouble than the past designs. Thankfully, the buffer layout was much less of a hassle — that one passed with minimal troubleshooting. The final layouts are below:
 
-![VCO Layout](../assets/project-placeholder.svg)
+![VCO Layout](../assets/projects/ring-vco.jpg)
+
+![Buffer Layout](../assets/projects/buffer-layout.jpg)
 
 The final portion of the project was to create a design review slideshow documenting the design process, schematics, simulation results, and layout. The slides are attached below.
 
-[Design Review Slides](#) *(placeholder link)*
+<a href="../assets/projects/Nayan Ramam AMS Onboarding Design Review (1).pdf" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 0.5rem 1rem; background-color: #1a1a1a; color: #F5F0E8; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: background-color 0.2s ease; margin: 1rem 0;">Design Review Slides</a>
 
 ## Tools Used
-- Cadence Virtuoso Schematic Editor
-- Cadence Virtuoso Layout Editor
-- Sky130 PDK (Process Design Kit)
+- Cadence Virtuoso
+- Cadence Pegasus
+- Cadence Maestro
+- Sky130 PDK
 
 ## Skills Demonstrated
 - Analog IC design fundamentals
