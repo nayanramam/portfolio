@@ -96,55 +96,9 @@
             <h1 class="text-3xl font-serif font-bold mb-2">All Projects</h1>
         </div>
 
-        <!-- Projects Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Ring VCO -->
-            <a href="ring-vco.html" class="project-card block bg-cream-dark/30 rounded-xl overflow-hidden group">
-                <div class="aspect-video bg-cream-dark overflow-hidden">
-                    <img src="../assets/projects/ring-vco.jpg" alt="Ring VCO Project" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                </div>
-                <div class="p-6">
-                    <span class="text-xs font-mono tracking-wider text-olive uppercase">Analog IC Design</span>
-                    <h3 class="text-lg font-semibold mt-2 group-hover:text-olive transition-colors">Ring VCO Design + Layout in Cadence Virtuoso</h3>
-                    <p class="text-sm text-ink-light mt-2 line-clamp-2">A voltage-controlled oscillator design project completed using Cadence Virtuoso, featuring a ring oscillator topology.</p>
-                </div>
-            </a>
-
-            <!-- AI Synth -->
-            <a href="ai-synth.html" class="project-card block bg-cream-dark/30 rounded-xl overflow-hidden group">
-                <div class="aspect-video bg-cream-dark overflow-hidden">
-                    <img src="../assets/projects/ai-synth.jpg" alt="AI Synth Project" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                </div>
-                <div class="p-6">
-                    <span class="text-xs font-mono tracking-wider text-olive uppercase">Audio / Machine Learning</span>
-                    <h3 class="text-lg font-semibold mt-2 group-hover:text-olive transition-colors">AI Powered Virtual Synthesizer</h3>
-                    <p class="text-sm text-ink-light mt-2 line-clamp-2">An innovative virtual synthesizer that leverages artificial intelligence to generate unique sounds and assist musicians.</p>
-                </div>
-            </a>
-
-            <!-- OD Pedal -->
-            <a href="od-pedal.html" class="project-card block bg-cream-dark/30 rounded-xl overflow-hidden group">
-                <div class="aspect-video bg-cream-dark overflow-hidden">
-                    <img src="../assets/projects/od-pedal.jpg" alt="JHS Morning Glory Copycat Pedal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                </div>
-                <div class="p-6">
-                    <span class="text-xs font-mono tracking-wider text-olive uppercase">Hardware / PCB Design</span>
-                    <h3 class="text-lg font-semibold mt-2 group-hover:text-olive transition-colors">JHS Morning Glory Copycat Pedal</h3>
-                    <p class="text-sm text-ink-light mt-2 line-clamp-2">Designing and fabricating a guitar overdrive pedal based on the JHS Morning Glory circuit, including PCB design, assembly, and custom housing.</p>
-                </div>
-            </a>
-
-            <!-- GCD Module ASIC Design -->
-            <a href="gcd-module.html" class="project-card block bg-cream-dark/30 rounded-xl overflow-hidden group">
-                <div class="aspect-video bg-cream-dark overflow-hidden">
-                    <img src="../assets/projects/verdi%20coverage%20onboarding.png" alt="GCD Module ASIC Design" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                </div>
-                <div class="p-6">
-                    <span class="text-xs font-mono tracking-wider text-olive uppercase">ASIC Design</span>
-                    <h3 class="text-lg font-semibold mt-2 group-hover:text-olive transition-colors">GCD Module ASIC Design</h3>
-                    <p class="text-sm text-ink-light mt-2 line-clamp-2">I was tasked with developing a module to calculate the greatest common denominator of two integers using the Euclidean algorithm.</p>
-                </div>
-            </a>
+        <!-- Projects Grid (order from config/project-order.js) -->
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Filled by config/project-order.js -->
         </div>
     </main>
 
@@ -183,6 +137,24 @@
             </div>
         </div>
     </footer>
+    <script src="../config/project-order.js"></script>
+    <script>
+        (function() {
+            const grid = document.getElementById('projects-grid');
+            if (!grid || typeof PROJECT_ORDER === 'undefined' || typeof PROJECTS === 'undefined') return;
+            const base = '../assets/projects/';
+            PROJECT_ORDER.all.forEach(function(id) {
+                const p = PROJECTS[id];
+                if (!p) return;
+                const imgSrc = base + (p.image.indexOf(' ') !== -1 ? p.image.replace(/ /g, '%20') : p.image);
+                const a = document.createElement('a');
+                a.href = p.href;
+                a.className = 'project-card block bg-cream-dark/30 rounded-xl overflow-hidden group';
+                a.innerHTML = '<div class="aspect-video bg-cream-dark overflow-hidden"><img src="' + imgSrc + '" alt="' + (p.shortTitle || p.title) + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"></div><div class="p-6"><span class="text-xs font-mono tracking-wider text-olive uppercase">' + p.category + '</span><h3 class="text-lg font-semibold mt-2 group-hover:text-olive transition-colors">' + p.title + '</h3><p class="text-sm text-ink-light mt-2 line-clamp-2">' + p.synopsis + '</p></div>';
+                grid.appendChild(a);
+            });
+        })();
+    </script>
 </body>
 </html>
 

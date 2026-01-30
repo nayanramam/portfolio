@@ -76,19 +76,6 @@
             background-color: #1a1a1a;
             color: #F5F0E8;
         }
-        .hobby-card {
-            transition: transform 0.2s ease;
-        }
-        .hobby-card:hover img {
-            filter: blur(8px);
-            transform: scale(1.05);
-        }
-        .hobby-card:hover img[src*="cooking"] {
-            transform: scale(1.05);
-        }
-        .hobby-card:hover .hobby-overlay {
-            opacity: 1;
-        }
     </style>
 </head>
 <body class="min-h-screen font-sans text-ink antialiased">
@@ -186,48 +173,8 @@
                 <h2 class="text-3xl lg:text-4xl font-bold mb-4">Featured Projects</h2>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
-                <!-- Project 1: Ring VCO -->
-                <a href="projects/ring-vco.html" class="card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="aspect-video bg-cream-dark overflow-hidden">
-                        <img src="assets/projects/ring-vco.jpg" alt="Ring VCO Design" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">Ring VCO Design + Layout</h3>
-                        <p class="text-ink-light text-sm mb-4 leading-relaxed">
-                            Designed an analog ring oscillator in Cadence Virtuoso, focusing on layout for mixed-signal applications and clock generation.
-                        </p>
-                        <span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span>
-                    </div>
-                </a>
-
-                <!-- Project 2: AI Synth -->
-                <a href="projects/ai-synth.html" class="card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="aspect-video bg-cream-dark overflow-hidden">
-                        <img src="assets/projects/ai-synth.jpg" alt="AI Powered Virtual Synthesizer" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">AI Powered Virtual Synthesizer</h3>
-                        <p class="text-ink-light text-sm mb-4 leading-relaxed">
-                            Developed a virtual synthesizer witth integrated AI-powered preset generation for real-time music synthesis and sound exploration.
-                        </p>
-                        <span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span>
-                    </div>
-                </a>
-
-                <!-- Project 3: OD Pedal -->
-                <a href="projects/od-pedal.html" class="card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="aspect-video bg-cream-dark overflow-hidden">
-                        <img src="assets/projects/od-pedal.jpg" alt="Overdrive Guitar Pedal" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2">Overdrive Guitar Pedal</h3>
-                        <p class="text-ink-light text-sm mb-4 leading-relaxed">
-                            Designing and fabricating a guitar overdrive pedal based on the JHS Morning Glory circuit, including PCB design, assembly, and custom housing.
-                        </p>
-                        <span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span>
-                    </div>
-                </a>
+            <div id="featured-projects-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+                <!-- Filled by config/project-order.js -->
             </div>
 
             <!-- View All Projects Button -->
@@ -244,78 +191,8 @@
                 <h2 class="text-3xl lg:text-4xl font-bold mb-4">Experience</h2>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                <!-- Experience Card 1: ICE Lab -->
-                <a href="experiences/ice-lab.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
-                        <img src="assets/experiences/ice lab thumb.png" alt="ICE Lab" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Analog Design Researcher</h3>
-                        <p class="text-xs text-ink-muted mb-1">Oct 2025 - Present</p>
-                        <p class="text-sm text-ink-light">Integrated Computational Electronics Lab</p>
-                    </div>
-                </a>
-
-                <!-- Experience Card 2: IVA Lab -->
-                <a href="experiences/iva-lab.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
-                        <img src="assets/experiences/iva lab thumb.png" alt="IVA Lab" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Image Processing & AI/ML Researcher</h3>
-                        <p class="text-xs text-ink-muted mb-1">Aug 2025 - Present</p>
-                        <p class="text-sm text-ink-light">Intelligent Vision Automation Lab</p>
-                    </div>
-                </a>
-
-                <!-- Experience Card 3: San José State -->
-                <a href="experiences/sjsu.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
-                        <img src="assets/experiences/sjsu thumb.png" alt="San José State" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Digital Design Researcher</h3>
-                        <p class="text-xs text-ink-muted mb-1">May 2025 - Aug 2025</p>
-                        <p class="text-sm text-ink-light">San José State University</p>
-                    </div>
-                </a>
-
-                <!-- Experience Card 4: Math Modeling -->
-                <a href="experiences/math-modeling.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
-                        <img src="assets/experiences/math modeling thumb.png" alt="Math Modeling" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Team Lead & Researcher</h3>
-                        <p class="text-xs text-ink-muted mb-1">Aug 2024 - Present</p>
-                        <p class="text-sm text-ink-light">Math Modeling Research Group</p>
-                    </div>
-                </a>
-
-                <!-- Experience Card 5: Interactive Music Group -->
-                <a href="experiences/interactive-music-group.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
-                        <img src="assets/experiences/interactive music group thumb.png" alt="Interactive Music Group" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Project Manager</h3>
-                        <p class="text-xs text-ink-muted mb-1">Aug 2025 - Present</p>
-                        <p class="text-sm text-ink-light">Interactive Music Group</p>
-                    </div>
-                </a>
-
-                <!-- Experience Card 6: Silicon Jackets -->
-                <a href="experiences/silicon-jackets.html" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
-                    <div class="w-full h-32 bg-cream-dark overflow-hidden">
-                        <img src="assets/experiences/sj tapeout.jpg" alt="Silicon Jackets" class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1">Digital & Analog Mixed-Signal Design</h3>
-                        <p class="text-xs text-ink-muted mb-1">Jan 2025 - Present</p>
-                        <p class="text-sm text-ink-light">Silicon Jackets</p>
-                    </div>
-                </a>
+            <div id="featured-experiences-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                <!-- Filled by config/experience-order.js -->
             </div>
 
             <!-- See All Button -->
@@ -332,24 +209,24 @@
                 <h2 class="text-3xl lg:text-4xl font-bold mb-4">Hobbies</h2>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                 <!-- Cooking Card -->
-                <a href="hobbies/index.html#cooking" class="hobby-card relative rounded-2xl overflow-hidden block bg-cream-dark" style="aspect-ratio: 21/9;">
-                    <img src="assets/hobbies/cooking/chicken piccata.jpg" alt="Cooking" class="absolute inset-0 w-full h-full object-cover transition-all duration-300" style="width: 160%; height: 160%; transform: translate(0%, -11%); object-position: center;">
-                    <div class="hobby-overlay absolute inset-0 bg-ink/80 opacity-0 transition-opacity duration-300 flex items-center justify-center">
-                        <div class="text-center text-cream px-6">
-                            <h3 class="text-2xl lg:text-3xl font-serif font-bold mb-2">Cooking</h3>
-                        </div>
+                <a href="hobbies/index.html#cooking" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="relative w-full overflow-hidden bg-cream-dark" style="aspect-ratio: 21/9;">
+                        <img src="assets/hobbies/cooking/chicken piccata.jpg" alt="Cooking" class="absolute inset-0 w-full h-full object-cover" style="width: 160%; height: 160%; transform: translate(0%, -11%); object-position: center;">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-ink">Cooking</h3>
                     </div>
                 </a>
 
                 <!-- Cubing Card -->
-                <a href="hobbies/index.html#cubing" class="hobby-card relative rounded-2xl overflow-hidden block bg-cream-dark" style="aspect-ratio: 21/9;">
-                    <img src="assets/hobbies/cubing/cubing thumb.png" alt="Rubik's Cube Speedsolving" class="w-full h-full object-cover transition-all duration-300">
-                    <div class="hobby-overlay absolute inset-0 bg-ink/80 opacity-0 transition-opacity duration-300 flex items-center justify-center">
-                        <div class="text-center text-cream px-6">
-                            <h3 class="text-2xl lg:text-3xl font-serif font-bold mb-2">Rubik's Cube Speedsolving</h3>
-                        </div>
+                <a href="hobbies/index.html#cubing" class="card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity">
+                    <div class="w-full overflow-hidden bg-cream-dark" style="aspect-ratio: 21/9;">
+                        <img src="assets/hobbies/cubing/cubing thumb.png" alt="Rubik's Cube Speedsolving" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-ink">Rubik's Cube Speedsolving</h3>
                     </div>
                 </a>
             </div>
@@ -436,6 +313,43 @@
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         });
+    </script>
+    <script src="config/project-order.js"></script>
+    <script>
+        (function() {
+            const grid = document.getElementById('featured-projects-grid');
+            if (!grid || typeof PROJECT_ORDER === 'undefined' || typeof PROJECTS === 'undefined') return;
+            const base = 'assets/projects/';
+            const hrefBase = 'projects/';
+            PROJECT_ORDER.featured.forEach(function(id) {
+                const p = PROJECTS[id];
+                if (!p) return;
+                const a = document.createElement('a');
+                a.href = hrefBase + p.href;
+                a.className = 'card bg-cream-dark/50 rounded-2xl overflow-hidden block hover:opacity-95 transition-opacity';
+                a.innerHTML = '<div class="aspect-video bg-cream-dark overflow-hidden"><img src="' + base + p.image.replace(/ /g, '%20') + '" alt="' + (p.shortTitle || p.title) + '" class="w-full h-full object-cover"></div><div class="p-6"><h3 class="text-xl font-semibold mb-2">' + (p.shortTitle || p.title) + '</h3><p class="text-ink-light text-sm mb-4 leading-relaxed">' + p.synopsis + '</p><span class="btn-primary inline-block px-4 py-2 rounded-lg text-sm font-medium text-ink">Learn More</span></div>';
+                grid.appendChild(a);
+            });
+        })();
+    </script>
+    <script src="config/experience-order.js"></script>
+    <script>
+        (function() {
+            const grid = document.getElementById('featured-experiences-grid');
+            if (!grid || typeof EXPERIENCE_ORDER === 'undefined' || typeof EXPERIENCES === 'undefined') return;
+            const base = 'assets/experiences/';
+            const hrefBase = 'experiences/';
+            EXPERIENCE_ORDER.featured.forEach(function(id) {
+                const e = EXPERIENCES[id];
+                if (!e) return;
+                const imgSrc = base + (e.image.indexOf(' ') !== -1 ? e.image.replace(/ /g, '%20') : e.image);
+                const a = document.createElement('a');
+                a.href = hrefBase + e.href;
+                a.className = 'card bg-cream-dark/50 rounded-xl overflow-hidden block hover:opacity-95 transition-opacity';
+                a.innerHTML = '<div class="w-full h-32 bg-cream-dark overflow-hidden"><img src="' + imgSrc + '" alt="' + e.subtitle + '" class="w-full h-full object-cover"></div><div class="p-4"><h3 class="text-lg font-semibold mb-1">' + e.title + '</h3><p class="text-xs text-ink-muted mb-1">' + e.date + '</p><p class="text-sm text-ink-light">' + e.subtitle + '</p></div>';
+                grid.appendChild(a);
+            });
+        })();
     </script>
 </body>
 </html>
