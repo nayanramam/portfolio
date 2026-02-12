@@ -1,7 +1,6 @@
 /**
  * Experience order for the home page.
  * Edit this file to control the order of experience cards in the "Experience" section on the home page.
- * The experiences index page (experiences/index.html) is unchanged.
  */
 
 const EXPERIENCE_ORDER = {
@@ -19,7 +18,7 @@ const EXPERIENCES = {
   },
   'iva-lab': {
     title: 'Image Processing & AI/ML Researcher',
-    date: 'Aug 2025 - Present',
+    date: 'Aug 2025 - Feb 2026',
     subtitle: 'Intelligent Vision Automation Lab',
     image: 'iva lab thumb.png',
     href: 'iva-lab.html',

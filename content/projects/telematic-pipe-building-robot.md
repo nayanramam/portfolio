@@ -1,4 +1,4 @@
-# Telematic Pipe Building Robot
+# Teleoperated Pipe-Building Robot
 
 ## About
 
