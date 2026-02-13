@@ -102,8 +102,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
                 <div class="lg:col-span-5 order-2 lg:order-1">
                     <h1 class="reveal reveal-delay-1 font-display text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.05] tracking-tight mb-8">Nayan Ramam<br></h1>
-                    <p class="reveal font-mono text-xs uppercase tracking-widest text-ink-muted mb-6">Electrical Engineer &middot; Georgia Tech</p>
-                    <p class="reveal font-mono text-xs uppercase tracking-widest text-ink-muted mb-6">Analog Design &middot; Machine Learning</p>
+                    <p class="reveal font-mono text-xs uppercase tracking-widest text-ink-muted mb-6">Electrical engineering student at Georgia Tech with a focus on analog mixed-signal design and its applications to audio/music and machine learning.</p>
+                    <!-- <p class="reveal font-mono text-xs uppercase tracking-widest text-ink-muted mb-6"></p> -->
                     <p class="reveal reveal-delay-2 text-ink-light text-lg leading-relaxed max-w-lg mb-10"></p>
                     <div class="reveal reveal-delay-3 flex items-center gap-4">
                         <a href="mailto:nramam3@gatech.edu" class="font-mono text-xs uppercase tracking-widest text-ink-muted hover:text-ink transition-colors border-b border-ink-faint hover:border-ink pb-1">nramam3@gatech.edu</a>
@@ -113,7 +113,7 @@
                 </div>
                 <div class="lg:col-span-7 order-1 lg:order-2">
                     <div class="rounded-2xl overflow-hidden shadow-2xl shadow-ink/10">
-                        <img src="assets/nayan_puerto_rico.png" alt="Nayan Ramam" class="w-full h-auto object-cover" style="aspect-ratio: 4/3; object-position: center top;">
+                        <img src="assets/river.png" alt="Nayan Ramam" class="w-full h-auto object-cover" style="aspect-ratio: 4/3; object-position: center center;">
                     </div>
                 </div>
             </div>
@@ -139,9 +139,14 @@
                         <img src="assets/projects/ring-vco.jpg" alt="Ring VCO Design" class="w-full h-auto object-cover" style="aspect-ratio: 16/9;">
                     </div>
                     <div class="lg:col-span-5">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-ink-muted mb-3">Analog IC Design</p>
                         <h3 class="font-display text-2xl lg:text-3xl font-medium tracking-tight mb-4 group-hover:text-ink-light transition-colors">Ring VCO Design + Layout</h3>
-                        <p class="text-ink-light leading-relaxed mb-6">Designed an analog ring oscillator in Cadence Virtuoso, focusing on layout for mixed-signal applications and clock generation.</p>
+                        <p class="text-ink-light leading-relaxed mb-4">Designed a current-starved ring-oscillator VCO in Cadence Virtuoso (Sky130 PDK). Verified across ff/tt/ss corners and temperature sweep of 0–70°C; added an inverter buffer to drive 1 pF load within power spec.</p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Analog IC Design</span>
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Analog Layout</span>
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Cadence Virtuoso</span>
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Cadence Maestro/ADE Explorer</span>
+                        </div>
                         <span class="font-mono text-xs uppercase tracking-widest text-ink-muted group-hover:text-ink transition-colors border-b border-ink-faint group-hover:border-ink pb-1">View Project &rarr;</span>
                     </div>
                 </div>
@@ -150,9 +155,14 @@
             <a href="projects/telematic-pipe-building-robot.html" class="reveal project-card block mb-6 lg:mb-8 group">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
                     <div class="lg:col-span-5 order-2 lg:order-1">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-ink-muted mb-3">Robotics</p>
-                        <h3 class="font-display text-2xl lg:text-3xl font-medium tracking-tight mb-4 group-hover:text-ink-light transition-colors">Telematic Pipe Building Robot</h3>
-                        <p class="text-ink-light leading-relaxed mb-6">A telematic robot system for remote pipe building and assembly, bridging physical manipulation with networked control.</p>
+                        <h3 class="font-display text-2xl lg:text-3xl font-medium tracking-tight mb-4 group-hover:text-ink-light transition-colors">Teleoperated Pipe Building Robot</h3>
+                        <p class="text-ink-light leading-relaxed mb-4">A pipe crawling robot with PWM servo driving, wireless control using ESP-NOW, and live video/telemetry monitoring via RTSP.</p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Embedded Systems/Programming</span>
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Robotics</span>
+                            <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Wireless Communication</span>
+                            <!-- <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">ESP32</span> -->
+                        </div>
                         <span class="font-mono text-xs uppercase tracking-widest text-ink-muted group-hover:text-ink transition-colors border-b border-ink-faint group-hover:border-ink pb-1">View Project &rarr;</span>
                     </div>
                     <div class="lg:col-span-7 order-1 lg:order-2 img-zoom rounded-2xl overflow-hidden bg-cream-dark">
@@ -166,25 +176,42 @@
                     <div class="img-zoom rounded-xl overflow-hidden bg-cream-dark mb-5">
                         <img src="assets/projects/verdi coverage onboarding.png" alt="GCD Module ASIC" class="w-full h-auto object-cover" style="aspect-ratio: 3/2;">
                     </div>
-                    <p class="font-mono text-[10px] uppercase tracking-widest text-ink-muted mb-2">ASIC Design</p>
                     <h3 class="font-display text-xl font-medium tracking-tight mb-2 group-hover:text-ink-light transition-colors">GCD Module ASIC Design</h3>
-                    <p class="text-sm text-ink-light leading-relaxed">Developed a module to calculate the greatest common denominator using the Euclidean algorithm.</p>
+                    <p class="text-sm text-ink-light leading-relaxed mb-3">Full stack ASIC design of a module to calculate the greatest common denominator of two integers. Wrote RTL, simulated in ModelSim, developed testbench with CRV, ran physical design flow in Cadence Innovus.</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">ASIC Design/Verification</span>
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">SystemVerilog</span>
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">ModelSim</span>
+                        <!-- <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Innovus</span> -->
+                    </div>
+                    <span class="font-mono text-xs uppercase tracking-widest text-ink-muted group-hover:text-ink transition-colors border-b border-ink-faint group-hover:border-ink pb-1">View Project &rarr;</span>
                 </a>
                 <a href="projects/ai-synth.html" class="reveal reveal-delay-1 project-card block group">
                     <div class="img-zoom rounded-xl overflow-hidden bg-cream-dark mb-5">
                         <img src="assets/projects/ai-synth.jpg" alt="AI Powered Synthesizer" class="w-full h-auto object-cover" style="aspect-ratio: 3/2;">
                     </div>
-                    <p class="font-mono text-[10px] uppercase tracking-widest text-ink-muted mb-2">Audio / Machine Learning</p>
                     <h3 class="font-display text-xl font-medium tracking-tight mb-2 group-hover:text-ink-light transition-colors">AI Powered Virtual Synthesizer</h3>
-                    <p class="text-sm text-ink-light leading-relaxed">A virtual synthesizer with AI-powered preset generation for real-time music synthesis and sound exploration.</p>
+                    <p class="text-sm text-ink-light leading-relaxed mb-3">A virtual synthesizer with AI-powered preset generation for real-time music synthesis and sound exploration. Built on JUCE C++ framework, integrated with Python script using OpenAI API.</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">DSP (JUCE)</span>
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">C++</span>
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Python for AI</span>
+                        <!-- <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">OpenAI API</span> -->
+                    </div>
+                    <span class="font-mono text-xs uppercase tracking-widest text-ink-muted group-hover:text-ink transition-colors border-b border-ink-faint group-hover:border-ink pb-1">View Project &rarr;</span>
                 </a>
                 <a href="projects/od-pedal.html" class="reveal reveal-delay-2 project-card block group">
                     <div class="img-zoom rounded-xl overflow-hidden bg-cream-dark mb-5">
                         <img src="assets/projects/od-pedal.jpg" alt="Overdrive Guitar Pedal" class="w-full h-auto object-cover" style="aspect-ratio: 3/2;">
                     </div>
-                    <p class="font-mono text-[10px] uppercase tracking-widest text-ink-muted mb-2">Hardware / PCB Design</p>
                     <h3 class="font-display text-xl font-medium tracking-tight mb-2 group-hover:text-ink-light transition-colors">Overdrive Guitar Pedal</h3>
-                    <p class="text-sm text-ink-light leading-relaxed">Designing and fabricating a guitar overdrive pedal based on the JHS Morning Glory circuit, with custom PCB and housing.</p>
+                    <p class="text-sm text-ink-light leading-relaxed mb-3">Designing and fabricating a guitar overdrive pedal based on the JHS Morning Glory circuit, with custom PCB and housing.</p>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">PCB Design</span>
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">Circuit Design</span>
+                        <span class="inline-block px-3 py-1.5 rounded-full border border-ink/15 bg-cream-dark/50 font-mono text-[10px] uppercase tracking-wider text-ink-muted">KiCad</span>
+                    </div>
+                    <span class="font-mono text-xs uppercase tracking-widest text-ink-muted group-hover:text-ink transition-colors border-b border-ink-faint group-hover:border-ink pb-1">View Project &rarr;</span>
                 </a>
             </div>
         </div>
@@ -261,46 +288,28 @@
                     <div class="flex-1 h-px bg-ink/15" aria-hidden="true"></div>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-                    <div class="reveal col-span-2 row-span-2 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
-                        <div class="relative w-full h-full min-h-0" style="aspect-ratio: 1/1;">
+                    <div class="reveal cook-card relative rounded-xl overflow-hidden bg-cream-dark">
+                        <div class="relative w-full" style="aspect-ratio: 1/1;">
                             <img src="assets/hobbies/cooking/chicken piccata.jpg" alt="Chicken Piccata" class="w-full h-full object-cover">
-                            <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-lg md:text-xl text-center px-4">Chicken Piccata</span></div>
+                            <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-sm md:text-base text-center px-3">Chicken Piccata</span></div>
                         </div>
                     </div>
-                    <div class="reveal reveal-delay-1 col-span-1 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
+                    <div class="reveal reveal-delay-1 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
                         <div class="relative w-full" style="aspect-ratio: 1/1;">
                             <img src="assets/hobbies/cooking/steak, mushrooms, and green beans.jpg" alt="Steak with Mushrooms" class="w-full h-full object-cover">
                             <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-sm md:text-base text-center px-3">Steak with Mushrooms &amp; Green Beans</span></div>
                         </div>
                     </div>
-                    <div class="reveal reveal-delay-2 col-span-1 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
-                        <div class="relative w-full" style="aspect-ratio: 1/1;">
-                            <img src="assets/hobbies/cooking/butter chicken pasta.jpg" alt="Butter Chicken Pasta" class="w-full h-full object-cover">
-                            <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-sm md:text-base text-center px-3">Butter Chicken Pasta</span></div>
-                        </div>
-                    </div>
-                    <div class="reveal reveal-delay-1 col-span-1 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
+                    <div class="reveal reveal-delay-2 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
                         <div class="relative w-full" style="aspect-ratio: 1/1;">
                             <img src="assets/hobbies/cooking/tagine and risotto with golden raisins.jpg" alt="Tagine & Risotto" class="w-full h-full object-cover">
                             <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-sm md:text-base text-center px-3">Tagine &amp; Risotto</span></div>
                         </div>
                     </div>
-                    <div class="reveal reveal-delay-2 col-span-1 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
+                    <div class="reveal reveal-delay-3 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
                         <div class="relative w-full" style="aspect-ratio: 1/1;">
                             <img src="assets/hobbies/cooking/puerto rican style pork stir fry with fried egg.jpg" alt="Puerto Rican Pork Stir Fry" class="w-full h-full object-cover">
                             <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-sm md:text-base text-center px-3">Puerto Rican Pork Stir Fry</span></div>
-                        </div>
-                    </div>
-                    <div class="reveal col-span-2 md:col-span-2 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
-                        <div class="relative w-full" style="aspect-ratio: 2/1;">
-                            <img src="assets/hobbies/cooking/indian ground beef stir fry.jpg" alt="Indian Ground Beef Stir Fry" class="w-full h-full object-cover">
-                            <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-base md:text-lg text-center px-4">Indian Ground Beef Stir Fry</span></div>
-                        </div>
-                    </div>
-                    <div class="reveal reveal-delay-1 col-span-2 md:col-span-2 cook-card relative rounded-xl overflow-hidden bg-cream-dark">
-                        <div class="relative w-full" style="aspect-ratio: 2/1;">
-                            <img src="assets/hobbies/cooking/beef stroganoff.jpg" alt="Beef Stroganoff" class="w-full h-full object-cover">
-                            <div class="cook-overlay absolute inset-0 bg-black/50 flex items-center justify-center opacity-0"><span class="text-cream font-display text-base md:text-lg text-center px-4">Beef Stroganoff</span></div>
                         </div>
                     </div>
                 </div>
@@ -310,10 +319,7 @@
                     <h3 class="font-display text-2xl font-medium tracking-tight">Speedcubing</h3>
                     <div class="flex-1 h-px bg-ink/15" aria-hidden="true"></div>
                 </div>
-                <div class="reveal mb-8">
-                    <a href="https://www.worldcubeassociation.org/persons/2018RAMA03" target="_blank" rel="noopener" class="font-mono text-xs uppercase tracking-widest text-ink-muted hover:text-ink transition-colors border-b border-ink-faint hover:border-ink pb-0.5">My Personal Records</a>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
                     <div class="reveal">
                         <div class="rounded-xl overflow-hidden bg-ink shadow-lg"><div class="video-wrap"><iframe src="https://www.youtube.com/embed/wgb68iG4k4E" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>
                         <div class="mt-4 flex items-baseline justify-between">
@@ -328,6 +334,24 @@
                             <span class="font-mono text-2xl font-medium tracking-tight text-ink-light">43.41<span class="text-sm text-ink-muted ml-1">s</span></span>
                         </div>
                     </div>
+                </div>
+                <h4 class="reveal font-display text-lg font-medium tracking-tight mb-3">Personal Records</h4>
+                <div class="reveal overflow-hidden rounded-xl border border-ink/10">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-ink/10 bg-cream-dark/50">
+                                <th class="font-mono text-[10px] uppercase tracking-widest text-ink-muted py-3 px-4">Event</th>
+                                <th class="font-mono text-[10px] uppercase tracking-widest text-ink-muted py-3 px-4 text-right">Single</th>
+                                <th class="font-mono text-[10px] uppercase tracking-widest text-ink-muted py-3 px-4 text-right">Average</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-ink/5 hover:bg-cream-dark/30 transition-colors"><td class="py-3 px-4 font-medium">3×3×3 Cube</td><td class="py-3 px-4 text-right font-mono text-ink-light">7.98</td><td class="py-3 px-4 text-right font-mono text-ink-light">10.67</td></tr>
+                            <tr class="border-b border-ink/5 hover:bg-cream-dark/30 transition-colors"><td class="py-3 px-4 font-medium">2×2×2 Cube</td><td class="py-3 px-4 text-right font-mono text-ink-light">2.52</td><td class="py-3 px-4 text-right font-mono text-ink-light">4.19</td></tr>
+                            <tr class="border-b border-ink/5 hover:bg-cream-dark/30 transition-colors"><td class="py-3 px-4 font-medium">4×4×4 Cube</td><td class="py-3 px-4 text-right font-mono text-ink-light">37.55</td><td class="py-3 px-4 text-right font-mono text-ink-light">40.11</td></tr>
+                            <tr class="hover:bg-cream-dark/30 transition-colors"><td class="py-3 px-4 font-medium">3×3×3 One-Handed</td><td class="py-3 px-4 text-right font-mono text-ink-light">25.57</td><td class="py-3 px-4 text-right font-mono text-ink-light">32.54</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
