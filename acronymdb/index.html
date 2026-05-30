@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0e1117">
 <title>AcronymDB</title>
+<script>
+  // Apply theme before paint to avoid flash. Stored choice wins; otherwise follow system.
+  (function () {
+    try {
+      var stored = localStorage.getItem('acronymdb:theme');
+      var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      var theme = stored || (prefersLight ? 'light' : 'dark');
+      if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    } catch (e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,6 +27,7 @@
     --bg: #0e1117;
     --bg-elev: #161b22;
     --bg-elev-2: #1c232c;
+    --bg-translucent: rgba(14, 17, 23, 0.85);
     --border: rgba(255, 255, 255, 0.08);
     --border-strong: rgba(255, 255, 255, 0.16);
     --text: #e8ebf0;
@@ -23,6 +35,44 @@
     --text-faint: #5c6675;
     --danger: #ef4444;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --drag-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --modal-backdrop: rgba(0, 0, 0, 0.6);
+    --cloud-glow-1: rgba(28, 199, 142, 0.04);
+    --cloud-glow-2: rgba(28, 199, 142, 0.03);
+    --label-hover-bg: rgba(28, 199, 142, 0.06);
+    --label-active-bg: rgba(28, 199, 142, 0.1);
+    --label-selected-bg: rgba(28, 199, 142, 0.12);
+    --marquee-bg: rgba(28, 199, 142, 0.08);
+    --on-accent: #062118;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --accent: #14a878;
+    --accent-soft: rgba(20, 168, 120, 0.12);
+    --accent-dim: rgba(20, 168, 120, 0.4);
+    --bg: #d8dbe2;
+    --bg-elev: #e6e8ec;
+    --bg-elev-2: #ccd0d8;
+    --bg-translucent: rgba(216, 219, 226, 0.85);
+    --border: rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.18);
+    --text: #1a1f29;
+    --text-muted: #5c6675;
+    --text-faint: #8b95a5;
+    --danger: #dc2626;
+    --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --drag-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+    --modal-backdrop: rgba(15, 23, 42, 0.4);
+    --cloud-glow-1: rgba(20, 168, 120, 0.11);
+    --cloud-glow-2: rgba(20, 168, 120, 0.11);
+    --label-hover-bg: rgba(20, 168, 120, 0.08);
+    --label-active-bg: rgba(20, 168, 120, 0.14);
+    --label-selected-bg: rgba(20, 168, 120, 0.16);
+    --marquee-bg: rgba(20, 168, 120, 0.1);
+    --on-accent: #ffffff;
+    --label-color: #0a6e4f;
+    --label-opacity: 1;
+    color-scheme: light;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -44,7 +94,7 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 50;
     display: flex; align-items: center; gap: 12px;
     padding: 14px 20px;
-    background: rgba(14, 17, 23, 0.85);
+    background: var(--bg-translucent);
     backdrop-filter: blur(16px) saturate(1.4);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
     border-bottom: 1px solid var(--border);
@@ -106,18 +156,30 @@
   .btn:hover { border-color: var(--border-strong); background: var(--bg-elev-2); }
   .btn-primary {
     background: var(--accent);
-    color: #062118;
+    color: var(--on-accent);
     border-color: var(--accent);
     font-weight: 600;
   }
-  .btn-primary:hover { background: #2dd99c; border-color: #2dd99c; }
+  .btn-primary:hover { filter: brightness(1.08); }
   .btn-icon {
     width: 36px; height: 36px; padding: 0;
     justify-content: center;
   }
   .btn-icon svg { width: 16px; height: 16px; }
-  .btn-danger { color: #fca5a5; }
-  .btn-danger:hover { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+  /* Theme toggle: show moon in light mode (click to go dark), sun in dark mode (click to go light) */
+  #btn-theme .theme-icon-dark { display: none; }
+  #btn-theme .theme-icon-light { display: block; }
+  [data-theme="light"] #btn-theme .theme-icon-dark { display: block; }
+  [data-theme="light"] #btn-theme .theme-icon-light { display: none; }
+
+  /* Smooth theme transitions on the most visible color surfaces */
+  body, header, .btn, .chip, .label, .modal, .modal-backdrop, .field input, .field textarea,
+  .search-input, .search-results, .search-result, .tooltip, .toast, .selection-bar, .cloud {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); color: var(--danger); }
 
   /* ───── Search dropdown ───── */
   .search-results {
@@ -187,8 +249,8 @@
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     background:
-      radial-gradient(circle at 20% 20%, rgba(28, 199, 142, 0.04), transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(28, 199, 142, 0.03), transparent 50%);
+      radial-gradient(circle at 20% 20%, var(--cloud-glow-1), transparent 50%),
+      radial-gradient(circle at 80% 80%, var(--cloud-glow-2), transparent 50%);
   }
   .cloud-inner {
     position: relative;
@@ -211,6 +273,65 @@
     white-space: nowrap;
     transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
     will-change: transform;
+    z-index: 2;
+  }
+
+  /* Group labels (decorative, not searchable) */
+  .label {
+    position: absolute;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--label-color, var(--accent));
+    opacity: var(--label-opacity, 0.7);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    white-space: nowrap;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: opacity 0.15s, background 0.15s, box-shadow 0.15s;
+    z-index: 1;
+  }
+  .label:hover {
+    opacity: 1;
+    background: var(--label-hover-bg);
+  }
+  .label.dragging {
+    cursor: grabbing;
+    opacity: 1;
+    background: var(--label-active-bg);
+    box-shadow: 0 0 0 1px var(--accent-dim);
+    transition: none;
+    z-index: 30;
+  }
+  .label-editor {
+    position: absolute;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    background: var(--marquee-bg);
+    border: 1px solid var(--accent-dim);
+    border-radius: 4px;
+    padding: 4px 6px;
+    outline: none;
+    min-width: 120px;
+    z-index: 40;
+    caret-color: var(--accent);
+  }
+  .label-editor::placeholder {
+    color: var(--accent);
+    opacity: 0.4;
+    text-transform: uppercase;
+  }
+  .label-editor:focus {
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
   .chip:hover {
     border-color: var(--accent-dim);
@@ -220,13 +341,53 @@
     cursor: grabbing;
     z-index: 30;
     border-color: var(--accent);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 3px var(--accent-soft);
+    box-shadow: var(--drag-shadow), 0 0 0 3px var(--accent-soft);
     transition: none;
   }
+  .chip.selected {
+    border-color: var(--accent);
+    background: var(--bg-elev-2);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+  }
+  .label.selected {
+    opacity: 1;
+    background: var(--label-selected-bg);
+    box-shadow: 0 0 0 1px var(--accent-dim);
+  }
+
+  /* Marquee selection box */
+  .marquee {
+    position: absolute;
+    border: 1px solid var(--accent);
+    background: var(--marquee-bg);
+    pointer-events: none;
+    z-index: 25;
+    border-radius: 2px;
+  }
+  .selection-bar {
+    position: fixed;
+    bottom: 80px; left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    align-items: center; gap: 12px;
+    padding: 8px 8px 8px 16px;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    z-index: 90;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .selection-bar.visible { display: inline-flex; }
+  .selection-bar .count {
+    color: var(--accent); font-weight: 600;
+  }
+  .selection-bar .btn { padding: 6px 12px; font-size: 12px; }
   .chip.focused {
     border-color: var(--accent);
     background: var(--accent);
-    color: #062118;
+    color: var(--on-accent);
     box-shadow: 0 0 0 4px var(--accent-soft), 0 0 24px var(--accent-dim);
     z-index: 20;
     animation: pulse 1.4s ease-out;
@@ -283,7 +444,7 @@
   /* ───── Modal ───── */
   .modal-backdrop {
     position: fixed; inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--modal-backdrop);
     backdrop-filter: blur(4px);
     z-index: 100;
     display: none;
@@ -298,7 +459,7 @@
     width: 100%; max-width: 560px;
     max-height: calc(100vh - 40px);
     display: flex; flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--shadow), 0 20px 60px var(--modal-backdrop);
   }
   .modal-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -436,13 +597,17 @@
     <div id="search-results" class="search-results" role="listbox"></div>
   </div>
   <div class="header-actions">
-    <button id="btn-add" class="btn btn-primary" title="Add term">
+    <button id="btn-add" class="btn btn-primary" title="Add term (A)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
       <span class="btn-label">Add</span>
     </button>
     <button id="btn-manage" class="btn" title="Manage terms">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       <span class="btn-label">Manage</span>
+    </button>
+    <button id="btn-theme" class="btn btn-icon" title="Toggle theme" aria-label="Toggle theme">
+      <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
     </button>
   </div>
 </header>
@@ -452,7 +617,7 @@
     <div id="cloud-inner" class="cloud-inner"></div>
     <div id="empty-state" class="empty-state">
       <h2>No terms yet</h2>
-      <p>Add your first acronym to get started. They'll appear as draggable chips you can arrange however you like.</p>
+      <p>Press <strong>A</strong> or click <strong>Add</strong> to create an acronym. Double-click empty space to drop a group label. Drag across empty space to lasso-select chips and move them as a group.</p>
     </div>
   </div>
 </main>
@@ -517,6 +682,11 @@
   </div>
 </div>
 
+<div id="selection-bar" class="selection-bar" role="status">
+  <span><span id="selection-count" class="count">0</span> selected</span>
+  <button id="btn-clear-selection" class="btn" type="button">Clear</button>
+</div>
+
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -531,6 +701,8 @@
   const db = {
     /** @type {Term[]} */
     terms: [],
+    /** @type {Array<{id:string,text:string,x:number,y:number}>} */
+    labels: [],
     load() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -539,17 +711,48 @@
         if (parsed && Array.isArray(parsed.terms)) {
           this.terms = parsed.terms.filter(t => t && typeof t.term === 'string');
         }
+        if (parsed && Array.isArray(parsed.labels)) {
+          this.labels = parsed.labels.filter(l => l && typeof l.text === 'string');
+        }
       } catch (e) {
         console.warn('Failed to load DB:', e);
       }
     },
     save() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, terms: this.terms }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, terms: this.terms, labels: this.labels }));
       } catch (e) {
         console.error('Failed to save DB:', e);
         toast('Failed to save — storage may be full', 'error');
       }
+    },
+    findLabelById(id) { return this.labels.find(l => l.id === id); },
+    addLabel(text, x, y) {
+      const l = {
+        id: crypto.randomUUID ? crypto.randomUUID() : 'lid-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9),
+        text: text.trim(),
+        x, y,
+      };
+      this.labels.push(l);
+      this.save();
+      return l;
+    },
+    updateLabel(id, text) {
+      const l = this.findLabelById(id);
+      if (!l) return null;
+      l.text = text.trim();
+      this.save();
+      return l;
+    },
+    setLabelPosition(id, x, y) {
+      const l = this.findLabelById(id);
+      if (!l) return;
+      l.x = x; l.y = y;
+      this.save();
+    },
+    removeLabel(id) {
+      const i = this.labels.findIndex(l => l.id === id);
+      if (i >= 0) { this.labels.splice(i, 1); this.save(); }
     },
     findByName(name) {
       const norm = name.trim().toLowerCase();
@@ -614,16 +817,34 @@
   // ───── Word cloud rendering ─────
   /** @type {Map<string, HTMLElement>} term id -> chip element */
   const chipMap = new Map();
+  /** @type {Map<string, HTMLElement>} label id -> label element */
+  const labelMap = new Map();
 
   function renderCloud() {
     chipMap.forEach(el => el.remove());
     chipMap.clear();
+    labelMap.forEach(el => el.remove());
+    labelMap.clear();
+    // Selection refers to elements that no longer exist after a re-render
+    if (selection.size > 0) { selection.clear(); updateSelectionUI(); }
 
-    if (db.terms.length === 0) {
+    if (db.terms.length === 0 && db.labels.length === 0) {
       emptyStateEl.classList.remove('hidden');
       return;
     }
     emptyStateEl.classList.add('hidden');
+
+    // Render labels first so chips render above them in stacking order
+    const labelFrag = document.createDocumentFragment();
+    db.labels.forEach(l => {
+      const el = createLabelEl(l);
+      labelMap.set(l.id, el);
+      labelFrag.appendChild(el);
+    });
+    cloudInnerEl.appendChild(labelFrag);
+
+    // Position labels (clamp to bounds)
+    requestAnimationFrame(() => clampLabels());
 
     // First pass: create chips so we can measure their size
     const fragment = document.createDocumentFragment();
@@ -638,6 +859,19 @@
 
     // Second pass: position chips that don't have a saved position
     requestAnimationFrame(() => layoutChips(newChips));
+  }
+
+  function clampLabels() {
+    const { w, h } = getCloudSize();
+    labelMap.forEach((el, id) => {
+      const l = db.findLabelById(id);
+      if (!l) return;
+      const cw = el.offsetWidth, ch = el.offsetHeight;
+      const x = clamp(l.x, 0, Math.max(0, w - cw));
+      const y = clamp(l.y, 0, Math.max(0, h - ch));
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+    });
   }
 
   function createChip(term) {
@@ -722,76 +956,320 @@
   }
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-  // ───── Chip interactions: drag + tooltip + focus ─────
-  function attachChipInteractions(el, termRef) {
+  // ───── Selection ─────
+  /** @type {Set<string>} item ids (chips and labels share the id namespace via maps) */
+  const selection = new Set();
+  const selectionBarEl = $('selection-bar');
+  const selectionCountEl = $('selection-count');
+
+  function getItemEl(id) { return chipMap.get(id) || labelMap.get(id); }
+  function isLabelId(id) { return labelMap.has(id); }
+
+  function setItemSelected(id, selected) {
+    const el = getItemEl(id);
+    if (!el) return;
+    if (selected) {
+      selection.add(id);
+      el.classList.add('selected');
+    } else {
+      selection.delete(id);
+      el.classList.remove('selected');
+    }
+    updateSelectionUI();
+  }
+  function clearSelection() {
+    Array.from(selection).forEach(id => {
+      const el = getItemEl(id);
+      if (el) el.classList.remove('selected');
+    });
+    selection.clear();
+    updateSelectionUI();
+  }
+  function updateSelectionUI() {
+    if (selection.size > 0) {
+      selectionCountEl.textContent = selection.size;
+      selectionBarEl.classList.add('visible');
+    } else {
+      selectionBarEl.classList.remove('visible');
+    }
+  }
+  $('btn-clear-selection').addEventListener('click', clearSelection);
+
+  // Marquee drag on empty cloud area
+  let marqueeEl = null;
+  let marqueeState = null;
+
+  cloudInnerEl.addEventListener('pointerdown', e => {
+    if (e.target !== cloudInnerEl) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    const rect = cloudInnerEl.getBoundingClientRect();
+    marqueeState = {
+      startX: e.clientX - rect.left,
+      startY: e.clientY - rect.top,
+      cloudLeft: rect.left,
+      cloudTop: rect.top,
+      pointerId: e.pointerId,
+      additive: e.shiftKey || e.metaKey || e.ctrlKey,
+      basis: e.shiftKey || e.metaKey || e.ctrlKey ? new Set(selection) : new Set(),
+      moved: false,
+    };
+    try { cloudInnerEl.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  cloudInnerEl.addEventListener('pointermove', e => {
+    if (!marqueeState) return;
+    const x = e.clientX - marqueeState.cloudLeft;
+    const y = e.clientY - marqueeState.cloudTop;
+    const dx = x - marqueeState.startX;
+    const dy = y - marqueeState.startY;
+    if (!marqueeState.moved && Math.hypot(dx, dy) < 4) return;
+    if (!marqueeState.moved) {
+      marqueeState.moved = true;
+      if (!marqueeState.additive) clearSelection();
+      marqueeEl = document.createElement('div');
+      marqueeEl.className = 'marquee';
+      cloudInnerEl.appendChild(marqueeEl);
+    }
+    const left = Math.min(x, marqueeState.startX);
+    const top = Math.min(y, marqueeState.startY);
+    const w = Math.abs(dx);
+    const h = Math.abs(dy);
+    marqueeEl.style.left = left + 'px';
+    marqueeEl.style.top = top + 'px';
+    marqueeEl.style.width = w + 'px';
+    marqueeEl.style.height = h + 'px';
+    applyMarqueeSelection({ left, top, right: left + w, bottom: top + h }, marqueeState.basis);
+  });
+
+  const endMarquee = e => {
+    if (!marqueeState) return;
+    const moved = marqueeState.moved;
+    const additive = marqueeState.additive;
+    try { cloudInnerEl.releasePointerCapture(e.pointerId); } catch (_) {}
+    if (marqueeEl) { marqueeEl.remove(); marqueeEl = null; }
+    marqueeState = null;
+    // Plain click on empty area clears selection
+    if (!moved && !additive && selection.size > 0) clearSelection();
+  };
+  cloudInnerEl.addEventListener('pointerup', endMarquee);
+  cloudInnerEl.addEventListener('pointercancel', endMarquee);
+
+  function applyMarqueeSelection(rect, basisSet) {
+    const inRect = (el) => {
+      const ix = parseFloat(el.style.left) || 0;
+      const iy = parseFloat(el.style.top) || 0;
+      const iw = el.offsetWidth, ih = el.offsetHeight;
+      return ix < rect.right && ix + iw > rect.left && iy < rect.bottom && iy + ih > rect.top;
+    };
+    const evaluate = (map) => {
+      map.forEach((el, id) => {
+        const should = inRect(el) || basisSet.has(id);
+        if (should && !selection.has(id)) {
+          selection.add(id); el.classList.add('selected');
+        } else if (!should && selection.has(id)) {
+          selection.delete(id); el.classList.remove('selected');
+        }
+      });
+    };
+    evaluate(chipMap);
+    evaluate(labelMap);
+    updateSelectionUI();
+  }
+
+  /**
+   * Selection-aware drag handler shared by chips and labels.
+   * If the item is part of a multi-selection, drags all selected items together.
+   * Otherwise drags only the item (and clears selection if the item wasn't selected).
+   */
+  function attachGroupDrag(el, id) {
     let dragState = null;
     let pointerIsDown = false;
     let moved = false;
 
-    const onPointerDown = (e) => {
+    el.addEventListener('pointerdown', e => {
       if (e.button !== undefined && e.button !== 0) return;
+
+      // Shift / Ctrl / Cmd + click toggles this item in the selection (no drag)
+      if (e.shiftKey || e.metaKey || e.ctrlKey) {
+        e.stopPropagation();
+        e.preventDefault();
+        setItemSelected(id, !selection.has(id));
+        return;
+      }
+
       pointerIsDown = true;
       moved = false;
-      const rect = el.getBoundingClientRect();
-      const cloudRect = cloudInnerEl.getBoundingClientRect();
-      dragState = {
-        offsetX: e.clientX - rect.left,
-        offsetY: e.clientY - rect.top,
-        cloudLeft: cloudRect.left,
-        cloudTop: cloudRect.top,
-        startX: e.clientX,
-        startY: e.clientY,
-      };
-      el.setPointerCapture(e.pointerId);
-      hideTooltip();
-    };
 
-    const onPointerMove = (e) => {
+      let groupIds;
+      if (selection.has(id) && selection.size > 1) {
+        groupIds = Array.from(selection);
+      } else {
+        if (!selection.has(id)) clearSelection();
+        groupIds = [id];
+      }
+
+      const initial = groupIds.map(iid => {
+        const ie = getItemEl(iid);
+        if (!ie) return null;
+        return {
+          id: iid,
+          el: ie,
+          isLabel: isLabelId(iid),
+          initLeft: parseFloat(ie.style.left) || 0,
+          initTop: parseFloat(ie.style.top) || 0,
+          w: ie.offsetWidth,
+          h: ie.offsetHeight,
+        };
+      }).filter(Boolean);
+
+      dragState = { startX: e.clientX, startY: e.clientY, initial };
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
+      hideTooltip();
+    });
+
+    el.addEventListener('pointermove', e => {
       if (!pointerIsDown || !dragState) return;
       const dx = e.clientX - dragState.startX;
       const dy = e.clientY - dragState.startY;
       if (!moved && Math.hypot(dx, dy) > 4) {
         moved = true;
-        el.classList.add('dragging');
+        dragState.initial.forEach(i => i.el.classList.add('dragging'));
       }
       if (!moved) return;
+
       const innerW = cloudInnerEl.clientWidth;
       const innerH = cloudInnerEl.clientHeight;
-      const newX = clamp(e.clientX - dragState.cloudLeft - dragState.offsetX, 0, innerW - el.offsetWidth);
-      const newY = clamp(e.clientY - dragState.cloudTop - dragState.offsetY, 0, innerH - el.offsetHeight);
-      el.style.left = newX + 'px';
-      el.style.top = newY + 'px';
-    };
+      let cdx = dx, cdy = dy;
+      dragState.initial.forEach(i => {
+        cdx = clamp(cdx, -i.initLeft, innerW - i.w - i.initLeft);
+        cdy = clamp(cdy, -i.initTop, innerH - i.h - i.initTop);
+      });
+      dragState.initial.forEach(i => {
+        i.el.style.left = (i.initLeft + cdx) + 'px';
+        i.el.style.top = (i.initTop + cdy) + 'px';
+      });
+    });
 
-    const onPointerUp = (e) => {
+    const finish = e => {
       if (!pointerIsDown) return;
       pointerIsDown = false;
-      el.classList.remove('dragging');
       try { el.releasePointerCapture(e.pointerId); } catch (_) {}
-      if (moved) {
-        const x = parseFloat(el.style.left) || 0;
-        const y = parseFloat(el.style.top) || 0;
-        db.setPosition(termRef.id, x, y);
+      if (moved && dragState) {
+        dragState.initial.forEach(i => {
+          i.el.classList.remove('dragging');
+          const x = parseFloat(i.el.style.left) || 0;
+          const y = parseFloat(i.el.style.top) || 0;
+          if (i.isLabel) db.setLabelPosition(i.id, x, y);
+          else db.setPosition(i.id, x, y);
+        });
       }
       dragState = null;
     };
+    el.addEventListener('pointerup', finish);
+    el.addEventListener('pointercancel', finish);
+  }
 
-    el.addEventListener('pointerdown', onPointerDown);
-    el.addEventListener('pointermove', onPointerMove);
-    el.addEventListener('pointerup', onPointerUp);
-    el.addEventListener('pointercancel', onPointerUp);
+  // ───── Chip interactions: drag + tooltip + focus ─────
+  function attachChipInteractions(el, termRef) {
+    attachGroupDrag(el, termRef.id);
 
     // Tooltip on hover (mouse only)
-    el.addEventListener('mouseenter', () => {
-      if (pointerIsDown) return;
-      showTooltip(el, termRef);
-    });
+    el.addEventListener('mouseenter', () => showTooltip(el, termRef));
     el.addEventListener('mouseleave', hideTooltip);
 
     // Keyboard accessibility
     el.addEventListener('focus', () => showTooltip(el, termRef));
     el.addEventListener('blur', hideTooltip);
   }
+
+  // ───── Labels ─────
+  function createLabelEl(label) {
+    const el = document.createElement('div');
+    el.className = 'label';
+    el.dataset.id = label.id;
+    el.textContent = label.text;
+    el.title = 'Double-click to edit · drag to move';
+    attachLabelInteractions(el, label);
+    return el;
+  }
+
+  function attachLabelInteractions(el, labelRef) {
+    attachGroupDrag(el, labelRef.id);
+
+    el.addEventListener('dblclick', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const x = parseFloat(el.style.left) || 0;
+      const y = parseFloat(el.style.top) || 0;
+      el.style.visibility = 'hidden';
+      startLabelEdit(x, y, labelRef.id, () => { el.style.visibility = ''; });
+    });
+  }
+
+  /**
+   * Show an inline input at (x, y) on the cloud to create or edit a label.
+   * @param {number} x
+   * @param {number} y
+   * @param {string|null} existingId  null = create new label
+   * @param {() => void} [onCancelRestore]  called on cancel for edits, to restore the original element
+   */
+  function startLabelEdit(x, y, existingId, onCancelRestore) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'label-editor';
+    input.placeholder = 'Label';
+    input.maxLength = 60;
+    input.style.left = x + 'px';
+    input.style.top = y + 'px';
+    if (existingId) {
+      const l = db.findLabelById(existingId);
+      if (l) input.value = l.text;
+    }
+    cloudInnerEl.appendChild(input);
+    input.focus();
+    input.select();
+
+    let done = false;
+    const finish = (commit) => {
+      if (done) return;
+      done = true;
+      const txt = input.value.trim();
+      input.remove();
+      if (commit) {
+        if (existingId) {
+          if (txt) {
+            db.updateLabel(existingId, txt);
+            renderCloud();
+          } else {
+            db.removeLabel(existingId);
+            toast('Label deleted', 'success');
+            renderCloud();
+          }
+        } else if (txt) {
+          db.addLabel(txt, x, y);
+          renderCloud();
+        }
+      } else if (existingId && onCancelRestore) {
+        onCancelRestore();
+      }
+    };
+
+    input.addEventListener('keydown', e => {
+      e.stopPropagation();
+      if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+      else if (e.key === 'Escape') { e.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', () => finish(true));
+  }
+
+  // Double-click empty cloud area to create a label
+  cloudInnerEl.addEventListener('dblclick', e => {
+    if (e.target !== cloudInnerEl) return;
+    const rect = cloudInnerEl.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    startLabelEdit(x, y, null);
+  });
 
   function showTooltip(anchor, term) {
     const fresh = db.findById(term.id);
@@ -1131,7 +1609,8 @@
     const anyModalOpen = !!document.querySelector('.modal-backdrop.visible');
 
     if (e.key === 'Escape') {
-      if (anyModalOpen) closeAllModals();
+      if (anyModalOpen) { closeAllModals(); return; }
+      if (selection.size > 0) { clearSelection(); return; }
       return;
     }
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -1177,16 +1656,58 @@
       const { w, h } = getCloudSize();
       chipMap.forEach((el, id) => {
         const cw = el.offsetWidth, ch = el.offsetHeight;
-        const x = clamp(parseFloat(el.style.left) || 0, 0, Math.max(0, w - cw));
-        const y = clamp(parseFloat(el.style.top) || 0, 0, Math.max(0, h - ch));
-        if (x !== parseFloat(el.style.left) || y !== parseFloat(el.style.top)) {
+        const curX = parseFloat(el.style.left) || 0;
+        const curY = parseFloat(el.style.top) || 0;
+        const x = clamp(curX, 0, Math.max(0, w - cw));
+        const y = clamp(curY, 0, Math.max(0, h - ch));
+        if (x !== curX || y !== curY) {
           el.style.left = x + 'px';
           el.style.top = y + 'px';
           db.setPosition(id, x, y);
         }
       });
+      labelMap.forEach((el, id) => {
+        const cw = el.offsetWidth, ch = el.offsetHeight;
+        const curX = parseFloat(el.style.left) || 0;
+        const curY = parseFloat(el.style.top) || 0;
+        const x = clamp(curX, 0, Math.max(0, w - cw));
+        const y = clamp(curY, 0, Math.max(0, h - ch));
+        if (x !== curX || y !== curY) {
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          db.setLabelPosition(id, x, y);
+        }
+      });
     }, 150);
   });
+
+  // ───── Theme ─────
+  const THEME_KEY = 'acronymdb:theme';
+  function applyTheme(theme) {
+    if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
+  }
+  function getStoredTheme() {
+    try { return localStorage.getItem(THEME_KEY); } catch (_) { return null; }
+  }
+  function setStoredTheme(theme) {
+    try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+  }
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+  $('btn-theme').addEventListener('click', () => {
+    const next = currentTheme() === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    setStoredTheme(next);
+  });
+  // Follow system changes only when the user hasn't explicitly chosen
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    mq.addEventListener && mq.addEventListener('change', e => {
+      if (!getStoredTheme()) applyTheme(e.matches ? 'light' : 'dark');
+    });
+  }
 
   // ───── Boot ─────
   db.load();
