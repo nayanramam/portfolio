@@ -432,13 +432,37 @@
     opacity: 0;
     transition: opacity 0.12s;
   }
-  .tooltip.visible { opacity: 1; }
+  .tooltip.visible { opacity: 1; pointer-events: auto; }
+  .tooltip-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
   .tooltip-term {
     font-weight: 600;
     color: var(--accent);
-    margin-bottom: 4px;
     font-size: 12px;
     letter-spacing: 0.02em;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tooltip-delete {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  .tooltip-delete:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.12);
   }
 
   /* ───── Modal ───── */
@@ -819,6 +843,8 @@
   const chipMap = new Map();
   /** @type {Map<string, HTMLElement>} label id -> label element */
   const labelMap = new Map();
+  /** id of a term that was just added; layoutChips places it in the bottom-right corner */
+  let pendingNewTermId = null;
 
   function renderCloud() {
     chipMap.forEach(el => el.remove());
@@ -903,8 +929,9 @@
     /** @type {Array<{x:number,y:number,w:number,h:number}>} placed rects */
     const placed = [];
 
-    // Place pre-positioned chips first
+    // Place pre-positioned chips first (skip the just-added one — it goes bottom-right below)
     newChips.forEach(({ term, chip }) => {
+      if (term.id === pendingNewTermId) return;
       if (term.x != null && term.y != null) {
         const cw = chip.offsetWidth;
         const ch = chip.offsetHeight;
@@ -915,6 +942,34 @@
         placed.push({ x, y, w: cw, h: ch });
       }
     });
+
+    // Place a just-added term in the bottom-right corner. If something is already
+    // there, walk left by chip-width steps, then up a row, to find an empty spot.
+    if (pendingNewTermId) {
+      const newest = newChips.find(({ term }) => term.id === pendingNewTermId);
+      if (newest) {
+        const { term, chip } = newest;
+        const cw = chip.offsetWidth, ch = chip.offsetHeight;
+        const gap = 8;
+        const baseX = Math.max(margin, w - cw - margin);
+        const baseY = Math.max(margin, h - ch - margin);
+        let x = baseX, y = baseY, placedOk = false;
+        outer: for (let row = 0; y >= margin; row++) {
+          y = baseY - row * (ch + gap);
+          if (y < margin) y = margin;
+          for (x = baseX; x >= margin; x -= (cw + gap)) {
+            if (!overlapsAny({ x, y, w: cw, h: ch }, placed, 4)) { placedOk = true; break outer; }
+          }
+          if (y === margin) break;
+        }
+        if (!placedOk) { x = baseX; y = baseY; }
+        chip.style.left = x + 'px';
+        chip.style.top = y + 'px';
+        placed.push({ x, y, w: cw, h: ch });
+        db.setPosition(term.id, x, y);
+      }
+      pendingNewTermId = null;
+    }
 
     // Place unpositioned chips with overlap avoidance
     newChips.forEach(({ term, chip }) => {
@@ -1124,7 +1179,6 @@
 
       dragState = { startX: e.clientX, startY: e.clientY, initial };
       try { el.setPointerCapture(e.pointerId); } catch (_) {}
-      hideTooltip();
     });
 
     el.addEventListener('pointermove', e => {
@@ -1134,6 +1188,7 @@
       if (!moved && Math.hypot(dx, dy) > 4) {
         moved = true;
         dragState.initial.forEach(i => i.el.classList.add('dragging'));
+        hideTooltipImmediate();
       }
       if (!moved) return;
 
@@ -1271,16 +1326,45 @@
     startLabelEdit(x, y, null);
   });
 
+  let tooltipHideTimer = null;
+  let tooltipOwnerId = null;
+
   function showTooltip(anchor, term) {
     const fresh = db.findById(term.id);
     if (!fresh) return;
+    clearTimeout(tooltipHideTimer);
+    tooltipOwnerId = fresh.id;
     tooltipEl.innerHTML = '';
+
+    const head = document.createElement('div');
+    head.className = 'tooltip-head';
+
     const t = document.createElement('div');
     t.className = 'tooltip-term mono';
     t.textContent = fresh.term.toUpperCase();
+    head.appendChild(t);
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'tooltip-delete';
+    delBtn.title = 'Delete term';
+    delBtn.setAttribute('aria-label', 'Delete ' + fresh.term);
+    delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+    delBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm('Delete "' + fresh.term + '"?')) {
+        db.remove(fresh.id);
+        hideTooltipImmediate();
+        toast('Deleted "' + fresh.term + '"', 'success');
+        renderCloud();
+        renderTermList();
+      }
+    });
+    head.appendChild(delBtn);
+    tooltipEl.appendChild(head);
+
     const d = document.createElement('div');
     d.textContent = fresh.description;
-    tooltipEl.appendChild(t);
     tooltipEl.appendChild(d);
 
     // Position tooltip
@@ -1291,18 +1375,28 @@
     const tipRect = tooltipEl.getBoundingClientRect();
 
     let left = rect.left + rect.width / 2 - tipRect.width / 2;
-    let top = rect.bottom + 8;
+    let top = rect.bottom + 6;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     if (left < 8) left = 8;
     if (left + tipRect.width > vw - 8) left = vw - tipRect.width - 8;
-    if (top + tipRect.height > vh - 8) top = rect.top - tipRect.height - 8;
+    if (top + tipRect.height > vh - 8) top = rect.top - tipRect.height - 6;
     tooltipEl.style.left = left + 'px';
     tooltipEl.style.top = top + 'px';
   }
   function hideTooltip() {
-    tooltipEl.classList.remove('visible');
+    // Delay hide so cursor can travel from chip into tooltip
+    clearTimeout(tooltipHideTimer);
+    tooltipHideTimer = setTimeout(hideTooltipImmediate, 160);
   }
+  function hideTooltipImmediate() {
+    clearTimeout(tooltipHideTimer);
+    tooltipEl.classList.remove('visible');
+    tooltipOwnerId = null;
+  }
+  // Keep tooltip visible while hovering it; hide when leaving it
+  tooltipEl.addEventListener('mouseenter', () => clearTimeout(tooltipHideTimer));
+  tooltipEl.addEventListener('mouseleave', hideTooltip);
 
   function focusChip(id) {
     const el = chipMap.get(id);
@@ -1490,7 +1584,8 @@
       db.update(id, term, desc);
       toast('Updated "' + term + '"', 'success');
     } else {
-      db.add(term, desc);
+      const created = db.add(term, desc);
+      pendingNewTermId = created.id;
       toast('Added "' + term + '"', 'success');
     }
     closeAllModals();
