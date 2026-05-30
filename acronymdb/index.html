@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e1117">
+<title>AcronymDB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #1CC78E;
+    --accent-soft: rgba(28, 199, 142, 0.15);
+    --accent-dim: rgba(28, 199, 142, 0.35);
+    --bg: #0e1117;
+    --bg-elev: #161b22;
+    --bg-elev-2: #1c232c;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --text: #e8ebf0;
+    --text-muted: #8b95a5;
+    --text-faint: #5c6675;
+    --danger: #ef4444;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, textarea { font-family: inherit; color: inherit; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* ───── Header ───── */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px;
+    background: rgba(14, 17, 23, 0.85);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; letter-spacing: -0.01em;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .brand-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .search-wrap {
+    flex: 1; max-width: 520px; position: relative;
+  }
+  .search-wrap svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: var(--text-faint);
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 36px 10px 36px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 13px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .search-input:focus {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .search-input::placeholder { color: var(--text-faint); }
+  .search-clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 22px;
+    display: none; align-items: center; justify-content: center;
+    border-radius: 6px; color: var(--text-muted);
+  }
+  .search-clear:hover { background: var(--bg-elev-2); color: var(--text); }
+  .search-clear.visible { display: flex; }
+  .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 14px;
+    border-radius: 9px;
+    font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--border-strong); background: var(--bg-elev-2); }
+  .btn-primary {
+    background: var(--accent);
+    color: #062118;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .btn-primary:hover { background: #2dd99c; border-color: #2dd99c; }
+  .btn-icon {
+    width: 36px; height: 36px; padding: 0;
+    justify-content: center;
+  }
+  .btn-icon svg { width: 16px; height: 16px; }
+  .btn-danger { color: #fca5a5; }
+  .btn-danger:hover { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+  /* ───── Search dropdown ───── */
+  .search-results {
+    position: absolute;
+    top: calc(100% + 8px); left: 0; right: 0;
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    z-index: 60;
+  }
+  .search-results.visible { display: block; }
+  .search-result {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .search-result:last-child { border-bottom: none; }
+  .search-result:hover, .search-result.active {
+    background: var(--bg-elev-2);
+  }
+  .search-result-term {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .search-result-term mark {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  .search-result-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .search-result-desc mark {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+  .search-empty {
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .search-empty strong { display: block; color: var(--text); margin-bottom: 4px; font-weight: 600; }
+
+  /* ───── Cloud ───── */
+  main { position: fixed; top: 64px; left: 0; right: 0; bottom: 0; }
+  .cloud {
+    position: relative;
+    width: 100%; height: 100%;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(28, 199, 142, 0.04), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(28, 199, 142, 0.03), transparent 50%);
+  }
+  .cloud-inner {
+    position: relative;
+    min-width: 100%;
+    min-height: 100%;
+  }
+  .chip {
+    position: absolute;
+    padding: 8px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    white-space: nowrap;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
+    will-change: transform;
+  }
+  .chip:hover {
+    border-color: var(--accent-dim);
+    background: var(--bg-elev-2);
+  }
+  .chip.dragging {
+    cursor: grabbing;
+    z-index: 30;
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 3px var(--accent-soft);
+    transition: none;
+  }
+  .chip.focused {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #062118;
+    box-shadow: 0 0 0 4px var(--accent-soft), 0 0 24px var(--accent-dim);
+    z-index: 20;
+    animation: pulse 1.4s ease-out;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 var(--accent-dim), 0 0 24px var(--accent-dim); }
+    50% { box-shadow: 0 0 0 14px transparent, 0 0 24px var(--accent-dim); }
+    100% { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 24px var(--accent-dim); }
+  }
+
+  /* Empty state */
+  .empty-state {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 24px;
+    pointer-events: none;
+  }
+  .empty-state h2 {
+    font-size: 18px; font-weight: 600; color: var(--text);
+    margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+  .empty-state p { font-size: 13px; max-width: 360px; line-height: 1.6; }
+  .empty-state.hidden { display: none; }
+
+  /* ───── Tooltip ───── */
+  .tooltip {
+    position: fixed;
+    z-index: 70;
+    max-width: 320px;
+    padding: 10px 14px;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .tooltip.visible { opacity: 1; }
+  .tooltip-term {
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ───── Modal ───── */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop.visible { display: flex; }
+  .modal {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    width: 100%; max-width: 560px;
+    max-height: calc(100vh - 40px);
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    display: flex; gap: 8px; justify-content: flex-end;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .field input, .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .field textarea { resize: vertical; min-height: 90px; line-height: 1.55; }
+  .field-error {
+    display: none;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #fca5a5;
+  }
+  .field-error.visible { display: block; }
+  .field.has-error input, .field.has-error textarea {
+    border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  /* Term list (manage panel) */
+  .term-list {
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .term-list-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .term-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .term-item:last-child { border-bottom: none; }
+  .term-item-main { flex: 1; min-width: 0; }
+  .term-item-name {
+    font-weight: 600; font-size: 13px;
+    margin-bottom: 3px;
+    word-break: break-word;
+  }
+  .term-item-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .term-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .term-item-actions .btn-icon { width: 30px; height: 30px; }
+  .term-item-actions .btn-icon svg { width: 14px; height: 14px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(calc(100% + 32px));
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    z-index: 200;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .toast.success { border-color: var(--accent-dim); }
+  .toast.error { border-color: rgba(239, 68, 68, 0.4); }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    header { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
+    .brand { font-size: 14px; }
+    .brand-text { display: none; }
+    .search-wrap { order: 3; flex-basis: 100%; max-width: none; }
+    .header-actions .btn-label { display: none; }
+    .header-actions .btn { padding: 9px 11px; }
+    main { top: 110px; }
+    .modal { max-height: calc(100vh - 32px); }
+    .modal-header, .modal-body, .modal-footer { padding-left: 16px; padding-right: 16px; }
+    .chip { font-size: 13px; padding: 8px 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <span class="brand-text">AcronymDB</span>
+  </div>
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" class="search-input" type="search" placeholder="Search terms…" autocomplete="off" spellcheck="false">
+    <button id="search-clear" class="search-clear" aria-label="Clear search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <div id="search-results" class="search-results" role="listbox"></div>
+  </div>
+  <div class="header-actions">
+    <button id="btn-add" class="btn btn-primary" title="Add term">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      <span class="btn-label">Add</span>
+    </button>
+    <button id="btn-manage" class="btn" title="Manage terms">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span class="btn-label">Manage</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div id="cloud" class="cloud">
+    <div id="cloud-inner" class="cloud-inner"></div>
+    <div id="empty-state" class="empty-state">
+      <h2>No terms yet</h2>
+      <p>Add your first acronym to get started. They'll appear as draggable chips you can arrange however you like.</p>
+    </div>
+  </div>
+</main>
+
+<div id="tooltip" class="tooltip" role="tooltip"></div>
+
+<!-- Add/Edit modal -->
+<div id="modal-edit" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-edit-title" class="modal-title">Add term</h2>
+      <button class="btn btn-icon" data-close-modal aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <form id="form-edit" class="modal-body" novalidate>
+      <input type="hidden" id="edit-id">
+      <div class="field" id="field-term">
+        <label for="edit-term">Term</label>
+        <input id="edit-term" type="text" maxlength="80" required autocomplete="off" spellcheck="false">
+        <div class="field-error" id="error-term"></div>
+      </div>
+      <div class="field" id="field-description">
+        <label for="edit-description">Description</label>
+        <textarea id="edit-description" maxlength="1000" required></textarea>
+        <div class="field-error" id="error-description"></div>
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn" data-close-modal>Cancel</button>
+      <button type="submit" form="form-edit" class="btn btn-primary" id="btn-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage modal -->
+<div id="modal-manage" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-manage-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-manage-title" class="modal-title">Manage terms (<span id="term-count">0</span>)</h2>
+      <button class="btn btn-icon" data-close-modal aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ul id="term-list" class="term-list"></ul>
+    </div>
+    <div class="modal-footer" style="justify-content: space-between;">
+      <div style="display:flex; gap:8px;">
+        <button id="btn-export" class="btn" title="Export as JSON">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button id="btn-import" class="btn" title="Import from JSON">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Import
+        </button>
+        <input type="file" id="import-file" accept="application/json,.json" style="display:none">
+      </div>
+      <button class="btn btn-primary" data-close-modal>Done</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ───── Data layer ─────
+  const STORAGE_KEY = 'acronymdb:v1';
+
+  /** @typedef {{ id:string, term:string, description:string, x:number|null, y:number|null, createdAt:number, updatedAt:number }} Term */
+
+  const db = {
+    /** @type {Term[]} */
+    terms: [],
+    load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.terms)) {
+          this.terms = parsed.terms.filter(t => t && typeof t.term === 'string');
+        }
+      } catch (e) {
+        console.warn('Failed to load DB:', e);
+      }
+    },
+    save() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, terms: this.terms }));
+      } catch (e) {
+        console.error('Failed to save DB:', e);
+        toast('Failed to save — storage may be full', 'error');
+      }
+    },
+    findByName(name) {
+      const norm = name.trim().toLowerCase();
+      return this.terms.find(t => t.term.trim().toLowerCase() === norm);
+    },
+    findById(id) {
+      return this.terms.find(t => t.id === id);
+    },
+    add(term, description) {
+      const now = Date.now();
+      const t = {
+        id: crypto.randomUUID ? crypto.randomUUID() : 'id-' + now + '-' + Math.random().toString(36).slice(2, 9),
+        term: term.trim(),
+        description: description.trim(),
+        x: null, y: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+      this.terms.push(t);
+      this.save();
+      return t;
+    },
+    update(id, term, description) {
+      const t = this.findById(id);
+      if (!t) return null;
+      t.term = term.trim();
+      t.description = description.trim();
+      t.updatedAt = Date.now();
+      this.save();
+      return t;
+    },
+    setPosition(id, x, y) {
+      const t = this.findById(id);
+      if (!t) return;
+      t.x = x; t.y = y;
+      this.save();
+    },
+    remove(id) {
+      const i = this.terms.findIndex(t => t.id === id);
+      if (i >= 0) {
+        this.terms.splice(i, 1);
+        this.save();
+      }
+    },
+    replaceAll(terms) {
+      this.terms = terms;
+      this.save();
+    },
+  };
+
+  // ───── DOM refs ─────
+  const $ = id => document.getElementById(id);
+  const cloudEl = $('cloud');
+  const cloudInnerEl = $('cloud-inner');
+  const emptyStateEl = $('empty-state');
+  const tooltipEl = $('tooltip');
+  const searchEl = $('search');
+  const searchClearEl = $('search-clear');
+  const searchResultsEl = $('search-results');
+  const toastEl = $('toast');
+
+  // ───── Word cloud rendering ─────
+  /** @type {Map<string, HTMLElement>} term id -> chip element */
+  const chipMap = new Map();
+
+  function renderCloud() {
+    chipMap.forEach(el => el.remove());
+    chipMap.clear();
+
+    if (db.terms.length === 0) {
+      emptyStateEl.classList.remove('hidden');
+      return;
+    }
+    emptyStateEl.classList.add('hidden');
+
+    // First pass: create chips so we can measure their size
+    const fragment = document.createDocumentFragment();
+    const newChips = [];
+    db.terms.forEach(t => {
+      const chip = createChip(t);
+      chipMap.set(t.id, chip);
+      fragment.appendChild(chip);
+      newChips.push({ term: t, chip });
+    });
+    cloudInnerEl.appendChild(fragment);
+
+    // Second pass: position chips that don't have a saved position
+    requestAnimationFrame(() => layoutChips(newChips));
+  }
+
+  function createChip(term) {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.dataset.id = term.id;
+    el.textContent = term.term;
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', term.term + ': ' + term.description);
+    attachChipInteractions(el, term);
+    return el;
+  }
+
+  function getCloudSize() {
+    return {
+      w: Math.max(cloudEl.clientWidth, 320),
+      h: Math.max(cloudEl.clientHeight, 320),
+    };
+  }
+
+  /**
+   * Place chips. Chips with saved positions keep them (clamped to bounds).
+   * Chips without saved positions get a non-overlapping random placement.
+   */
+  function layoutChips(newChips) {
+    const { w, h } = getCloudSize();
+    const margin = 8;
+    /** @type {Array<{x:number,y:number,w:number,h:number}>} placed rects */
+    const placed = [];
+
+    // Place pre-positioned chips first
+    newChips.forEach(({ term, chip }) => {
+      if (term.x != null && term.y != null) {
+        const cw = chip.offsetWidth;
+        const ch = chip.offsetHeight;
+        const x = clamp(term.x, margin, Math.max(margin, w - cw - margin));
+        const y = clamp(term.y, margin, Math.max(margin, h - ch - margin));
+        chip.style.left = x + 'px';
+        chip.style.top = y + 'px';
+        placed.push({ x, y, w: cw, h: ch });
+      }
+    });
+
+    // Place unpositioned chips with overlap avoidance
+    newChips.forEach(({ term, chip }) => {
+      if (term.x != null && term.y != null) return;
+      const cw = chip.offsetWidth;
+      const ch = chip.offsetHeight;
+      const maxX = Math.max(margin, w - cw - margin);
+      const maxY = Math.max(margin, h - ch - margin);
+
+      let x = 0, y = 0;
+      let placedOk = false;
+      for (let attempt = 0; attempt < 80; attempt++) {
+        x = margin + Math.random() * (maxX - margin);
+        y = margin + Math.random() * (maxY - margin);
+        if (!overlapsAny({ x, y, w: cw, h: ch }, placed, 6)) {
+          placedOk = true;
+          break;
+        }
+      }
+      // Fallback: just place it (overlap accepted)
+      if (!placedOk) {
+        x = margin + Math.random() * (maxX - margin);
+        y = margin + Math.random() * (maxY - margin);
+      }
+      chip.style.left = x + 'px';
+      chip.style.top = y + 'px';
+      placed.push({ x, y, w: cw, h: ch });
+      db.setPosition(term.id, x, y);
+    });
+  }
+
+  function overlapsAny(rect, others, padding = 0) {
+    return others.some(o =>
+      rect.x < o.x + o.w + padding &&
+      rect.x + rect.w + padding > o.x &&
+      rect.y < o.y + o.h + padding &&
+      rect.y + rect.h + padding > o.y
+    );
+  }
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  // ───── Chip interactions: drag + tooltip + focus ─────
+  function attachChipInteractions(el, termRef) {
+    let dragState = null;
+    let pointerIsDown = false;
+    let moved = false;
+
+    const onPointerDown = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      pointerIsDown = true;
+      moved = false;
+      const rect = el.getBoundingClientRect();
+      const cloudRect = cloudInnerEl.getBoundingClientRect();
+      dragState = {
+        offsetX: e.clientX - rect.left,
+        offsetY: e.clientY - rect.top,
+        cloudLeft: cloudRect.left,
+        cloudTop: cloudRect.top,
+        startX: e.clientX,
+        startY: e.clientY,
+      };
+      el.setPointerCapture(e.pointerId);
+      hideTooltip();
+    };
+
+    const onPointerMove = (e) => {
+      if (!pointerIsDown || !dragState) return;
+      const dx = e.clientX - dragState.startX;
+      const dy = e.clientY - dragState.startY;
+      if (!moved && Math.hypot(dx, dy) > 4) {
+        moved = true;
+        el.classList.add('dragging');
+      }
+      if (!moved) return;
+      const innerW = cloudInnerEl.clientWidth;
+      const innerH = cloudInnerEl.clientHeight;
+      const newX = clamp(e.clientX - dragState.cloudLeft - dragState.offsetX, 0, innerW - el.offsetWidth);
+      const newY = clamp(e.clientY - dragState.cloudTop - dragState.offsetY, 0, innerH - el.offsetHeight);
+      el.style.left = newX + 'px';
+      el.style.top = newY + 'px';
+    };
+
+    const onPointerUp = (e) => {
+      if (!pointerIsDown) return;
+      pointerIsDown = false;
+      el.classList.remove('dragging');
+      try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+      if (moved) {
+        const x = parseFloat(el.style.left) || 0;
+        const y = parseFloat(el.style.top) || 0;
+        db.setPosition(termRef.id, x, y);
+      }
+      dragState = null;
+    };
+
+    el.addEventListener('pointerdown', onPointerDown);
+    el.addEventListener('pointermove', onPointerMove);
+    el.addEventListener('pointerup', onPointerUp);
+    el.addEventListener('pointercancel', onPointerUp);
+
+    // Tooltip on hover (mouse only)
+    el.addEventListener('mouseenter', () => {
+      if (pointerIsDown) return;
+      showTooltip(el, termRef);
+    });
+    el.addEventListener('mouseleave', hideTooltip);
+
+    // Keyboard accessibility
+    el.addEventListener('focus', () => showTooltip(el, termRef));
+    el.addEventListener('blur', hideTooltip);
+  }
+
+  function showTooltip(anchor, term) {
+    const fresh = db.findById(term.id);
+    if (!fresh) return;
+    tooltipEl.innerHTML = '';
+    const t = document.createElement('div');
+    t.className = 'tooltip-term mono';
+    t.textContent = fresh.term.toUpperCase();
+    const d = document.createElement('div');
+    d.textContent = fresh.description;
+    tooltipEl.appendChild(t);
+    tooltipEl.appendChild(d);
+
+    // Position tooltip
+    const rect = anchor.getBoundingClientRect();
+    tooltipEl.style.left = '0px';
+    tooltipEl.style.top = '0px';
+    tooltipEl.classList.add('visible');
+    const tipRect = tooltipEl.getBoundingClientRect();
+
+    let left = rect.left + rect.width / 2 - tipRect.width / 2;
+    let top = rect.bottom + 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (left < 8) left = 8;
+    if (left + tipRect.width > vw - 8) left = vw - tipRect.width - 8;
+    if (top + tipRect.height > vh - 8) top = rect.top - tipRect.height - 8;
+    tooltipEl.style.left = left + 'px';
+    tooltipEl.style.top = top + 'px';
+  }
+  function hideTooltip() {
+    tooltipEl.classList.remove('visible');
+  }
+
+  function focusChip(id) {
+    const el = chipMap.get(id);
+    if (!el) return;
+    chipMap.forEach(e => e.classList.remove('focused'));
+    el.classList.add('focused');
+    // Restart animation
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+    // Scroll into view within the cloud
+    const cloudRect = cloudEl.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    if (elRect.top < cloudRect.top + 16 || elRect.bottom > cloudRect.bottom - 16 ||
+        elRect.left < cloudRect.left + 16 || elRect.right > cloudRect.right - 16) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+    }
+    setTimeout(() => el.classList.remove('focused'), 2200);
+  }
+
+  // ───── Search ─────
+  /** @type {Term[]} */
+  let currentResults = [];
+  let activeResultIdx = -1;
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function highlight(text, query) {
+    if (!query) return escapeHtml(text);
+    const re = new RegExp('(' + escapeRegExp(query) + ')', 'gi');
+    return escapeHtml(text).replace(re, '<mark>$1</mark>');
+  }
+
+  function runSearch(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      currentResults = [];
+      searchResultsEl.classList.remove('visible');
+      searchClearEl.classList.remove('visible');
+      return;
+    }
+    searchClearEl.classList.add('visible');
+    currentResults = db.terms.filter(t =>
+      t.term.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q)
+    );
+    // Sort: term-match first, alphabetical
+    currentResults.sort((a, b) => {
+      const am = a.term.toLowerCase().includes(q) ? 0 : 1;
+      const bm = b.term.toLowerCase().includes(q) ? 0 : 1;
+      if (am !== bm) return am - bm;
+      return a.term.localeCompare(b.term);
+    });
+    activeResultIdx = currentResults.length > 0 ? 0 : -1;
+    renderSearchResults(query);
+  }
+
+  function renderSearchResults(query) {
+    searchResultsEl.innerHTML = '';
+    if (currentResults.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'search-empty';
+      empty.innerHTML = '<strong>No matches</strong>Try a different search, or add this term.';
+      searchResultsEl.appendChild(empty);
+    } else {
+      currentResults.forEach((t, i) => {
+        const item = document.createElement('div');
+        item.className = 'search-result' + (i === activeResultIdx ? ' active' : '');
+        item.setAttribute('role', 'option');
+        item.dataset.id = t.id;
+        item.innerHTML =
+          '<div class="search-result-term">' + highlight(t.term, query) + '</div>' +
+          '<div class="search-result-desc">' + highlight(t.description, query) + '</div>';
+        item.addEventListener('mousedown', (e) => { e.preventDefault(); selectResult(t.id); });
+        searchResultsEl.appendChild(item);
+      });
+    }
+    searchResultsEl.classList.add('visible');
+  }
+
+  function selectResult(id) {
+    searchResultsEl.classList.remove('visible');
+    searchEl.blur();
+    focusChip(id);
+  }
+
+  searchEl.addEventListener('input', e => runSearch(e.target.value));
+  searchEl.addEventListener('focus', () => {
+    if (searchEl.value.trim()) {
+      searchResultsEl.classList.add('visible');
+    }
+  });
+  searchEl.addEventListener('blur', () => {
+    setTimeout(() => searchResultsEl.classList.remove('visible'), 150);
+  });
+  searchEl.addEventListener('keydown', e => {
+    if (!searchResultsEl.classList.contains('visible')) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (currentResults.length === 0) return;
+      activeResultIdx = (activeResultIdx + 1) % currentResults.length;
+      renderSearchResults(searchEl.value);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (currentResults.length === 0) return;
+      activeResultIdx = (activeResultIdx - 1 + currentResults.length) % currentResults.length;
+      renderSearchResults(searchEl.value);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeResultIdx >= 0 && currentResults[activeResultIdx]) {
+        selectResult(currentResults[activeResultIdx].id);
+      }
+    } else if (e.key === 'Escape') {
+      searchEl.value = '';
+      runSearch('');
+      searchEl.blur();
+    }
+  });
+  searchClearEl.addEventListener('click', () => {
+    searchEl.value = '';
+    runSearch('');
+    searchEl.focus();
+  });
+
+  // ───── Add / Edit modal ─────
+  const editModal = $('modal-edit');
+  const editForm = $('form-edit');
+  const editIdInput = $('edit-id');
+  const editTermInput = $('edit-term');
+  const editDescInput = $('edit-description');
+  const editTitle = $('modal-edit-title');
+  const errorTermEl = $('error-term');
+  const errorDescEl = $('error-description');
+  const fieldTermEl = $('field-term');
+  const fieldDescEl = $('field-description');
+
+  function openEditModal(term = null) {
+    editIdInput.value = term ? term.id : '';
+    editTermInput.value = term ? term.term : '';
+    editDescInput.value = term ? term.description : '';
+    editTitle.textContent = term ? 'Edit term' : 'Add term';
+    clearFieldErrors();
+    editModal.classList.add('visible');
+    setTimeout(() => editTermInput.focus(), 50);
+  }
+  function clearFieldErrors() {
+    fieldTermEl.classList.remove('has-error');
+    fieldDescEl.classList.remove('has-error');
+    errorTermEl.classList.remove('visible');
+    errorDescEl.classList.remove('visible');
+  }
+  function setFieldError(field, msg) {
+    if (field === 'term') {
+      fieldTermEl.classList.add('has-error');
+      errorTermEl.textContent = msg;
+      errorTermEl.classList.add('visible');
+    } else {
+      fieldDescEl.classList.add('has-error');
+      errorDescEl.textContent = msg;
+      errorDescEl.classList.add('visible');
+    }
+  }
+
+  editForm.addEventListener('submit', e => {
+    e.preventDefault();
+    clearFieldErrors();
+    const id = editIdInput.value;
+    const term = editTermInput.value.trim();
+    const desc = editDescInput.value.trim();
+
+    let hasError = false;
+    if (!term) { setFieldError('term', 'Term is required'); hasError = true; }
+    if (!desc) { setFieldError('description', 'Description is required'); hasError = true; }
+    if (hasError) return;
+
+    const existing = db.findByName(term);
+    if (existing && existing.id !== id) {
+      setFieldError('term', 'This term already exists');
+      return;
+    }
+
+    if (id) {
+      db.update(id, term, desc);
+      toast('Updated "' + term + '"', 'success');
+    } else {
+      db.add(term, desc);
+      toast('Added "' + term + '"', 'success');
+    }
+    closeAllModals();
+    renderCloud();
+    renderTermList();
+  });
+
+  $('btn-add').addEventListener('click', () => openEditModal(null));
+
+  // ───── Manage modal ─────
+  const manageModal = $('modal-manage');
+  const termListEl = $('term-list');
+  const termCountEl = $('term-count');
+
+  function openManageModal() {
+    renderTermList();
+    manageModal.classList.add('visible');
+  }
+  function renderTermList() {
+    termCountEl.textContent = db.terms.length;
+    termListEl.innerHTML = '';
+    if (db.terms.length === 0) {
+      const empty = document.createElement('li');
+      empty.className = 'term-list-empty';
+      empty.textContent = 'No terms yet. Click Add to create one.';
+      termListEl.appendChild(empty);
+      return;
+    }
+    const sorted = [...db.terms].sort((a, b) => a.term.localeCompare(b.term, undefined, { sensitivity: 'base' }));
+    sorted.forEach(t => {
+      const li = document.createElement('li');
+      li.className = 'term-item';
+      li.innerHTML =
+        '<div class="term-item-main">' +
+          '<div class="term-item-name"></div>' +
+          '<div class="term-item-desc"></div>' +
+        '</div>' +
+        '<div class="term-item-actions">' +
+          '<button class="btn btn-icon" data-edit aria-label="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+          '<button class="btn btn-icon btn-danger" data-delete aria-label="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>' +
+        '</div>';
+      li.querySelector('.term-item-name').textContent = t.term;
+      li.querySelector('.term-item-desc').textContent = t.description;
+      li.querySelector('[data-edit]').addEventListener('click', () => {
+        closeAllModals();
+        openEditModal(t);
+      });
+      li.querySelector('[data-delete]').addEventListener('click', () => {
+        if (confirm('Delete "' + t.term + '"?')) {
+          db.remove(t.id);
+          toast('Deleted "' + t.term + '"', 'success');
+          renderCloud();
+          renderTermList();
+        }
+      });
+      termListEl.appendChild(li);
+    });
+  }
+
+  $('btn-manage').addEventListener('click', openManageModal);
+
+  // Export / Import
+  $('btn-export').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ version: 1, terms: db.terms }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'acronymdb-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Exported ' + db.terms.length + ' term' + (db.terms.length === 1 ? '' : 's'), 'success');
+  });
+  $('btn-import').addEventListener('click', () => $('import-file').click());
+  $('import-file').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const incoming = Array.isArray(data) ? data : (data && Array.isArray(data.terms) ? data.terms : null);
+      if (!incoming) throw new Error('Invalid file format');
+      let added = 0, skipped = 0;
+      incoming.forEach(t => {
+        if (!t || typeof t.term !== 'string' || typeof t.description !== 'string') { skipped++; return; }
+        if (db.findByName(t.term)) { skipped++; return; }
+        db.add(t.term, t.description);
+        added++;
+      });
+      renderCloud();
+      renderTermList();
+      toast('Imported ' + added + ' term' + (added === 1 ? '' : 's') + (skipped ? ' (' + skipped + ' skipped)' : ''), 'success');
+    } catch (err) {
+      console.error(err);
+      toast('Import failed: ' + err.message, 'error');
+    } finally {
+      e.target.value = '';
+    }
+  });
+
+  // ───── Modal close handlers ─────
+  function closeAllModals() {
+    document.querySelectorAll('.modal-backdrop.visible').forEach(m => m.classList.remove('visible'));
+  }
+  document.querySelectorAll('[data-close-modal]').forEach(b => {
+    b.addEventListener('click', closeAllModals);
+  });
+  document.querySelectorAll('.modal-backdrop').forEach(m => {
+    m.addEventListener('click', e => {
+      if (e.target === m) closeAllModals();
+    });
+  });
+  document.addEventListener('keydown', e => {
+    const editModalOpen = editModal.classList.contains('visible');
+    const anyModalOpen = !!document.querySelector('.modal-backdrop.visible');
+
+    if (e.key === 'Escape') {
+      if (anyModalOpen) closeAllModals();
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      searchEl.focus();
+      searchEl.select();
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && editModalOpen) {
+      e.preventDefault();
+      editForm.requestSubmit ? editForm.requestSubmit() : editForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      return;
+    }
+
+    // Single-key shortcuts only when not typing in a field and no modal is open
+    if (anyModalOpen) return;
+    const tgt = e.target;
+    const tag = tgt && tgt.tagName;
+    const typing = tag === 'INPUT' || tag === 'TEXTAREA' || (tgt && tgt.isContentEditable);
+    if (typing) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    if (e.key === 'a' || e.key === 'A') {
+      e.preventDefault();
+      openEditModal(null);
+    }
+  });
+
+  // ───── Toast ─────
+  let toastTimer = null;
+  function toast(msg, kind = 'success') {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast ' + kind + ' visible';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('visible'), 2200);
+  }
+
+  // ───── Resize: reclamp positions to new bounds ─────
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const { w, h } = getCloudSize();
+      chipMap.forEach((el, id) => {
+        const cw = el.offsetWidth, ch = el.offsetHeight;
+        const x = clamp(parseFloat(el.style.left) || 0, 0, Math.max(0, w - cw));
+        const y = clamp(parseFloat(el.style.top) || 0, 0, Math.max(0, h - ch));
+        if (x !== parseFloat(el.style.left) || y !== parseFloat(el.style.top)) {
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          db.setPosition(id, x, y);
+        }
+      });
+    }, 150);
+  });
+
+  // ───── Boot ─────
+  db.load();
+  renderCloud();
+})();
+</script>
+</body>
+</html>
