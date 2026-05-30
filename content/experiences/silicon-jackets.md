@@ -6,20 +6,20 @@ Silicon Jackets is Georgia Tech's chip design club. We are currently nearing our
 
 ## Analog Mixed-Signal Design
 
-Most of my time on the team was spent working on the [Ring VCO Project](../../projects/ring-vco.html).
+I started with an onboarding project to learn Cadence and the design process: [Ring VCO Project](../../projects/ring-vco.html).
 
-The team also hosted weekly lectures covering fundamental analog concepts, since many of us (myself included) had no prior experience. We learned basic MOSFET physics and behaviors, outlining second order effects and small signal models. We also learned how to use Cadence Virtuoso through the construction of digital inverter and single-stage amplifier modules. We covered schematic design, basic simulation, and layout practices. These lectures culminated in the aforementioned ring VCO project.
+I then moved on to designing an 8-bit R-2R DAC. I performed transient and AC simulations to verify ideal behavior, and am now developing the buffer and optimizing for PVT variation through Monte-Carlo simulation and sizing/tuning.
 
-Now, as I await a module assignment, I am solidifying my foundational knowledge with Dr. Aaron Lanterman's <a href="https://www.youtube.com/playlist?list=PLOunECWxELQSbOv3ekzuwC4K8ygV-Jkiy" target="_blank" rel="noopener noreferrer">Analog Electronics Lecture Series</a>.
+At the end of the Spring semester, I was selected to be the sub-team lead, a role I will take on the Fall.
 
 
 ## Digital Design
 
 My first semester on the digital design team was spent doing an onboarding project. See the details [here](../../projects/gcd-module.html).
 
-Upon completion of the onboarding project, I began work on the digital design for the club's second tapeout. I am developing a fast divider module. I started by implementing three division algorithms in Python and performed constrained random verification to gauge cycle/iteration counts and variance. I quickly narrowed it down to Newton-Raphson and Goldschmidt. From there, I built a workplan with block diagrams, flowcharts, state machines, and a port list. The team leads stressed the importance of thorough documentation prior to writing RTL to allow the design verification team to develop the testbench in parallel.
+Upon completion of the onboarding project, I began work on the digital design for the club's second tapeout. I developed a fast divider module, implementing three division algorithms in Python and performing constrained random verification to gauge cycle/iteration counts and variance. From there, I built a workplan with block diagrams, flowcharts, state machines, and a port list. I then moved to writing RTL, initially verifying with a simple "sanity check" test bench, then moved to a more comprehensive UVM environment where my focus shifted to verification and optimization.
 
-Currently, I am developing the first iteration of RTL for each algorithm. I have implemented two hardware speed-ups: shifting when the divisor is a multiple of two and skipping the division logic when either input is zero. The module can handle negative inputs and returns either the quotient or remainder, covering the div, divu, rem, and remu RISC-V instructions.
+I am now working on a CORDIC module for our third tapeout.
 
 ## Tools Used
 - Cadence Virtuoso (Schematic Editor, Layout Editor)

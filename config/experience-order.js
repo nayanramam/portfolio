@@ -18,7 +18,7 @@ const EXPERIENCES = {
   },
   'iva-lab': {
     title: 'Image Processing & AI/ML Researcher',
-    date: 'Aug 2025 - Feb 2026',
+    date: 'Aug 2025 - Apr 2026',
     subtitle: 'Intelligent Vision Automation Lab',
     image: 'iva lab thumb.png',
     href: 'iva-lab.html',
@@ -39,7 +39,7 @@ const EXPERIENCES = {
   },
   'interactive-music-group': {
     title: 'Project Manager',
-    date: 'Aug 2025 - Present',
+    date: 'Aug 2025 - Apr 2026',
     subtitle: 'Interactive Music Group',
     image: 'interactive music group thumb.png',
     href: 'interactive-music-group.html',
