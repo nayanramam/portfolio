@@ -380,6 +380,39 @@
     color: var(--text);
   }
   .selection-bar.visible { display: inline-flex; }
+
+  /* Label placement mode */
+  body.label-mode .cloud,
+  body.label-mode .cloud-inner { cursor: crosshair; }
+  .hint-bar {
+    position: fixed;
+    top: 76px; left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    align-items: center; gap: 10px;
+    padding: 8px 14px 8px 14px;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--accent-dim);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    z-index: 90;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .hint-bar .accent { color: var(--accent); font-weight: 600; }
+  .hint-bar kbd {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    padding: 2px 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text-muted);
+  }
+  body.label-mode .hint-bar { display: inline-flex; }
+  @media (max-width: 640px) {
+    .hint-bar { top: 124px; }
+  }
   .selection-bar .count {
     color: var(--accent); font-weight: 600;
   }
@@ -641,7 +674,7 @@
     <div id="cloud-inner" class="cloud-inner"></div>
     <div id="empty-state" class="empty-state">
       <h2>No terms yet</h2>
-      <p>Press <strong>A</strong> or click <strong>Add</strong> to create an acronym. Double-click empty space to drop a group label. Drag across empty space to lasso-select chips and move them as a group.</p>
+      <p>Press <strong>A</strong> (or double-click anywhere) to add a term. Press <strong>L</strong> then click to drop a group label. Drag across empty space to lasso-select.</p>
     </div>
   </div>
 </main>
@@ -709,6 +742,13 @@
 <div id="selection-bar" class="selection-bar" role="status">
   <span><span id="selection-count" class="count">0</span> selected</span>
   <button id="btn-clear-selection" class="btn" type="button">Clear</button>
+</div>
+
+<div id="label-hint" class="hint-bar" role="status" aria-live="polite">
+  <span class="accent">Label mode</span>
+  <span>Click anywhere to place</span>
+  <kbd>Esc</kbd>
+  <span>to cancel</span>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -845,6 +885,8 @@
   const labelMap = new Map();
   /** id of a term that was just added; layoutChips places it in the bottom-right corner */
   let pendingNewTermId = null;
+  /** if set, the just-added term goes here (centered) instead of bottom-right */
+  let pendingNewTermPos = null;
 
   function renderCloud() {
     chipMap.forEach(el => el.remove());
@@ -943,32 +985,41 @@
       }
     });
 
-    // Place a just-added term in the bottom-right corner. If something is already
-    // there, walk left by chip-width steps, then up a row, to find an empty spot.
+    // Place a just-added term:
+    //  • If pendingNewTermPos is set (came from a double-click at a point), center on that point.
+    //  • Otherwise drop it in the bottom-right corner; if occupied, walk left then up.
     if (pendingNewTermId) {
       const newest = newChips.find(({ term }) => term.id === pendingNewTermId);
       if (newest) {
         const { term, chip } = newest;
         const cw = chip.offsetWidth, ch = chip.offsetHeight;
-        const gap = 8;
-        const baseX = Math.max(margin, w - cw - margin);
-        const baseY = Math.max(margin, h - ch - margin);
-        let x = baseX, y = baseY, placedOk = false;
-        outer: for (let row = 0; y >= margin; row++) {
-          y = baseY - row * (ch + gap);
-          if (y < margin) y = margin;
-          for (x = baseX; x >= margin; x -= (cw + gap)) {
-            if (!overlapsAny({ x, y, w: cw, h: ch }, placed, 4)) { placedOk = true; break outer; }
+        let x, y;
+        if (pendingNewTermPos) {
+          x = clamp(pendingNewTermPos.x - cw / 2, margin, Math.max(margin, w - cw - margin));
+          y = clamp(pendingNewTermPos.y - ch / 2, margin, Math.max(margin, h - ch - margin));
+        } else {
+          const gap = 8;
+          const baseX = Math.max(margin, w - cw - margin);
+          const baseY = Math.max(margin, h - ch - margin);
+          x = baseX; y = baseY;
+          let placedOk = false;
+          outer: for (let row = 0; y >= margin; row++) {
+            y = baseY - row * (ch + gap);
+            if (y < margin) y = margin;
+            for (x = baseX; x >= margin; x -= (cw + gap)) {
+              if (!overlapsAny({ x, y, w: cw, h: ch }, placed, 4)) { placedOk = true; break outer; }
+            }
+            if (y === margin) break;
           }
-          if (y === margin) break;
+          if (!placedOk) { x = baseX; y = baseY; }
         }
-        if (!placedOk) { x = baseX; y = baseY; }
         chip.style.left = x + 'px';
         chip.style.top = y + 'px';
         placed.push({ x, y, w: cw, h: ch });
         db.setPosition(term.id, x, y);
       }
       pendingNewTermId = null;
+      pendingNewTermPos = null;
     }
 
     // Place unpositioned chips with overlap avoidance
@@ -1055,6 +1106,7 @@
   let marqueeState = null;
 
   cloudInnerEl.addEventListener('pointerdown', e => {
+    if (labelPlacementMode) return;
     if (e.target !== cloudInnerEl) return;
     if (e.button !== undefined && e.button !== 0) return;
     const rect = cloudInnerEl.getBoundingClientRect();
@@ -1217,6 +1269,11 @@
           if (i.isLabel) db.setLabelPosition(i.id, x, y);
           else db.setPosition(i.id, x, y);
         });
+      } else if (!moved && !(selection.has(id) && selection.size === 1)) {
+        // A click without drag → make this item the sole selection,
+        // so single-key actions like Delete have a clear target.
+        clearSelection();
+        setItemSelected(id, true);
       }
       dragState = null;
     };
@@ -1317,13 +1374,32 @@
     input.addEventListener('blur', () => finish(true));
   }
 
-  // Double-click empty cloud area to create a label
-  cloudInnerEl.addEventListener('dblclick', e => {
+  // ───── Label placement mode ─────
+  let labelPlacementMode = false;
+  function setLabelPlacementMode(on) {
+    labelPlacementMode = on;
+    document.body.classList.toggle('label-mode', on);
+  }
+
+  // Single click on empty cloud area while in label mode → place a label there
+  cloudInnerEl.addEventListener('click', e => {
+    if (!labelPlacementMode) return;
     if (e.target !== cloudInnerEl) return;
     const rect = cloudInnerEl.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    setLabelPlacementMode(false);
     startLabelEdit(x, y, null);
+  });
+
+  // Double-click on empty cloud area → open the Add Term modal, place at that point
+  cloudInnerEl.addEventListener('dblclick', e => {
+    if (e.target !== cloudInnerEl) return;
+    if (labelPlacementMode) return;
+    const rect = cloudInnerEl.getBoundingClientRect();
+    const pos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    openEditModal(null);
+    pendingNewTermPos = pos;
   });
 
   let tooltipHideTimer = null;
@@ -1536,6 +1612,9 @@
   const fieldDescEl = $('field-description');
 
   function openEditModal(term = null) {
+    setLabelPlacementMode(false);
+    // Reset any pending placement; the dblclick handler sets it back after this call.
+    pendingNewTermPos = null;
     editIdInput.value = term ? term.id : '';
     editTermInput.value = term ? term.term : '';
     editDescInput.value = term ? term.description : '';
@@ -1601,6 +1680,7 @@
   const termCountEl = $('term-count');
 
   function openManageModal() {
+    setLabelPlacementMode(false);
     renderTermList();
     manageModal.classList.add('visible');
   }
@@ -1705,6 +1785,7 @@
 
     if (e.key === 'Escape') {
       if (anyModalOpen) { closeAllModals(); return; }
+      if (labelPlacementMode) { setLabelPlacementMode(false); return; }
       if (selection.size > 0) { clearSelection(); return; }
       return;
     }
@@ -1731,8 +1812,33 @@
     if (e.key === 'a' || e.key === 'A') {
       e.preventDefault();
       openEditModal(null);
+    } else if (e.key === 'l' || e.key === 'L') {
+      e.preventDefault();
+      setLabelPlacementMode(!labelPlacementMode);
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (selection.size === 0) return;
+      e.preventDefault();
+      deleteSelection();
     }
   });
+
+  function deleteSelection() {
+    if (selection.size === 0) return;
+    const ids = Array.from(selection);
+    let chips = 0, labels = 0;
+    ids.forEach(id => {
+      if (labelMap.has(id)) { db.removeLabel(id); labels++; }
+      else if (chipMap.has(id)) { db.remove(id); chips++; }
+    });
+    clearSelection();
+    hideTooltipImmediate();
+    const parts = [];
+    if (chips) parts.push(chips + (chips === 1 ? ' term' : ' terms'));
+    if (labels) parts.push(labels + (labels === 1 ? ' label' : ' labels'));
+    toast('Deleted ' + parts.join(' and '), 'success');
+    renderCloud();
+    renderTermList();
+  }
 
   // ───── Toast ─────
   let toastTimer = null;
