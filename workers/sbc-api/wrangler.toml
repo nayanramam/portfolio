@@ -5,15 +5,15 @@ compatibility_date = "2024-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "sbc-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "5c56e5e7-405c-49fa-95e0-8fec3b049ce1"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "0ab072c97ed5437a80cbea2afa8741b5"
 
 [vars]
 ALLOWED_USERS = "aman,jackie,logan,mirzett,muadh,nayan,ryan,sophia m,sophia q,tarak,vineeth"
 ALLOWED_ORIGINS = "https://nayanramam.com,http://localhost:8000,http://127.0.0.1:8000,http://localhost:8787,http://127.0.0.1:8787,http://localhost:8788,http://127.0.0.1:8788"
 
 # Route the Worker on your domain (configure after first deploy):
-# routes = [{ pattern = "nayanramam.com/api/sbc/*", zone_name = "nayanramam.com" }]
+routes = [{ pattern = "nayanramam.com/api/sbc/*", zone_name = "nayanramam.com" }]
