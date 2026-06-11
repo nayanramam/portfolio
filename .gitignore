@@ -25,3 +25,9 @@ ENV/
 *.tmp
 *.log
 
+# Node
+node_modules/
+
+# Cloudflare Worker local secrets
+workers/sbc-api/.dev.vars
+

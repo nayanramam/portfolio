@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote — SBC Tier List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    background: #111;
+    color: #fff;
+    min-height: 100vh;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .btn-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: 2px solid #fff;
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-link:hover {
+    background: #fff;
+    color: #111;
+  }
+  .panel {
+    border: 2px solid #333;
+    background: #1a1a1a;
+    padding: 24px;
+    max-width: 360px;
+    margin: 40px auto;
+  }
+  .panel h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+  label {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 2px solid #444;
+    background: #111;
+    color: #fff;
+    font-family: inherit;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #7FBFFF;
+  }
+  .btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    border: 2px solid #7FBFFF;
+    background: #7FBFFF;
+    color: #111;
+  }
+  .btn:hover { filter: brightness(1.05); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ghost {
+    background: transparent;
+    color: #fff;
+    border-color: #555;
+    width: auto;
+    margin-top: 0;
+    padding: 8px 14px;
+  }
+  .error {
+    color: #ff8f8f;
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+  .user-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    border: 2px solid #333;
+    background: #1a1a1a;
+    font-size: 0.9rem;
+  }
+  .user-bar strong { color: #7FBFFF; }
+  .vote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .vote-card {
+    border: 2px solid #333;
+    background: #1a1a1a;
+    padding: 14px;
+    text-align: center;
+  }
+  .vote-card img {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border: 2px solid #444;
+    background: #2a2a2a;
+    margin-bottom: 8px;
+  }
+  .vote-card .name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+  .vote-btns {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .vote-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    border: 2px solid #444;
+    background: #222;
+    color: #fff;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .vote-btn.up:hover { border-color: #7dffb2; background: rgba(125, 255, 178, 0.12); }
+  .vote-btn.down:hover { border-color: #ff8f8f; background: rgba(255, 143, 143, 0.12); }
+  .vote-btn.up.active {
+    border-color: #7dffb2;
+    background: rgba(125, 255, 178, 0.22);
+    color: #7dffb2;
+  }
+  .vote-btn.down.active {
+    border-color: #ff8f8f;
+    background: rgba(255, 143, 143, 0.22);
+    color: #ff8f8f;
+  }
+  .vote-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #2a2a2a;
+    border: 2px solid #444;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: transform 0.25s, opacity 0.25s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .toast.success { border-color: #7dffb2; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Vote</h1>
+    <a class="btn-link" href="/sbc/">← Tier List</a>
+  </header>
+
+  <div id="login-panel" class="panel">
+    <h2>Enter your name</h2>
+    <form id="login-form">
+      <label for="username">Username</label>
+      <input id="username" type="text" autocomplete="off" required>
+      <button class="btn" type="submit">Continue</button>
+      <p class="error hidden" id="login-error"></p>
+    </form>
+  </div>
+
+  <div id="vote-panel" class="hidden">
+    <div class="user-bar">
+      <span>Logged in as <strong id="current-user"></strong></span>
+      <button class="btn btn-ghost" id="logout-btn" type="button">Logout</button>
+    </div>
+    <div class="vote-grid" id="vote-grid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://127.0.0.1:8787/api/sbc'
+  : '/api/sbc';
+
+const TIERS = ['S', 'A', 'B', 'C', 'D', 'F'];
+
+let sessionToken = null;
+let sessionUsername = null;
+let state = null;
+let myVotes = {};
+
+function setSession(token, username) {
+  sessionToken = token;
+  sessionUsername = username;
+}
+
+function clearSession() {
+  sessionToken = null;
+  sessionUsername = null;
+  state = null;
+  myVotes = {};
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function allPeople(tiers) {
+  const list = [];
+  for (const tier of TIERS) {
+    for (const p of (tiers[tier] || [])) list.push(p);
+  }
+  return list.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function renderVoteGrid(tiers, votes) {
+  const people = allPeople(tiers);
+  const grid = document.getElementById('vote-grid');
+  grid.innerHTML = people.map((p) => {
+    const vote = votes[p.id] || null;
+    return `
+      <div class="vote-card" data-id="${escapeHtml(p.id)}">
+        <img src="${escapeHtml(p.photo_url)}" alt="${escapeHtml(p.name)}">
+        <div class="name">${escapeHtml(p.name)}</div>
+        <div class="vote-btns">
+          <button class="vote-btn up${vote === 'up' ? ' active' : ''}" data-dir="up" type="button" title="Upvote" ${vote === 'down' ? 'disabled' : ''}>▲</button>
+          <button class="vote-btn down${vote === 'down' ? ' active' : ''}" data-dir="down" type="button" title="Downvote" ${vote === 'up' ? 'disabled' : ''}>▼</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showVotePanel(username) {
+  document.getElementById('login-panel').classList.add('hidden');
+  document.getElementById('vote-panel').classList.remove('hidden');
+  document.getElementById('current-user').textContent = username;
+}
+
+function showLoginPanel() {
+  document.getElementById('login-panel').classList.remove('hidden');
+  document.getElementById('vote-panel').classList.add('hidden');
+  document.getElementById('username').value = '';
+}
+
+async function fetchState() {
+  const headers = {};
+  if (sessionToken) headers.Authorization = 'Bearer ' + sessionToken;
+  const res = await fetch(API_BASE + '/state', { headers });
+  if (!res.ok) throw new Error('Failed to load state');
+  return res.json();
+}
+
+async function login(username) {
+  const res = await fetch(API_BASE + '/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Login failed');
+  setSession(data.token, data.username);
+  return data;
+}
+
+async function vote(personId, direction) {
+  const res = await fetch(API_BASE + '/vote', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken,
+    },
+    body: JSON.stringify({ person_id: personId, direction }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Vote failed');
+  return data;
+}
+
+function updatePersonInState(updated) {
+  if (!state?.tiers) return;
+  for (const tier of TIERS) {
+    const idx = (state.tiers[tier] || []).findIndex((p) => p.id === updated.id);
+    if (idx !== -1) {
+      state.tiers[tier].splice(idx, 1);
+      break;
+    }
+  }
+  if (!state.tiers[updated.tier]) state.tiers[updated.tier] = [];
+  state.tiers[updated.tier].push(updated);
+}
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+  const username = document.getElementById('username').value.trim();
+  if (!username) return;
+
+  try {
+    await login(username);
+    state = await fetchState();
+    myVotes = state.my_votes || {};
+    showVotePanel(username);
+    renderVoteGrid(state.tiers, myVotes);
+  } catch (err) {
+    clearSession();
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  clearSession();
+  showLoginPanel();
+});
+
+document.getElementById('vote-grid').addEventListener('click', async (e) => {
+  const btn = e.target.closest('.vote-btn');
+  if (!btn || btn.disabled || !sessionToken) return;
+
+  const card = btn.closest('.vote-card');
+  const personId = card?.dataset.id;
+  const direction = btn.dataset.dir;
+  if (!personId || !direction) return;
+
+  btn.disabled = true;
+  try {
+    const result = await vote(personId, direction);
+    updatePersonInState(result.person);
+    if (result.your_vote) myVotes[personId] = result.your_vote;
+    else delete myVotes[personId];
+    renderVoteGrid(state.tiers, myVotes);
+
+    if (result.tier_changed) {
+      showToast(
+        result.person.name + ': ' + result.from_tier + ' → ' + result.to_tier,
+        'success'
+      );
+    } else if (result.action === 'removed') {
+      showToast('Vote removed');
+    } else {
+      showToast('Vote recorded');
+    }
+  } catch (err) {
+    if (err.message === 'Unauthorized') {
+      clearSession();
+      showLoginPanel();
+    }
+    showToast(err.message);
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
