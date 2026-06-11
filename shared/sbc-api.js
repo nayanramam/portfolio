@@ -233,18 +233,12 @@ async function handleVote(request, env, session) {
 
   const tierResult = applyTierChanges(person.tier, pendingUp, pendingDown);
 
-  statements.push(
-    env.DB.prepare(
-      'UPDATE people SET tier = ?, pending_up = ?, pending_down = ? WHERE id = ?'
-    ).bind(
-      tierResult.tier,
-      tierResult.pendingUp,
-      tierResult.pendingDown,
-      personId
-    )
-  );
-
   if (tierResult.tierChanged) {
+    tierResult.pendingUp = 0;
+    tierResult.pendingDown = 0;
+    statements.push(
+      env.DB.prepare('DELETE FROM votes WHERE person_id = ?').bind(personId)
+    );
     statements.push(
       env.DB.prepare(
         `INSERT INTO activity (person_id, person_name, direction, from_tier, to_tier, triggered_by)
@@ -260,6 +254,17 @@ async function handleVote(request, env, session) {
     );
   }
 
+  statements.push(
+    env.DB.prepare(
+      'UPDATE people SET tier = ?, pending_up = ?, pending_down = ? WHERE id = ?'
+    ).bind(
+      tierResult.tier,
+      tierResult.pendingUp,
+      tierResult.pendingDown,
+      personId
+    )
+  );
+
   await env.DB.batch(statements);
 
   return json({
@@ -269,7 +274,7 @@ async function handleVote(request, env, session) {
       photo_url: person.photo_url,
       tier: tierResult.tier,
     }),
-    your_vote: yourVote,
+    your_vote: tierResult.tierChanged ? null : yourVote,
     action,
     tier_changed: tierResult.tierChanged,
     from_tier: tierResult.tierChanged ? tierResult.fromTier : null,

@@ -14,6 +14,7 @@ A joke tier-list site for friends at `nayanramam.com/sbc`.
 - Vote counts are hidden from the UI; tier changes still appear in the activity feed
 - When **5 total upvotes** accumulate on a person, they move up one tier (F→D→C→B→A→S)
 - When **5 total downvotes** accumulate, they move down one tier (S→A→B→C→D→F)
+- When a tier change happens, **all votes on that person are cleared** so everyone can vote fresh
 - Tier caps at S (top) and F (bottom)
 
 ## Replacing placeholder people
