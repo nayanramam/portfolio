@@ -279,8 +279,8 @@ function renderVoteGrid(tiers, votes) {
         <img src="${escapeHtml(p.photo_url)}" alt="${escapeHtml(p.name)}">
         <div class="name">${escapeHtml(p.name)}</div>
         <div class="vote-btns">
-          <button class="vote-btn up${vote === 'up' ? ' active' : ''}" data-dir="up" type="button" title="Upvote" ${vote === 'down' ? 'disabled' : ''}>▲</button>
-          <button class="vote-btn down${vote === 'down' ? ' active' : ''}" data-dir="down" type="button" title="Downvote" ${vote === 'up' ? 'disabled' : ''}>▼</button>
+          <button class="vote-btn up${vote === 'up' ? ' active' : ''}" data-dir="up" type="button" title="Upvote">▲</button>
+          <button class="vote-btn down${vote === 'down' ? ' active' : ''}" data-dir="down" type="button" title="Downvote">▼</button>
         </div>
       </div>
     `;
@@ -395,6 +395,8 @@ document.getElementById('vote-grid').addEventListener('click', async (e) => {
       );
     } else if (result.action === 'removed') {
       showToast('Vote removed');
+    } else if (result.action === 'switched') {
+      showToast('Vote switched');
     } else {
       showToast('Vote recorded');
     }

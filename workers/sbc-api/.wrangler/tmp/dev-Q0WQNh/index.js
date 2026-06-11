@@ -222,7 +222,17 @@ async function handleVote(request, env, session) {
     yourVote = null;
     action = "removed";
   } else if (existing) {
-    return json({ error: "Remove your current vote first" }, 400);
+    statements.push(
+      env.DB.prepare(
+        "UPDATE votes SET direction = ? WHERE person_id = ? AND username = ?"
+      ).bind(direction, personId, username)
+    );
+    if (existing.direction === "up") pendingUp = Math.max(0, pendingUp - 1);
+    else pendingDown = Math.max(0, pendingDown - 1);
+    if (direction === "up") pendingUp += 1;
+    else pendingDown += 1;
+    yourVote = direction;
+    action = "switched";
   } else {
     statements.push(
       env.DB.prepare(
