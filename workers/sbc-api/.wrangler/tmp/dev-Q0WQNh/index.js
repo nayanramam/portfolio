@@ -27,7 +27,7 @@ globalThis.fetch = new Proxy(globalThis.fetch, {
   }
 });
 
-// src/index.js
+// ../../shared/sbc-api.js
 var TIERS = ["S", "A", "B", "C", "D", "F"];
 var TIER_UP = { F: "D", D: "C", C: "B", B: "A", A: null };
 var TIER_DOWN = { S: "A", A: "B", B: "C", C: "D", D: "F", F: null };
@@ -276,35 +276,41 @@ async function handleVote(request, env, session) {
   });
 }
 __name(handleVote, "handleVote");
+async function handleApiRequest(request, env) {
+  const url = new URL(request.url);
+  const path = url.pathname.replace(/\/+$/, "") || "/";
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders(request, env) });
+  }
+  let response;
+  try {
+    if (path === "/api/sbc/state" && request.method === "GET") {
+      const session = await getSession(request, env);
+      response = await handleState(env, session);
+    } else if (path === "/api/sbc/login" && request.method === "POST") {
+      response = await handleLogin(request, env);
+    } else if (path === "/api/sbc/vote" && request.method === "POST") {
+      const session = await getSession(request, env);
+      if (!session) {
+        response = json({ error: "Unauthorized" }, 401);
+      } else {
+        response = await handleVote(request, env, session);
+      }
+    } else {
+      response = json({ error: "Not found" }, 404);
+    }
+  } catch (err) {
+    console.error(err);
+    response = json({ error: "Internal server error" }, 500);
+  }
+  return withCors(response, request, env);
+}
+__name(handleApiRequest, "handleApiRequest");
+
+// src/index.js
 var src_default = {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    const path = url.pathname.replace(/\/+$/, "") || "/";
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders(request, env) });
-    }
-    let response;
-    try {
-      if (path === "/api/sbc/state" && request.method === "GET") {
-        const session = await getSession(request, env);
-        response = await handleState(env, session);
-      } else if (path === "/api/sbc/login" && request.method === "POST") {
-        response = await handleLogin(request, env);
-      } else if (path === "/api/sbc/vote" && request.method === "POST") {
-        const session = await getSession(request, env);
-        if (!session) {
-          response = json({ error: "Unauthorized" }, 401);
-        } else {
-          response = await handleVote(request, env, session);
-        }
-      } else {
-        response = json({ error: "Not found" }, 404);
-      }
-    } catch (err) {
-      console.error(err);
-      response = json({ error: "Internal server error" }, 500);
-    }
-    return withCors(response, request, env);
+    return handleApiRequest(request, env);
   }
 };
 

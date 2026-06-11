@@ -80,19 +80,20 @@ npm run db:seed:local
 npm run deploy
 ```
 
-### 7. Add a route in Cloudflare
+### 7. Deploy static files + Pages Function
 
-In the Cloudflare dashboard → Workers & Pages → your `sbc-api` worker → Settings → Triggers → Routes:
+Push to your repo. Cloudflare Pages will deploy:
+- `/sbc` and `/sbc/vote` (static HTML)
+- `/api/sbc/*` (via `functions/api/sbc/[[path]].js`)
 
-```
-nayanramam.com/api/sbc/*
-```
+The root `wrangler.toml` wires D1/KV bindings into Pages. **Check that `name = "portfolio"` matches your Pages project name** in the Cloudflare dashboard — if not, update it.
 
-Or uncomment and fill in the `routes` block in `wrangler.toml`, then redeploy.
+If bindings don't apply automatically, add them manually in **Workers & Pages → your Pages project → Settings → Functions**:
+- D1: `DB` → `sbc-db`
+- KV: `SESSIONS` → your sessions namespace
+- Variables: `ALLOWED_USERS`, `ALLOWED_ORIGINS`
 
-### 8. Deploy static files
-
-Push to your repo so Cloudflare Pages picks up the new `sbc/` folder. No extra config needed for `/sbc` and `/sbc/vote`.
+> **Note:** The `*.workers.dev` URL from `npm run deploy` is only the standalone Worker. It returns `{"error":"Not found"}` at the root — that's normal. Your live site uses `nayanramam.com/api/sbc/*` via the Pages Function.
 
 ## Local development
 
