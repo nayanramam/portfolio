@@ -1063,12 +1063,12 @@ window.startScope = function (DATA) {
         for (var i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 6);
         var src = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
         src.buffer = buf; bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = .9;
-        g.gain.value = .5 * (vol || 1);
+        g.gain.value = .3 * (vol || 1);
         src.connect(bp); bp.connect(g); g.connect(a.destination);
         src.start(t);
         var o = a.createOscillator(), og = a.createGain();
         o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(70, t + .04);
-        og.gain.setValueAtTime(.12 * (vol || 1), t); og.gain.exponentialRampToValueAtTime(.0001, t + .05);
+        og.gain.setValueAtTime(.07 * (vol || 1), t); og.gain.exponentialRampToValueAtTime(.0001, t + .05);
         o.connect(og); og.connect(a.destination); o.start(t); o.stop(t + .06);
     }
     function hum(on) {
