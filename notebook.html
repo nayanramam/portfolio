@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nayan Ramam's Notebook</title>
+    <meta name="description" content="Nayan Ramam — electrical engineering at Georgia Tech. Analog/mixed-signal design, audio, and machine learning, written up in a notebook.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/notebook/common.css">
+    <script src="assets/notebook/handwriting.js"></script>
+    <script src="assets/notebook/handwrite.js"></script>
+    <style>
+        @property --fold { syntax: '<length>'; inherits: true; initial-value: 26px; }
+
+        :root {
+            --rule: 30px;
+            --top: 90px;
+            --margin-x: 76px;
+            --pw: 560px;
+            --ph: 760px;
+        }
+
+        html, body { height: 100%; }
+        body {
+            background: radial-gradient(ellipse at 50% 40%, var(--desk) 0%, var(--desk-2) 100%) fixed;
+            background-color: var(--desk);
+            line-height: var(--rule);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stage { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 0; }
+
+        /* On phones only half of the open notebook fits; the viewport pans between the halves. */
+        .viewport { position: relative; width: calc(var(--pw) * 2); }
+        .viewport.single { width: calc(var(--pw) + 30px); overflow-x: clip; overflow-y: visible; }
+
+        .controls {
+            height: 64px;
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--chrome);
+        }
+        .controls button {
+            font: inherit;
+            color: var(--chrome);
+            background: transparent;
+            border: 1.5px solid var(--chrome-soft);
+            border-radius: 18px 14px 20px 12px / 12px 18px 14px 20px;
+            padding: 2px 16px;
+            cursor: pointer;
+            line-height: 30px;
+        }
+        .controls button:hover:not(:disabled) { border-color: var(--chrome); background: rgba(255,255,255,.08); }
+        .controls button:disabled { opacity: .35; cursor: default; }
+        .controls .where { min-width: 140px; text-align: center; color: var(--chrome-soft); }
+        @media (max-width: 560px) {
+            .controls .where { min-width: 96px; }
+            .controls .contents-btn { display: none; }
+        }
+
+        /* ---------- the book: always an open spread, sheets turn on the centre spine ---------- */
+        .book {
+            position: relative;
+            width: calc(var(--pw) * 2);
+            height: var(--ph);
+            perspective: 2800px;
+            touch-action: pan-y;
+            transition: transform var(--flip) cubic-bezier(.6, .05, .35, 1);
+        }
+        .book.no-anim, .book.no-anim * { transition: none !important; }
+
+        .cover {
+            position: absolute;
+            inset: -9px -10px -11px -9px;
+            background: var(--cover);
+            border-radius: 10px;
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,.06),
+                0 2px 0 var(--cover-edge),
+                0 26px 50px -10px rgba(0,0,0,.45);
+        }
+        /* page-stack thickness peeking out on each side */
+        .cover::before, .cover::after {
+            content: '';
+            position: absolute;
+            top: 12px; bottom: 10px;
+            width: 6px;
+            background: repeating-linear-gradient(90deg, #e8e2d2 0 1px, #cfc7b3 1px 2px);
+        }
+        .cover::before { left: 5px; border-radius: 3px 0 0 3px; }
+        .cover::after { right: 6px; border-radius: 0 3px 3px 0; }
+
+        .inside-cover {
+            position: absolute;
+            z-index: 1;   /* above the index tabs, below every sheet */
+            top: 0;
+            width: var(--pw); height: var(--ph);
+            background:
+                radial-gradient(circle at 30% 20%, rgba(255,255,255,.06), transparent 60%),
+                #c9b48f;
+        }
+        .inside-cover.front-cover { left: 0; border-radius: 6px 2px 2px 6px; box-shadow: inset -18px 0 30px -18px rgba(0,0,0,.4); padding: 64px 56px; }
+        .inside-cover.back-cover { left: var(--pw); border-radius: 2px 6px 6px 2px; box-shadow: inset 18px 0 30px -18px rgba(0,0,0,.4); }
+        .label {
+            background: var(--paper);
+            border: 1.5px solid #8a7a5c;
+            border-radius: 4px;
+            padding: 14px 22px 18px;
+            max-width: 340px;
+            margin: 0 auto;
+            transform: rotate(-1.5deg);
+            box-shadow: 0 2px 6px rgba(0,0,0,.15);
+            color: var(--ink-soft);
+        }
+        .label .line { border-bottom: 1.5px solid var(--rule-c); display: flex; gap: 10px; align-items: baseline; }
+        .label .line .hw { color: var(--ink-blue); font-size: 26px; }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: var(--pw);
+            width: var(--pw);
+            height: var(--ph);
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform var(--flip) cubic-bezier(.6, .05, .35, 1);
+        }
+        .page.flipped { transform: rotateY(-180deg); }
+        .page.away { visibility: hidden; }
+
+        .face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            background: var(--paper);
+            border-radius: 2px 6px 6px 2px;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--fold)), calc(100% - var(--fold)) 100%, 0 100%);
+            transition: --fold .25s ease;
+        }
+        .back { --fold: 0px; }
+        .book:has(.corner-next:hover) .front.current { --fold: 54px; }
+        /* folded-over corner on the right-hand pages */
+        .front::after {
+            content: '';
+            position: absolute;
+            right: 0; bottom: 0;
+            width: var(--fold); height: var(--fold);
+            background: linear-gradient(315deg, transparent 50%, rgba(0,0,0,.12) 50%, #e7e0cc 56%, var(--paper) 100%);
+            box-shadow: -2px -2px 4px rgba(0,0,0,.08);
+            pointer-events: none;
+        }
+        /* gutter shadow, plus light sweeping across a sheet as it turns */
+        .face::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            background: linear-gradient(90deg, rgba(0,0,0,.09), transparent 12%);
+        }
+        .page.turning .face::before { animation: shade var(--flip) ease-in-out; }
+        @keyframes shade {
+            0%, 100% { background-color: transparent; }
+            50% { background-color: rgba(0,0,0,.14); }
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background: var(--paper-back);
+            border-radius: 6px 2px 2px 6px;
+        }
+        .back::before { background: linear-gradient(270deg, rgba(0,0,0,.09), transparent 12%); }
+
+        /* punched holes along the spine edge */
+        .holes {
+            position: absolute;
+            top: 0;
+            height: var(--holes-h, 100%);
+            width: 26px;
+            pointer-events: none;
+            z-index: 4;
+            background: radial-gradient(circle at 13px 16px, var(--cover-edge) 0 5px, rgba(0,0,0,.18) 5.5px, transparent 6.5px) 0 0 / 26px 32px repeat-y;
+        }
+        .front .holes { left: 0; }
+        .back .holes { right: 0; }
+
+        /* ruled paper; the margin line is printed through, so it sits on the spine side of a back page */
+        .sheet {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            padding: var(--top) 30px 44px calc(var(--margin-x) + 14px);
+            background:
+                linear-gradient(90deg, transparent var(--margin-x), var(--margin-c) var(--margin-x) calc(var(--margin-x) + 1.5px), transparent 0),
+                linear-gradient(var(--paper) var(--top), transparent 0),
+                repeating-linear-gradient(transparent 0 calc(var(--rule) - var(--lw, 1px)), var(--rule-c) calc(var(--rule) - var(--lw, 1px)) var(--rule));
+            background-attachment: local;
+        }
+        .back .sheet {
+            padding: var(--top) calc(var(--margin-x) + 14px) 44px 40px;
+            background:
+                linear-gradient(270deg, transparent var(--margin-x), var(--margin-c) var(--margin-x) calc(var(--margin-x) + 1.5px), transparent 0),
+                linear-gradient(var(--paper-back) var(--top), transparent 0),
+                repeating-linear-gradient(transparent 0 calc(var(--rule) - var(--lw, 1px)), var(--rule-c) calc(var(--rule) - var(--lw, 1px)) var(--rule));
+            background-attachment: local;
+        }
+        /* a page that still doesn't fit fades out at the bottom until it's scrolled */
+        .face.scrolls .sheet {
+            -webkit-mask-image: linear-gradient(#000 calc(100% - 64px), transparent calc(100% - 8px));
+            mask-image: linear-gradient(#000 calc(100% - 64px), transparent calc(100% - 8px));
+        }
+        .pageno {
+            position: absolute;
+            bottom: 8px;
+            color: var(--ink-soft);
+            font-size: 17px;
+            z-index: 6;
+        }
+        .front .pageno { right: 46px; }
+        .back .pageno { left: 40px; }
+
+        /* spiral binding */
+        .spiral {
+            position: absolute;
+            top: 0;
+            left: calc(var(--pw) - 17px);
+            width: 34px;
+            height: 100%;
+            z-index: 5000;
+            pointer-events: none;
+        }
+        .spiral i {
+            position: absolute;
+            left: 0;
+            width: 34px;
+            height: 9px;
+            margin-top: -4px;
+            border-radius: 5px;
+            background: linear-gradient(#5d636b, #eef1f4 35%, #9aa1a9 65%, #4b5058);
+            box-shadow: 0 2px 2px rgba(0,0,0,.35);
+        }
+
+        /* index tabs */
+        .tabs {
+            position: absolute;
+            top: 36px;
+            left: calc(var(--pw) * 2 - 30px);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 0;
+        }
+        .viewport:not(.single) .tabs { display: flex; }
+        .tabs a {
+            display: block;
+            width: 136px;
+            padding: 6px 10px 6px 42px;
+            border-radius: 0 8px 8px 0;
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 18px;
+            line-height: 24px;
+            background: var(--tab);
+            box-shadow: 2px 2px 4px rgba(0,0,0,.2);
+            transition: transform .2s;
+        }
+        .tabs a:hover { transform: translateX(6px); color: var(--ink); }
+        .tabs a.on { transform: translateX(12px); font-weight: bold; }
+
+        .corner-next, .corner-prev {
+            position: absolute;
+            width: 64px; height: 64px;
+            top: calc(var(--ph) - 64px);
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            z-index: 4000;
+            display: none;
+        }
+        .corner-next { left: calc(var(--pw) * 2 - 64px); }
+        .corner-prev { left: 0; }
+        .book.has-next .corner-next, .book.has-prev .corner-prev { display: block; }
+        .corner-prev:hover::after {
+            content: '\2190';
+            position: absolute; left: 18px; bottom: 10px;
+            color: var(--ink-red); font: 22px 'Patrick Hand', cursive;
+        }
+
+        /* ---------- page content ---------- */
+        .title {
+            margin-top: calc(-1 * var(--top));
+            min-height: var(--top);
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 6px;
+            font-size: 50px;
+            line-height: 1;
+            font-weight: normal;
+        }
+        h3 { font-size: 23px; font-weight: normal; line-height: var(--rule); }
+        h3 a { color: var(--ink); text-decoration: none; }
+        h3 a:hover { color: var(--ink-red); }
+        p { margin-bottom: var(--rule); }
+        ul { list-style: none; margin-bottom: var(--rule); }
+        li { position: relative; }
+        ul.dash li::before { content: '\2013'; position: absolute; left: -18px; color: var(--ink-soft); }
+        .more { font-size: 18px; white-space: nowrap; }
+
+        /* contents */
+        .sig-wrap { margin: -6px 0 2px -6px; }
+        .tagline { color: var(--ink-soft); margin-bottom: var(--rule); }
+        .toc { list-style: none; margin-bottom: var(--rule); }
+        .toc a {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--ink);
+            min-height: calc(var(--rule) * 1.5);
+            padding-top: 6px;
+            line-height: 1.15;
+        }
+        .toc a .hw { font-size: 30px; transition: color .15s; }
+        .toc a:hover .hw { color: var(--ink-red); }
+        .toc .dots { flex: 1; border-bottom: 2.5px dotted var(--ink-soft); transform: translateY(-5px); opacity: .5; }
+        .toc .num { font-size: 22px; color: var(--ink-blue); }
+        .toc-head { font-size: 34px; display: block; margin-bottom: 4px; }
+
+        /* about */
+        .about-photo { float: right; width: 168px; margin: 4px -6px 18px 22px; --tilt: 3deg; }
+
+        /* projects */
+        .entry { display: grid; grid-template-columns: 128px 1fr; gap: 20px; margin-bottom: var(--rule); }
+        .entry .polaroid { padding-bottom: 8px; align-self: start; margin-top: 6px; }
+        .entry:nth-child(even) .polaroid { --tilt: 2deg; }
+        .entry p { margin-bottom: 0; font-size: 18px; }
+        .polaroid .sketch { display: block; width: 100%; aspect-ratio: 1; background: #fbfaf4; color: var(--ink-blue); }
+
+        /* experience: dates in the margin */
+        .xp { margin-bottom: 10px; position: relative; }
+        .xp .when {
+            position: absolute;
+            left: calc(-1 * var(--margin-x) - 14px);
+            width: calc(var(--margin-x) - 4px);
+            text-align: right;
+            color: var(--ink-red);
+            font-size: 15px;
+            line-height: 15px;
+            padding-top: 8px;
+        }
+        .back .xp .when { left: auto; right: calc(-1 * var(--margin-x) - 14px); text-align: left; padding-left: 6px; }
+        .xp .org { color: var(--ink-soft); font-size: 18px; }
+        .xp .roles { margin: 2px 0 4px; font-size: 17px; line-height: 24px; }
+        .xp .roles b { font-weight: normal; color: var(--ink-blue); }
+        .xp .roles .red { font-size: 15px; }
+        .xp .tags .more { margin-left: 8px; }
+        .xp .what { font-size: 17px; line-height: 24px; margin: 2px 0 4px; }
+
+        /* skills */
+        .cols { display: grid; grid-template-columns: 1fr 1fr; column-gap: 26px; }
+        .courses li { font-size: 18px; }
+        .courses b { font-weight: normal; color: var(--ink-blue); }
+
+        /* hobbies */
+        .food { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 8px 0 var(--rule); }
+        .food .polaroid { padding-bottom: 0; }
+        .food .polaroid:nth-child(odd) { --tilt: 2.5deg; }
+        .food figcaption { font-size: 13px; line-height: 16px; padding: 4px 0 6px; }
+        .cubing { display: grid; grid-template-columns: 1fr 190px; gap: 22px; align-items: start; }
+        .cubing .polaroid { --tilt: -3deg; margin-top: 6px; }
+        table.prs { border-collapse: collapse; font-size: 18px; width: 100%; margin-bottom: var(--rule); }
+        table.prs th, table.prs td { border: 1.5px solid var(--ink-soft); padding: 0 8px; text-align: left; line-height: 28px; }
+        table.prs th { font-weight: normal; color: var(--ink-blue); }
+        table.prs td:not(:first-child) { text-align: right; }
+
+        /* contact */
+        .say { font-size: 22px; }
+        .contact-list .k { display: inline-block; width: 92px; color: var(--ink-soft); }
+
+        /* narrow pages */
+        .book.narrow { --margin-x: 40px; }
+        .book.narrow .front .sheet { padding-right: 18px; }
+        .book.narrow .back .sheet { padding-left: 22px; }
+        .book.narrow .title { font-size: 40px; }
+        .book.narrow .xp .when { position: static; display: block; text-align: left; width: auto; padding-top: 6px; }
+        .book.narrow .xp .when br { display: none; }
+        .book.narrow .entry { grid-template-columns: 84px 1fr; gap: 14px; }
+        .book.narrow .about-photo { width: 120px; }
+        .book.narrow .cols { grid-template-columns: 1fr; }
+        .book.narrow .food { grid-template-columns: repeat(2, 1fr); }
+        .book.narrow .cubing { grid-template-columns: 1fr; }
+        .book.narrow .cubing .polaroid { width: 160px; }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="who" href="#contents">nayan's notebook</a>
+        <nav aria-label="Links">
+            <a href="assets/Nayan_Ramam_Resume_Analog_IC-9.pdf">resume</a>
+            <a href="https://www.linkedin.com/in/nayan-ramam-788334279/">linkedin</a>
+            <a href="mailto:nramam3@gatech.edu">email</a>
+            <a href="index.html">classic site</a>
+        </nav>
+    </header>
+
+    <main class="stage">
+        <div class="viewport" id="viewport">
+        <div class="book" id="book" aria-roledescription="notebook">
+            <div class="cover"></div>
+            <div class="inside-cover front-cover" aria-hidden="true">
+                <div class="label">
+                    <div class="line">if found, please return to</div>
+                    <div class="line"><span class="hw" data-hw>Nayan Ramam</span></div>
+                    <div class="line">nramam3@gatech.edu</div>
+                    <div class="line">&nbsp;</div>
+                </div>
+            </div>
+            <div class="inside-cover back-cover" aria-hidden="true"></div>
+
+            <!-- sheet 1: contents / about -->
+            <section class="page">
+                <div class="face front" data-id="contents" data-title="Contents">
+                    <div class="holes"></div>
+                    <div class="sheet" style="padding-top: 34px;">
+                        <h1 class="sig-wrap"><span class="signature" role="img" aria-label="Nayan Ramam"></span></h1>
+                        <p class="tagline">electrical engineering @ georgia tech &mdash; analog/mixed-signal design, and what it can do for <span class="hl">audio, music &amp; machine learning</span>.</p>
+                        <h2 class="toc-head hw" data-hw>Contents</h2>
+                        <ol class="toc">
+                            <li><a href="#about"><span class="hw" data-hw>About me</span><span class="dots"></span><span class="num">2</span></a></li>
+                            <li><a href="#projects"><span class="hw" data-hw>Projects</span><span class="dots"></span><span class="num">3</span></a></li>
+                            <li><a href="#experience"><span class="hw" data-hw>Experience</span><span class="dots"></span><span class="num">5</span></a></li>
+                            <li><a href="#skills"><span class="hw" data-hw>Skills and Classes</span><span class="dots"></span><span class="num">7</span></a></li>
+                            <li><a href="#hobbies"><span class="hw" data-hw>Hobbies</span><span class="dots"></span><span class="num">8</span></a></li>
+                            <li><a href="#hello"><span class="hw" data-hw>Say hello</span><span class="dots"></span><span class="num">10</span></a></li>
+                        </ol>
+                        <div class="sticky" style="--tilt: -2deg; margin-left: auto;">
+                            psst &mdash; flip pages with the corner, the &larr; &rarr; keys, or a swipe.
+                        </div>
+                    </div>
+                    <span class="pageno">1</span>
+                </div>
+                <div class="face back" data-id="about" data-title="About me">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>About me</h2>
+                        <figure class="polaroid taped about-photo">
+                            <img src="assets/nayan_headshot_1_crop.png" alt="Nayan Ramam" loading="lazy">
+                            <figcaption>hi, that's me</figcaption>
+                        </figure>
+                        <p>I'm an electrical engineering undergrad at Georgia Tech, focused on <span class="hl">analog mixed-signal design</span>. I'm especially into analog IC design and where it meets audio, music, and machine learning &mdash; including neuromorphic analog circuits.</p>
+                        <p>Outside the lab I play guitar, produce music, play basketball, and speedsolve Rubik's cubes. The common thread is <span class="blue">the intersection of theory and creativity</span>: getting the technical details right, then using them as a foundation to make something unique.</p>
+                        <h3>Education</h3>
+                        <ul class="dash">
+                            <li>B.S. Electrical Engineering, Georgia Tech</li>
+                            <li>expected graduation: <span class="red">December 2027</span></li>
+                            <li>GPA 3.91 &middot; Dean's List</li>
+                            <li>IEEE&ndash;Eta Kappa Nu honor society</li>
+                        </ul>
+                    </div>
+                    <span class="pageno">2</span>
+                </div>
+            </section>
+
+            <!-- sheet 2: projects / projects, continued -->
+            <section class="page">
+                <div class="face front" data-id="projects" data-title="Projects">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Projects</h2>
+                        <article class="entry">
+                            <figure class="polaroid taped"><img src="assets/projects/ring-vco.png" alt="Ring VCO layout" loading="lazy"></figure>
+                            <div>
+                                <h3><a href="binder/index.html#projects/ring-vco">Ring VCO design + layout</a></h3>
+                                <p>A current-starved ring-oscillator VCO in Cadence Virtuoso (Sky130 PDK): 500&nbsp;MHz oscillation, &lt;250&nbsp;ps rise/fall, &lt;35&nbsp;&micro;W average power. Verified across ff/tt/ss corners and 0&ndash;70&deg;C; an inverter buffer drives a 1&nbsp;pF load.</p>
+                                <p class="tags">#analog-ic #layout #virtuoso #maestro</p>
+                                <a class="more" href="binder/index.html#projects/ring-vco">read more &rarr;</a>
+                            </div>
+                        </article>
+                        <article class="entry">
+                            <figure class="polaroid taped"><img src="assets/projects/verdi coverage onboarding.png" alt="Verdi coverage report" loading="lazy"></figure>
+                            <div>
+                                <h3><a href="binder/index.html#projects/gcd-module">GCD module ASIC design</a></h3>
+                                <p>Full-stack ASIC design of a module that computes the greatest common divisor of two integers with the Euclidean algorithm: RTL, a constrained-random testbench (99.62% DUT coverage), static timing analysis, and place &amp; route in Cadence Innovus.</p>
+                                <p class="tags">#asic #systemverilog #verification #innovus</p>
+                                <a class="more" href="binder/index.html#projects/gcd-module">read more &rarr;</a>
+                            </div>
+                        </article>
+                        <article class="entry">
+                            <figure class="polaroid taped">
+                                <svg class="sketch" viewBox="0 0 120 120" role="img" aria-label="Sketch of a 6T SRAM cell">
+                                    <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 16 V108 M106 16 V108"/>
+                                        <path d="M14 26 H106" stroke-dasharray="5 5"/>
+                                        <path d="M44 40 V62 L64 51 Z"/><circle cx="67.5" cy="51" r="3"/>
+                                        <path d="M76 66 V88 L56 77 Z"/><circle cx="52.5" cy="77" r="3"/>
+                                        <path d="M71 51 H88 V77 H76 M49 77 H32 V51 H44"/>
+                                        <path d="M32 51 H26 M20 51 H14 M23 26 V46 M19 46 H27"/>
+                                        <path d="M88 64 H94 M100 64 H106 M97 26 V59 M93 59 H101"/>
+                                    </g>
+                                    <g font-family="Patrick Hand, cursive" font-size="11" fill="currentColor">
+                                        <text x="4" y="118">BL</text><text x="94" y="118">BLB</text><text x="50" y="20">WL</text>
+                                    </g>
+                                </svg>
+                            </figure>
+                            <div>
+                                <h3><a href="binder/index.html#projects/sram">Low-power AI inference SoC</a></h3>
+                                <p>Leading a team of 6 building a RISC-V CPU with a MAC accelerator and custom SRAM. Designing and verifying 2&nbsp;KB pseudo-dual-port SRAM macros on a 6T bit cell, plus the sense amps, address decoders, and write drivers around them.</p>
+                                <p class="tags">#sram #risc-v #accelerator #in-progress</p>
+                                <a class="more" href="binder/index.html#projects/sram">read more &rarr;</a>
+                            </div>
+                        </article>
+                    </div>
+                    <span class="pageno">3</span>
+                </div>
+                <div class="face back" data-id="projects-2" data-title="Projects">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Projects contd</h2>
+                        <article class="entry">
+                            <figure class="polaroid taped"><img src="assets/projects/ai-synth.jpg" alt="AI synthesizer interface" loading="lazy"></figure>
+                            <div>
+                                <h3><a href="binder/index.html#projects/ai-synth">AI-powered virtual synthesizer</a></h3>
+                                <p>A virtual synth with AI-generated presets for real-time synthesis and sound exploration. Built on the JUCE C++ framework and wired to a Python script using the OpenAI API.</p>
+                                <p class="tags">#dsp #juce #c++ #python</p>
+                                <a class="more" href="binder/index.html#projects/ai-synth">read more &rarr;</a>
+                            </div>
+                        </article>
+                        <article class="entry">
+                            <figure class="polaroid taped"><img src="assets/projects/robotech thumb.jpg" alt="Pipe building robot" loading="lazy"></figure>
+                            <div>
+                                <h3><a href="binder/index.html#projects/telematic-pipe-building-robot">Teleoperated pipe-building robot</a></h3>
+                                <p>A pipe-crawling robot with PWM servo driving, wireless control over ESP-NOW, and live video/telemetry over RTSP.</p>
+                                <p class="tags">#embedded #robotics #wireless #esp32</p>
+                                <a class="more" href="binder/index.html#projects/telematic-pipe-building-robot">read more &rarr;</a>
+                            </div>
+                        </article>
+                    </div>
+                    <span class="pageno">4</span>
+                </div>
+            </section>
+
+            <!-- sheet 3: experience / experience, continued -->
+            <section class="page">
+                <div class="face front" data-id="experience" data-title="Experience">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Experience</h2>
+                        <div class="xp">
+                            <span class="when">may &ndash; <br>aug '26</span>
+                            <h3>ASIC verification/design intern</h3>
+                            <div class="org">Hewlett Packard Enterprise</div>
+                            <p class="what">Built an agentic AI framework that generates, verifies, and debugs 115+ post-silicon tests (4000+ engineer-hours saved); traced defects across the packet-modeling engine and scoreboards (L2/L3, LAGs, ECMP).</p>
+                            <div class="tags">#asic-verification #ai-agents #networking</div>
+                        </div>
+                        <div class="xp">
+                            <span class="when">oct '25 &ndash; <br>now</span>
+                            <h3><a href="binder/index.html#experiences/silicon-jackets-analog">Analog mixed-signal design</a></h3>
+                            <div class="org">Silicon Jackets &middot; GT's chip design club</div>
+                            <ul class="roles">
+                                <li><b>team lead</b> <span class="red">aug '26 &ndash; now</span> &mdash; leading 20+ members on a PLL, SRAM, standard cells &amp; SerDes</li>
+                                <li><b>design engineer</b> <span class="red">oct '25 &ndash; may '26</span> &mdash; ring VCO, 8-bit R-2R DAC, amplifier</li>
+                            </ul>
+                            <div class="tags">#virtuoso #layout #monte-carlo <a class="more" href="binder/index.html#experiences/silicon-jackets-analog">read more &rarr;</a></div>
+                        </div>
+                        <div class="xp">
+                            <span class="when">jan '25 &ndash; <br>now</span>
+                            <h3><a href="binder/index.html#experiences/silicon-jackets-digital">Digital design engineer</a></h3>
+                            <div class="org">Silicon Jackets &middot; GT's chip design club</div>
+                            <p class="what">RTL, verification, and P&amp;R across three tape-outs: a GCD module, a fast divider for a 6-stage RISC-V core, and a pipelined CORDIC AXI peripheral.</p>
+                            <div class="tags">#systemverilog #uvm #sta <a class="more" href="binder/index.html#experiences/silicon-jackets-digital">read more &rarr;</a></div>
+                        </div>
+                        <div class="xp">
+                            <span class="when">oct '25 &ndash; <br>now</span>
+                            <h3><a href="binder/index.html#experiences/ice-lab">Undergraduate researcher</a></h3>
+                            <div class="org">Integrated Computational Electronics Lab</div>
+                            <p class="what">Building an audio synthesis/signal processing circuit library on an FPAA; designing a new FPAA on the GF180 PDK.</p>
+                            <div class="tags">#fpaa #gf180 #xschem #ngspice #magic <a class="more" href="binder/index.html#experiences/ice-lab">read more &rarr;</a></div>
+                        </div>
+                    </div>
+                    <span class="pageno">5</span>
+                </div>
+                <div class="face back" data-id="experience-2" data-title="Experience">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Experience contd</h2>
+                        <div class="xp">
+                            <span class="when">aug '24 &ndash; <br>apr '26</span>
+                            <h3><a href="binder/index.html#experiences/math-modeling">Team lead &amp; lead researcher</a></h3>
+                            <div class="org">Math Modeling Student Research Group</div>
+                            <p class="what">Quantifying feature overlap in neural networks; first-author paper in <i>The Tower</i>.</p>
+                            <div class="tags">#pytorch #interpretability <a class="more" href="binder/index.html#experiences/math-modeling">read more &rarr;</a></div>
+                        </div>
+                        <div class="xp">
+                            <span class="when">aug '25 &ndash; <br>apr '26</span>
+                            <h3><a href="binder/index.html#experiences/interactive-music-group">Lead researcher &amp; project manager</a></h3>
+                            <div class="org">Interactive Music Group</div>
+                            <div class="tags">#pcb #embedded #project-management <a class="more" href="binder/index.html#experiences/interactive-music-group">read more &rarr;</a></div>
+                        </div>
+                        <div class="xp">
+                            <span class="when">aug '25 &ndash; <br>apr '26</span>
+                            <h3><a href="binder/index.html#experiences/iva-lab">Image processing &amp; AI/ML researcher</a></h3>
+                            <div class="org">Intelligent Vision Automation Lab</div>
+                            <div class="tags">#python #opencv <a class="more" href="binder/index.html#experiences/iva-lab">read more &rarr;</a></div>
+                        </div>
+                        <div class="xp">
+                            <span class="when">may &ndash; <br>aug '25</span>
+                            <h3><a href="binder/index.html#experiences/sjsu">Digital design researcher</a></h3>
+                            <div class="org">San Jos&eacute; State University</div>
+                            <div class="tags">#verilog #fpga #serial <a class="more" href="binder/index.html#experiences/sjsu">read more &rarr;</a></div>
+                        </div>
+                        <div class="sticky" style="--tilt: -1.5deg; margin: 24px 0 0 auto;">
+                            the full story is in my <a href="assets/Nayan_Ramam_Resume_Analog_IC-9.pdf">resume</a>.
+                        </div>
+                    </div>
+                    <span class="pageno">6</span>
+                </div>
+            </section>
+
+            <!-- sheet 4: skills / hobbies -->
+            <section class="page">
+                <div class="face front" data-id="skills" data-title="Skills">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Skills</h2>
+                        <div class="cols">
+                            <div>
+                                <h3 class="blue">languages</h3>
+                                <ul class="dash"><li>SystemVerilog, Verilog, VHDL</li><li>Python, C, assembly</li></ul>
+                            </div>
+                            <div>
+                                <h3 class="blue">hardware</h3>
+                                <ul class="dash"><li>FPAA, FPGA</li><li>oscilloscope, multimeter</li><li>function generator, spectrum analyzer</li></ul>
+                            </div>
+                        </div>
+                        <h3 class="blue">software / platforms</h3>
+                        <ul class="dash">
+                            <li>Cadence Virtuoso / ADE / Spectre / Pegasus, SPICE</li>
+                            <li>XSchem, Ngspice, Magic, KiCAD, Quartus</li>
+                            <li>PyTorch, OpenCV, Linux, Git</li>
+                        </ul>
+                        <h3 class="blue">classes worth mentioning</h3>
+                        <ul class="dash courses">
+                            <li><b>ECE 4430</b> analog IC design</li>
+                            <li><b>ECE 3400</b> analog electronics</li>
+                            <li><b>ECE 3040</b> microelectronics</li>
+                            <li><b>ECE 3084</b> signals &amp; systems</li>
+                            <li><b>ECE 2031</b> digital design lab</li>
+                            <li><b>ECE 4270</b> digital signal processing</li>
+                            <li><b>ECE 3043</b> circuits &amp; electronics lab</li>
+                        </ul>
+                    </div>
+                    <span class="pageno">7</span>
+                </div>
+                <div class="face back" data-id="hobbies" data-title="Hobbies">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Hobbies</h2>
+                        <h3>cooking <span class="soft" style="font-size: 18px;">&mdash; recent hits</span></h3>
+                        <div class="food">
+                            <figure class="polaroid"><img src="assets/hobbies/cooking/chicken piccata.jpg" alt="" loading="lazy"><figcaption>chicken piccata</figcaption></figure>
+                            <figure class="polaroid"><img src="assets/hobbies/cooking/steak, mushrooms, and green beans.jpg" alt="" loading="lazy"><figcaption>steak &amp; green beans</figcaption></figure>
+                            <figure class="polaroid"><img src="assets/hobbies/cooking/tagine and risotto with golden raisins.jpg" alt="" loading="lazy"><figcaption>tagine &amp; risotto</figcaption></figure>
+                            <figure class="polaroid"><img src="assets/hobbies/cooking/puerto rican style pork stir fry with fried egg.jpg" alt="" loading="lazy"><figcaption>puerto rican pork stir fry</figcaption></figure>
+                            <figure class="polaroid"><img src="assets/hobbies/cooking/beef stroganoff.jpg" alt="" loading="lazy"><figcaption>beef stroganoff</figcaption></figure>
+                            <figure class="polaroid"><img src="assets/hobbies/cooking/butter chicken pasta.jpg" alt="" loading="lazy"><figcaption>butter chicken pasta</figcaption></figure>
+                        </div>
+                        <p class="soft">also: guitar, producing music, and basketball.</p>
+                    </div>
+                    <span class="pageno">8</span>
+                </div>
+            </section>
+
+            <!-- sheet 5: speedcubing / say hello -->
+            <section class="page">
+                <div class="face front" data-id="cubing" data-tab="hobbies" data-title="Speedcubing">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Speedcubing</h2>
+                        <div class="cubing">
+                            <div>
+                                <h3>personal records</h3>
+                                <table class="prs">
+                                    <thead><tr><th>event</th><th>single</th><th>avg</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>3&times;3</td><td>7.98</td><td>10.67</td></tr>
+                                        <tr><td>2&times;2</td><td>2.52</td><td>4.19</td></tr>
+                                        <tr><td>4&times;4</td><td>37.55</td><td>40.11</td></tr>
+                                        <tr><td>3&times;3 OH</td><td>25.57</td><td>32.54</td></tr>
+                                    </tbody>
+                                </table>
+                                <h3>at CubingUSA Nationals 2023</h3>
+                                <ul class="dash"><li>3&times;3 solve: <span class="hl">9.86 s</span></li><li>4&times;4 solve: <span class="hl">43.41 s</span></li></ul>
+                            </div>
+                            <figure class="polaroid taped">
+                                <img src="assets/nats cropped.jpg" alt="Competing at CubingUSA Nationals 2023" loading="lazy">
+                                <figcaption>nationals '23</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                    <span class="pageno">9</span>
+                </div>
+                <div class="face back" data-id="hello" data-title="Say hello">
+                    <div class="holes"></div>
+                    <div class="sheet">
+                        <h2 class="title hw" data-hw>Say hello</h2>
+                        <p class="say">I'm always happy to talk analog design, audio hardware, research, or cubing. Leave a note:</p>
+                        <ul class="contact-list">
+                            <li><span class="k">email</span><a href="mailto:nramam3@gatech.edu">nramam3@gatech.edu</a></li>
+                            <li><span class="k">linkedin</span><a href="https://www.linkedin.com/in/nayan-ramam-788334279/">nayan-ramam</a></li>
+                            <li><span class="k">resume</span><a href="assets/Nayan_Ramam_Resume_Analog_IC-9.pdf">resume.pdf</a></li>
+                        </ul>
+                        <p class="soft">prefer the old look? the <a href="index.html">classic version of this site</a> is still around.</p>
+                        <div class="sticky" style="--tilt: -2.5deg; margin: 20px auto 0;">
+                            thanks for flipping through!
+                            <span class="signature" style="width: 150px; margin-top: 6px;" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                    <span class="pageno">10</span>
+                </div>
+            </section>
+
+            <div class="spiral" aria-hidden="true"></div>
+            <nav class="tabs" aria-label="Sections">
+                <a href="#about" style="--tab: #ffe08a;">about</a>
+                <a href="#projects" style="--tab: #ffb3c1;">projects</a>
+                <a href="#experience" style="--tab: #a8d8ff;">experience</a>
+                <a href="#skills" style="--tab: #b8e6b0;">skills</a>
+                <a href="#hobbies" style="--tab: #ffc89a;">hobbies</a>
+                <a href="#hello" style="--tab: #d7c2ff;">hello</a>
+            </nav>
+            <button class="corner-next" type="button" aria-label="Next page"></button>
+            <button class="corner-prev" type="button" aria-label="Previous page"></button>
+        </div>
+        </div>
+    </main>
+
+    <div class="controls">
+        <button type="button" id="prev" aria-label="Previous page">&larr; back</button>
+        <button type="button" class="contents-btn" id="toc">contents</button>
+        <span class="where" id="where" aria-live="polite"></span>
+        <button type="button" id="next" aria-label="Next page">next &rarr;</button>
+    </div>
+
+    <script>
+        handwrite();
+
+        // ---------- the notebook ----------
+        // Each sheet (.page) carries two pages: page 2n on its front, page 2n+1 on its back.
+        // F = how many sheets are turned over. With F turned, the open spread shows the back of
+        // sheet F-1 on the left and the front of sheet F on the right.
+        (function () {
+            var viewport = document.getElementById('viewport');
+            var book = document.getElementById('book');
+            var sheets = Array.prototype.slice.call(book.querySelectorAll('.page'));
+            var faces = [];
+            sheets.forEach(function (s) { faces.push(s.querySelector('.front'), s.querySelector('.back')); });
+            var spiral = book.querySelector('.spiral');
+            var tabs = Array.prototype.slice.call(book.querySelectorAll('.tabs a'));
+            var where = document.getElementById('where');
+            var prevBtn = document.getElementById('prev');
+            var nextBtn = document.getElementById('next');
+            var S = sheets.length, P = faces.length;
+            var page = 0, F = 0, spread = true, pw = 560, seq = 0;
+
+            function flipMs() {
+                return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--flip')) || 0;
+            }
+            function turnedFor(p) { return Math.floor((p + 1) / 2); }
+
+            function layout() {
+                var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+                var ph = Math.max(460, Math.min(vh - 56 - 64 - 24, 900));
+                // portrait pages when there's height to spare; on short, wide screens let them
+                // widen (up to square) so the writing doesn't have to shrink as much
+                pw = Math.round(Math.max(ph * 0.74, Math.min(ph, 640, (vw - 240) / 2)));
+                pw = Math.min(pw, 640);
+                spread = vw >= pw * 2 + 2 * 120;
+                if (!spread) {
+                    // one page (plus the spiral) fills the screen
+                    pw = Math.min(vw - 24 - 30, 620);
+                    ph = Math.max(420, Math.min(vh - 56 - 64 - 12, 960));
+                }
+                var s = book.style;
+                s.setProperty('--pw', pw + 'px');
+                s.setProperty('--ph', ph + 'px');
+                viewport.style.setProperty('--pw', pw + 'px');
+                viewport.classList.toggle('single', !spread);
+                book.classList.toggle('narrow', pw < 520);
+
+                spiral.textContent = '';
+                var y;
+                for (y = 16; y <= ph - 20; y += 32) {   // one ring per punched hole
+                    var ring = document.createElement('i');
+                    ring.style.top = y + 'px';
+                    spiral.appendChild(ring);
+                }
+                s.setProperty('--holes-h', (y - 32 + 10) + 'px');
+
+                book.classList.add('no-anim');
+                pan();
+                settle();
+                void book.offsetWidth;
+                book.classList.remove('no-anim');
+                fit();
+            }
+
+            // Shrink a page's writing (text, handwriting and ruled lines together) until it
+            // fits on the page. Past a readable minimum the page scrolls instead, with a fade.
+            function fit() {
+                var min = spread ? 0.66 : 0.86;
+                book.querySelectorAll('.sheet').forEach(function (sheet) {
+                    var z = 1;
+                    sheet.style.zoom = '';
+                    while (sheet.scrollHeight > sheet.clientHeight + 1 && z > min) {
+                        z = Math.max(min, z - 0.03);
+                        sheet.style.zoom = z;
+                    }
+                    sheet.style.setProperty('--lw', (1 / z).toFixed(3) + 'px');   // keep rules a real pixel thick
+                    sheet.scrollTop = 0;
+                    markScroll(sheet);
+                });
+            }
+            function markScroll(sheet) {
+                var more = sheet.scrollHeight - sheet.scrollTop - sheet.clientHeight > 2;
+                sheet.parentNode.classList.toggle('scrolls', more);
+            }
+            book.querySelectorAll('.sheet').forEach(function (sheet) {
+                sheet.addEventListener('scroll', function () { markScroll(sheet); }, { passive: true });
+            });
+
+            // On phones, slide the open notebook so the current page is the one in view.
+            function pan() {
+                if (spread) { book.style.transform = ''; return; }
+                var x = page % 2 ? 10 : -(pw - 20);
+                book.style.transform = 'translateX(' + x + 'px)';
+            }
+
+            function setZ(i) {
+                var s = sheets[i];
+                s.style.zIndex = s.classList.contains('flipped') ? S + i + 1 : S - i;
+            }
+
+            // Visibility, stacking and focusability once nothing is moving.
+            function settle() {
+                sheets.forEach(function (s, i) {
+                    if (s.classList.contains('turning')) return;
+                    s.classList.toggle('away', i !== F - 1 && i !== F);
+                    setZ(i);
+                });
+                faces.forEach(function (f, i) {
+                    var onSpread = i === 2 * F - 1 || i === 2 * F;
+                    f.inert = spread ? !onSpread : i !== page;
+                    f.classList.toggle('current', i === 2 * F);
+                });
+                book.classList.toggle('has-prev', spread ? F > 0 : page % 2 === 1);
+                book.classList.toggle('has-next', F < S && (spread || page % 2 === 0));
+            }
+
+            // Direction is decided when the turn fires, not when it was queued, so
+            // rapid clicks/keys always converge on the latest target.
+            function turn(i, delay) {
+                var s = sheets[i];
+                setTimeout(function () {
+                    var over = i < F;
+                    if (s.classList.contains('flipped') === over) return settle();
+                    s.classList.remove('away');
+                    s.classList.add('turning');
+                    s.style.zIndex = 3 * S + (++seq);
+                    void s.offsetWidth;   // commit the un-hidden sheet before it starts moving
+                    s.classList.toggle('flipped', over);
+                    clearTimeout(s._done);
+                    s._done = setTimeout(function () {
+                        s.classList.remove('turning');
+                        settle();
+                    }, flipMs() + 30);
+                }, delay);
+            }
+
+            function go(p, animate) {
+                p = Math.max(0, Math.min(P - 1, p));
+                var from = F;
+                page = p;
+                F = turnedFor(p);
+                if (animate === false || flipMs() === 0) {
+                    book.classList.add('no-anim');
+                    sheets.forEach(function (s, i) { s.classList.toggle('flipped', i < F); });
+                    pan();
+                    settle();
+                    void book.offsetWidth;   // apply the jump before transitions come back on
+                    book.classList.remove('no-anim');
+                } else {
+                    // reveal the destination spread underneath before sheets start moving
+                    if (F > 0) sheets[F - 1].classList.remove('away');
+                    if (F < S) sheets[F].classList.remove('away');
+                    var n = Math.abs(F - from), step = n ? Math.min(110, 600 / n) : 0;
+                    if (F > from) for (var i = from; i < F; i++) turn(i, (i - from) * step);
+                    else for (var j = from - 1; j >= F; j--) turn(j, (from - 1 - j) * step);
+                    pan();
+                    if (!n) settle();
+                }
+                update();
+            }
+
+            // A spread is addressed by its right-hand page (or the left one at the very end).
+            function goSpread(f) {
+                f = Math.max(0, Math.min(S, f));
+                go(f < S ? 2 * f : 2 * f - 1);
+            }
+            function next() { spread ? goSpread(F + 1) : go(page + 1); }
+            function prev() { spread ? goSpread(F - 1) : go(page - 1); }
+
+            function title(i) { return faces[i].dataset.title.toLowerCase(); }
+
+            function update() {
+                var shown = spread ? [2 * F - 1, 2 * F].filter(function (i) { return i >= 0 && i < P; }) : [page];
+                if (shown.length === 2) {
+                    var a = title(shown[0]), b = title(shown[1]);
+                    where.textContent = 'pp. ' + (shown[0] + 1) + '–' + (shown[1] + 1) + ' · ' + (a === b ? a : a + ' & ' + b);
+                } else {
+                    where.textContent = 'p. ' + (shown[0] + 1) + ' of ' + P + ' · ' + title(shown[0]);
+                }
+                prevBtn.disabled = spread ? F === 0 : page === 0;
+                nextBtn.disabled = spread ? F === S : page === P - 1;
+
+                var face = faces[page];
+                var hash = '#' + face.dataset.id;
+                if (location.hash !== hash) history.replaceState(null, '', hash);
+                var sections = shown.map(function (i) { return '#' + (faces[i].dataset.tab || faces[i].dataset.id.replace(/-\d+$/, '')); });
+                tabs.forEach(function (t) { t.classList.toggle('on', sections.indexOf(t.getAttribute('href')) >= 0); });
+                document.title = page === 0 ? "Nayan Ramam's Notebook" : face.dataset.title + " · Nayan Ramam's Notebook";
+            }
+
+            function indexOf(id) {
+                for (var i = 0; i < P; i++) if (faces[i].dataset.id === id) return i;
+                return -1;
+            }
+
+            // Links to #section turn the notebook instead of jumping.
+            document.addEventListener('click', function (e) {
+                var a = e.target.closest('a[href^="#"]');
+                if (!a) return;
+                var i = indexOf(a.getAttribute('href').slice(1));
+                if (i < 0) return;
+                e.preventDefault();
+                go(i);
+            });
+            window.addEventListener('hashchange', function () {
+                var i = indexOf(decodeURIComponent(location.hash.slice(1)));
+                if (i >= 0 && i !== page) go(i);
+            });
+
+            prevBtn.addEventListener('click', prev);
+            nextBtn.addEventListener('click', next);
+            document.getElementById('toc').addEventListener('click', function () { go(0); });
+            book.querySelector('.corner-next').addEventListener('click', next);
+            book.querySelector('.corner-prev').addEventListener('click', prev);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.altKey || e.ctrlKey || e.metaKey) return;
+                if (e.key === 'ArrowRight' || e.key === 'PageDown') { next(); e.preventDefault(); }
+                else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { prev(); e.preventDefault(); }
+                else if (e.key === 'Home') { go(0); e.preventDefault(); }
+                else if (e.key === 'End') { go(P - 1); e.preventDefault(); }
+            });
+
+            // horizontal swipes turn pages; vertical ones still scroll the page
+            var sx = null, sy = 0;
+            book.addEventListener('touchstart', function (e) {
+                if (e.touches.length !== 1) { sx = null; return; }
+                sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+            }, { passive: true });
+            book.addEventListener('touchend', function (e) {
+                if (sx === null) return;
+                var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+                sx = null;
+                if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) (dx < 0 ? next : prev)();
+            }, { passive: true });
+
+            window.addEventListener('resize', layout);
+            // measurements change once the handwriting font and photos arrive
+            if (document.fonts) document.fonts.ready.then(fit);
+            window.addEventListener('load', fit);
+
+            var start = indexOf(decodeURIComponent(location.hash.slice(1)));
+            layout();
+            go(start < 0 ? 0 : start, false);
+        })();
+    </script>
+</body>
+</html>

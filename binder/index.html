@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nayan Ramam's Lab Notebook</title>
+    <meta name="description" content="Project and experience write-ups by Nayan Ramam.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/notebook/common.css">
+    <script src="../assets/notebook/handwriting.js"></script>
+    <script src="../assets/notebook/handwrite.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+    <style>
+        :root {
+            --rule: 32px;                            /* one line of writing = two grid squares */
+            --sq: 16px;                              /* grid square */
+            --lab-paper: #f2f6ea;
+            --lab-grid: rgba(86, 140, 104, .17);
+            --lab-grid-major: rgba(86, 140, 104, .30);
+            --lab-line: #6f9a7f;                     /* printed rules: header, margin, sign-off */
+            --lab-print: #5d7f69;                    /* printed labels */
+            --sw: min(860px, calc(100vw - 32px));    /* sheet width */
+            --mx: 64px;                              /* margin line */
+        }
+        @media (max-width: 640px) {
+            :root { --mx: 28px; }
+        }
+
+        body { line-height: var(--rule); min-height: 100vh; }
+        .topbar { position: sticky; top: 0; z-index: 10; background: var(--desk); box-shadow: 0 1px 0 rgba(0,0,0,.08); }
+        .topbar .back-top { font-size: 20px; white-space: nowrap; }
+        .crumbs { color: var(--chrome-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ---------- a page from a bound engineering lab notebook ---------- */
+        .binder {
+            position: relative;
+            width: var(--sw);
+            margin: 20px auto 72px;
+            padding: 22px 40px 28px calc(var(--mx) + 20px);
+            border-radius: 2px 4px 4px 2px;
+            box-shadow:
+                inset 16px 0 18px -14px rgba(0,0,0,.22),          /* curve into the bound spine */
+                0 1px 1px rgba(0,0,0,.08), 0 18px 40px -16px rgba(0,0,0,.45);
+            background:
+                linear-gradient(90deg, transparent var(--mx), var(--lab-line) var(--mx) calc(var(--mx) + 1.5px), transparent 0),
+                repeating-linear-gradient(90deg, transparent 0 calc(var(--sq) * 5 - 1px), var(--lab-grid-major) calc(var(--sq) * 5 - 1px) calc(var(--sq) * 5)),
+                repeating-linear-gradient(transparent 0 calc(var(--sq) * 5 - 1px), var(--lab-grid-major) calc(var(--sq) * 5 - 1px) calc(var(--sq) * 5)),
+                repeating-linear-gradient(90deg, transparent 0 calc(var(--sq) - 1px), var(--lab-grid) calc(var(--sq) - 1px) var(--sq)),
+                repeating-linear-gradient(transparent 0 calc(var(--sq) - 1px), var(--lab-grid) calc(var(--sq) - 1px) var(--sq)),
+                var(--lab-paper);
+        }
+        @media (max-width: 640px) {
+            .binder { padding-right: 16px; }
+        }
+
+        /* printed header block: entry, date, page number */
+        .lab-head {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            border: 1.5px solid var(--lab-line);
+            background: var(--lab-paper);
+            margin-bottom: var(--rule);
+        }
+        .lab-head > div { padding: 4px 12px 6px; border-left: 1.5px solid var(--lab-line); min-width: 0; }
+        .lab-head > div:first-child { border-left: 0; }
+        .lab-label {
+            display: block;
+            font: 600 10px/16px 'Arial Narrow', Arial, sans-serif;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--lab-print);
+        }
+        .lab-val { display: block; color: var(--ink-blue); font-size: 18px; line-height: 24px; white-space: pre-line; }
+        .lab-page .lab-val { text-align: center; font-size: 22px; }
+        @media (max-width: 640px) {
+            .lab-head { grid-template-columns: 1fr auto; }
+            .lab-head > div:first-child { grid-column: 1 / -1; border-bottom: 1.5px solid var(--lab-line); }
+            .lab-head > div:nth-child(2) { border-left: 0; }
+        }
+
+        h1.hw {
+            font-size: 52px;
+            font-weight: normal;
+            line-height: 1.15;
+            margin-bottom: 4px;
+        }
+        .org { font-size: 23px; color: var(--ink-blue); margin-bottom: var(--rule); }
+        .org.tags { font-size: 18px; color: var(--ink-red); }
+        @media (max-width: 640px) {
+            h1.hw { font-size: 38px; }
+        }
+
+        /* printed sign-off block at the foot of every lab notebook page */
+        .signoff {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 28px;
+            margin-top: calc(var(--rule) * 1.5);
+            padding-top: 10px;
+            border-top: 1.5px solid var(--lab-line);
+        }
+        .signoff > div { border-bottom: 1.5px solid var(--lab-line); min-height: 56px; display: flex; flex-direction: column; justify-content: space-between; }
+        .signoff .signature { width: 170px; margin: 0 0 2px; }
+        @media (max-width: 640px) {
+            .signoff { grid-template-columns: 1fr; gap: 14px; }
+        }
+
+        /* the write-up itself */
+        .content { overflow-wrap: anywhere; }
+        .content > *:first-child { margin-top: 0; }
+        .content p, .content ul, .content ol, .content table, .content figure, .content blockquote { margin-bottom: var(--rule); }
+        .content h2 {
+            font-size: 36px;
+            font-weight: normal;
+            line-height: 1.15;
+            min-height: calc(var(--rule) * 2);
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 4px;
+            color: var(--ink-blue);
+        }
+        .content h3 { font-size: 23px; font-weight: normal; color: var(--ink-blue); }
+        .content ul, .content ol { padding-left: 4px; list-style: none; }
+        .content ol { counter-reset: n; }
+        .content li { position: relative; }
+        .content ul > li::before { content: '\2013'; position: absolute; left: -20px; color: var(--ink-soft); }
+        .content ol > li { counter-increment: n; }
+        .content ol > li::before { content: counter(n) '.'; position: absolute; left: -24px; color: var(--ink-soft); }
+        .content em { color: var(--ink-soft); }
+        .content strong { font-weight: normal; background: linear-gradient(transparent 50%, var(--highlight) 50% 92%, transparent 92%); }
+        .content code { font-family: inherit; color: var(--ink-red); }
+        .content hr { border: 0; height: var(--rule); }
+        .content blockquote { padding-left: 14px; border-left: 3px solid var(--ink-blue); color: var(--ink-soft); }
+
+        /* hand-ruled tables */
+        .content table { border-collapse: collapse; font-size: 18px; max-width: 100%; display: block; overflow-x: auto; }
+        .content th, .content td { border: 1.5px solid var(--ink-soft); padding: 0 12px; text-align: left; line-height: calc(var(--rule) - 2px); }
+        .content th { font-weight: normal; color: var(--ink-blue); }
+
+        /* photos taped onto the page */
+        .photo {
+            display: block;
+            position: relative;
+            width: fit-content;
+            max-width: 100%;
+            margin: 26px auto var(--rule);
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.18);
+            transform: rotate(var(--tilt, -.8deg));
+        }
+        .photo:nth-of-type(even) { --tilt: .9deg; }
+        .photo img { display: block; max-width: 100%; height: auto; max-height: 560px; }
+        .content figure { margin-top: 0; }
+        .content figcaption { text-align: center; color: var(--ink-soft); font-size: 17px; margin-top: -18px; }
+        /* a row of photos (e.g. the robot's electrical build) */
+        .content div[style*="flex"] { gap: 14px !important; align-items: flex-start; }
+        .content div[style*="flex"] > .photo { flex: 1 1 0; min-width: 0; margin: 20px 0; }
+        /* embedded videos get a white border and some tape too */
+        .content div[style*="padding-bottom"] { border: 10px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,.18); overflow: visible !important; margin: 26px 0 var(--rule) !important; }
+
+        /* attached files (PDFs) look like a sticky note clipped to the page */
+        a.attach {
+            display: inline-block;
+            background: #fff3a3;
+            color: var(--ink);
+            padding: 6px 16px;
+            text-decoration: none;
+            box-shadow: 0 6px 10px -4px rgba(0,0,0,.25);
+            transform: rotate(-1.2deg);
+            margin: 6px 0;
+            line-height: 26px;
+        }
+        a.attach::before { content: '\1F4CE  '; }
+        a.attach:hover { color: var(--ink-red); }
+
+        /* bottom of the sheet: flip to other entries */
+        .pager {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: var(--rule);
+            padding-top: var(--rule);
+            font-size: 19px;
+        }
+        .pager a { text-decoration: none; }
+        .pager a:hover { text-decoration: underline; }
+        .pager .next { text-align: right; margin-left: auto; }
+        .pager small { display: block; color: var(--ink-soft); font-size: 15px; line-height: 20px; }
+        .back-link { display: block; text-align: center; margin-top: var(--rule); }
+        .back-link .hw { font-size: 30px; color: var(--ink-blue); }
+
+        .status { color: var(--ink-soft); }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="back-top" id="back-top" href="../notebook.html">&larr; back to the notebook</a>
+        <span class="crumbs" id="crumbs"></span>
+    </header>
+
+    <main>
+        <article class="binder" id="sheet">
+            <div class="lab-head">
+                <div><span class="lab-label">Project / Entry</span><span class="lab-val" id="entry">&nbsp;</span></div>
+                <div><span class="lab-label">Date</span><span class="lab-val" id="meta">&nbsp;</span></div>
+                <div class="lab-page"><span class="lab-label">Page No.</span><span class="lab-val" id="pageno">&nbsp;</span></div>
+            </div>
+            <h1 class="hw" id="title" data-hw>Loading</h1>
+            <div class="org" id="org"></div>
+            <div class="content" id="content"><p class="status">flipping to the right page&hellip;</p></div>
+            <div class="signoff" aria-hidden="true">
+                <div><span class="lab-label">Signed</span><span class="signature"></span></div>
+                <div><span class="lab-label">Witnessed &amp; understood by</span></div>
+            </div>
+            <nav class="pager" id="pager" aria-label="Other entries"></nav>
+            <a class="back-link" id="back-bottom" href="../notebook.html"><span class="hw" data-hw>back to the notebook</span></a>
+        </article>
+    </main>
+
+    <script>
+        // Every write-up lives in content/<kind>/<slug>.md; this page renders one of them,
+        // chosen by the hash (#projects/ring-vco). "page" is where it sits in the notebook.
+        // "dates" fill the Date box in the page header; "tags" are written under the title.
+        var ENTRIES = [
+            { id: 'projects/ring-vco', label: 'Ring VCO design + layout', page: 'projects', dates: [], tags: '500 MHz \u00b7 <35 \u00b5W \u00b7 #analog-ic #layout' },
+            { id: 'projects/gcd-module', label: 'GCD module ASIC design', page: 'projects', dates: [], tags: '#asic #systemverilog #innovus' },
+            { id: 'projects/sram', label: 'Low-power AI inference SoC', page: 'projects', dates: ['feb 2026 \u2013 now'], tags: '#sram #risc-v #accelerator' },
+            { id: 'projects/ai-synth', label: 'AI-powered virtual synthesizer', page: 'projects-2', dates: [], tags: '#dsp #juce #python' },
+            { id: 'projects/telematic-pipe-building-robot', label: 'Teleoperated pipe-building robot', page: 'projects-2', dates: [], tags: '#embedded #robotics #esp32' },
+            { id: 'experiences/silicon-jackets-analog', label: 'Silicon Jackets \u00b7 analog', page: 'experience', dates: ['lead: aug 2026 \u2013 now', 'engineer: oct 2025 \u2013 may 2026'] },
+            { id: 'experiences/silicon-jackets-digital', label: 'Silicon Jackets \u00b7 digital', page: 'experience', dates: ['jan 2025 \u2013 now'] },
+            { id: 'experiences/ice-lab', label: 'ICE Lab', page: 'experience', dates: ['oct 2025 \u2013 now'] },
+            { id: 'experiences/math-modeling', label: 'Math Modeling Research Group', page: 'experience-2', dates: ['aug 2024 \u2013 apr 2026'] },
+            { id: 'experiences/interactive-music-group', label: 'Interactive Music Group', page: 'experience-2', dates: ['aug 2025 \u2013 apr 2026'] },
+            { id: 'experiences/iva-lab', label: 'IVA Lab', page: 'experience-2', dates: ['aug 2025 \u2013 apr 2026'] },
+            { id: 'experiences/sjsu', label: 'San Jos\u00e9 State University', page: 'experience-2', dates: ['may \u2013 aug 2025'] }
+        ];
+        // old addresses that should still land somewhere sensible
+        var ALIASES = { 'experiences/silicon-jackets': 'experiences/silicon-jackets-analog' };
+
+        var els = {
+            meta: document.getElementById('meta'),
+            entry: document.getElementById('entry'),
+            pageno: document.getElementById('pageno'),
+            title: document.getElementById('title'),
+            org: document.getElementById('org'),
+            content: document.getElementById('content'),
+            pager: document.getElementById('pager'),
+            crumbs: document.getElementById('crumbs'),
+            backTop: document.getElementById('back-top'),
+            backBottom: document.getElementById('back-bottom')
+        };
+
+        function setTitle(text) {
+            els.title.textContent = text;
+            els.title.setAttribute('data-hw', '');
+            handwrite(els.title);
+        }
+
+        // Links between write-ups (../projects/x.html, ../../experiences/y.html) stay in the binder.
+        function binderLink(href) {
+            var m = /(?:^|\/)(projects|experiences)\/([\w-]+)\.html(#.*)?$/.exec(href || '');
+            return m && !/^[a-z]+:/i.test(href) ? '#' + m[1] + '/' + m[2] : null;
+        }
+
+        function tidy(root) {
+            // the old pages styled things inline; let the binder's own look take over
+            root.querySelectorAll('a, img, figure, figcaption').forEach(function (el) { el.removeAttribute('style'); });
+
+            root.querySelectorAll('a[href]').forEach(function (a) {
+                var href = a.getAttribute('href');
+                var inside = binderLink(href);
+                if (inside) { a.setAttribute('href', inside); a.removeAttribute('target'); return; }
+                if (/\.pdf($|[?#])/i.test(href)) a.classList.add('attach');
+                if (/^https?:/i.test(href) || a.classList.contains('attach')) {
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                }
+            });
+
+            // markdown wraps lone images in <p>; give every image its own taped photo frame
+            root.querySelectorAll('img').forEach(function (img) {
+                img.loading = 'lazy';
+                var frame = document.createElement('span');
+                frame.className = 'photo taped';
+                var p = img.parentElement;
+                img.replaceWith(frame);
+                frame.appendChild(img);
+                if (p && p.tagName === 'P' && p.textContent.trim() === '' && p.children.length === 1) p.replaceWith(frame);
+            });
+
+            root.querySelectorAll('h2').forEach(function (h) { h.setAttribute('data-hw', ''); });
+            handwrite(root);
+        }
+
+        function render(entry) {
+            var i = ENTRIES.indexOf(entry);
+            var notebook = '../notebook.html#' + entry.page;
+            els.backTop.href = els.backBottom.href = notebook;
+            els.crumbs.textContent = entry.id.split('/')[0] + ' / ' + entry.label.toLowerCase();
+            els.entry.textContent = (entry.id.indexOf('projects/') === 0 ? 'project' : 'experience') + ' \u2014 ' + entry.label.toLowerCase();
+            els.meta.textContent = entry.dates.length ? entry.dates.join('\n') : '\u2014';
+            els.pageno.textContent = String(i + 1).padStart(2, '0');
+            els.org.textContent = '';
+            els.org.classList.toggle('tags', !!entry.tags);
+            els.content.innerHTML = '<p class="status">flipping to the right page\u2026</p>';
+            window.scrollTo(0, 0);
+
+            // previous / next entry of the same kind
+            var kind = entry.id.split('/')[0];
+            var same = ENTRIES.filter(function (e) { return e.id.split('/')[0] === kind; });
+            var k = same.indexOf(entry);
+            var html = '';
+            if (k > 0) html += '<a class="prev" href="#' + same[k - 1].id + '"><small>&larr; previous</small>' + same[k - 1].label + '</a>';
+            if (k < same.length - 1) html += '<a class="next" href="#' + same[k + 1].id + '"><small>next &rarr;</small>' + same[k + 1].label + '</a>';
+            els.pager.innerHTML = html;
+
+            fetch('../content/' + entry.id + '.md', { cache: 'no-cache' })
+                .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+                .then(function (md) {
+                    var lines = md.replace(/^﻿/, '').split(/\r?\n/);
+                    var heading = entry.label, org = '';
+                    var h1 = lines.findIndex(function (l) { return /^#\s+/.test(l); });
+                    if (h1 >= 0) {
+                        var parts = lines[h1].replace(/^#\s+/, '').split(/\s+\|\s+/);
+                        heading = parts[0];
+                        org = parts.slice(1).join(' · ');
+                        lines.splice(h1, 1);
+                    }
+                    setTitle(heading);
+                    els.org.textContent = org || entry.tags || '';
+                    document.title = heading + (org ? ' \u00b7 ' + org : '') + " \u00b7 Nayan Ramam's Lab Notebook";
+                    els.content.innerHTML = marked.parse(lines.join('\n'), { gfm: true, breaks: false });
+                    tidy(els.content);
+                })
+                .catch(function () {
+                    setTitle(entry.label);
+                    els.content.innerHTML = '<p class="status">couldn’t load this page. If you opened the file directly, '
+                        + 'serve the site instead (<code>python -m http.server</code>) and open it from localhost.</p>';
+                });
+        }
+
+        function route() {
+            var id = decodeURIComponent(location.hash.slice(1));
+            if (ALIASES[id]) { history.replaceState(null, '', '#' + ALIASES[id]); id = ALIASES[id]; }
+            var entry = ENTRIES.find(function (e) { return e.id === id; });
+            if (entry) return render(entry);
+            setTitle('Lab notebook');
+            els.crumbs.textContent = '';
+            els.entry.textContent = 'index';
+            els.meta.textContent = '\u2014';
+            els.pageno.textContent = '00';
+            els.org.textContent = '';
+            els.pager.innerHTML = '';
+            els.content.innerHTML = '<h2 data-hw>Projects</h2><ul>' + list('projects') + '</ul><h2 data-hw>Experience</h2><ul>' + list('experiences') + '</ul>';
+            handwrite(els.content);
+        }
+        function list(kind) {
+            return ENTRIES.filter(function (e) { return e.id.indexOf(kind + '/') === 0; })
+                .map(function (e) { return '<li><a href="#' + e.id + '">' + e.label + '</a></li>'; }).join('');
+        }
+
+        handwrite();
+        window.addEventListener('hashchange', route);
+        route();
+    </script>
+</body>
+</html>
