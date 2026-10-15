@@ -113,7 +113,13 @@ window.startScope = function (DATA) {
     $('#home-tagline').innerHTML = list(HOME.tagline).map(function (l) { return '<span class="ln">' + mdInline(l) + '</span>'; }).join(' ');
     if (HOME.photo) { $('#home-photo').src = HOME.photo; $('#home-photo').alt = HOME.photo_alt || S.name || ''; }
     else $('#home-photo').parentNode.remove();
+    $('#home-specs').innerHTML = pairs(HOME.specs).map(function (r) {
+        return '<div><span class="k">' + esc(r[0]) + '</span><span class="v">' + mdInline(r[1]) + '</span></div>';
+    }).join('');
+    $('#home-bench').innerHTML = list(HOME.off_the_bench).length ? '<span class="bl">Off the bench</span>' +
+        list(HOME.off_the_bench).map(function (t) { return '<span class="tagp">' + esc(t) + '</span>'; }).join('') : '';
     $('#home-bio').innerHTML = md(DATA.home.body);
+    if (!DATA.home.body.replace(/<!--[\s\S]*?-->/g, '').trim()) $('#home-full').remove();
     $$('[data-print]').forEach(function (a) { a.href = RESUME; });
 
     $('#s-ch3').innerHTML =
@@ -208,15 +214,10 @@ window.startScope = function (DATA) {
         return '<svg class="wave" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>';
     }
 
-    // ================= HOME: one row per channel, summarised from that channel's own content =================
-    $('#home-menu').innerHTML = [
-        ['ch1', 'CH1', 'Projects', PROJECTS.length + ' capture' + (PROJECTS.length === 1 ? '' : 's'), 'square'],
-        ['ch2', 'CH2', 'Experience', ROLES.length + ' role' + (ROLES.length === 1 ? '' : 's'), 'pulses'],
-        ['ch3', 'CH3', 'Education', EDU.settles || EDU.school || '', 'step'],
-        ['ch4', 'CH4', 'Beyond eng.', [CUBING.heading, COOKING.heading].filter(Boolean).join(' · '), 'complex']
-    ].map(function (c) {
-        return '<button class="chrow" type="button" data-go="' + c[0] + '"><span class="chk">' + c[1] + '</span><span class="chn">' + esc(c[2]) + '</span>' +
-            waveSVG(c[4]) + '<span class="chd">' + esc(c[3]) + '</span><span class="cha" aria-hidden="true">▸</span></button>';
+    // ================= HOME: the experience tiles, each with its own trace =================
+    $('#home-xp').innerHTML = list(HOME.experience).map(function (x, i) {
+        var text = typeof x === 'string' ? x : x.text, wave = (x && x.wave) || ['step', 'pulses', 'square', 'complex', 'pwm'][i % 5];
+        return '<div class="xpt"><span class="xn">' + pad2(i + 1) + '</span>' + waveSVG(WAVES[wave] || wave === 'bitline' ? wave : 'square') + '<span class="xt">' + mdInline(text) + '</span></div>';
     }).join('');
 
     // ================= CH1: projects =================
