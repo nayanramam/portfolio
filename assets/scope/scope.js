@@ -174,7 +174,12 @@ window.startScope = function (DATA) {
         square: function (u) { return Math.tanh(7 * Math.sin(2 * Math.PI * 2.5 * u)) / Math.tanh(7); },
         complex: function (u) { var w = 2 * Math.PI * 2 * u; return (Math.sin(w) + .55 * Math.sin(2 * w + .8) + .35 * Math.sin(3 * w + 2.1) + .2 * Math.sin(7 * w + .4)) / 1.55; },
         pulses: function (u) { var bits = [1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0]; return bits[Math.min(bits.length - 1, Math.floor(u * bits.length))] ? .85 : -.85; },
-        pwm: function (u) { var k = Math.floor(u * 10), f = u * 10 - k; var duty = .5 + .38 * Math.sin(2 * Math.PI * (k + .5) / 10); return f < duty ? .85 : -.85; }
+        pwm: function (u) { var k = Math.floor(u * 10), f = u * 10 - k; var duty = .5 + .38 * Math.sin(2 * Math.PI * (k + .5) / 10); return f < duty ? .85 : -.85; },
+        step: function (u) {
+            if (u < .12) return -.6;
+            var t = (u - .12) * 9;
+            return -.6 + 1.2 * (1 - Math.exp(-.7 * t) * (Math.cos(2.4 * t) + .29 * Math.sin(2.4 * t)));
+        }
     };
     function wavePath(kind, b) {
         var f = WAVES[kind], d = '', n = 400;
@@ -202,6 +207,17 @@ window.startScope = function (DATA) {
         var paths = '<path class="ax" d="M0 30 H200"/><path d="' + (kind === 'bitline' ? bitlinePath() : wavePath(kind)) + '"/>';
         return '<svg class="wave" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>';
     }
+
+    // ================= HOME: one row per channel, summarised from that channel's own content =================
+    $('#home-menu').innerHTML = [
+        ['ch1', 'CH1', 'Projects', PROJECTS.length + ' capture' + (PROJECTS.length === 1 ? '' : 's'), 'square'],
+        ['ch2', 'CH2', 'Experience', ROLES.length + ' role' + (ROLES.length === 1 ? '' : 's'), 'pulses'],
+        ['ch3', 'CH3', 'Education', EDU.settles || EDU.school || '', 'step'],
+        ['ch4', 'CH4', 'Beyond eng.', [CUBING.heading, COOKING.heading].filter(Boolean).join(' · '), 'complex']
+    ].map(function (c) {
+        return '<button class="chrow" type="button" data-go="' + c[0] + '"><span class="chk">' + c[1] + '</span><span class="chn">' + esc(c[2]) + '</span>' +
+            waveSVG(c[4]) + '<span class="chd">' + esc(c[3]) + '</span><span class="cha" aria-hidden="true">▸</span></button>';
+    }).join('');
 
     // ================= CH1: projects =================
     $('#caps').innerHTML = PROJECTS.map(function (p, i) {
