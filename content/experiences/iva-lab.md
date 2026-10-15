@@ -1,4 +1,18 @@
-# Image Processing/Deep Learning Researcher | Intelligent Vision Automation (IVA) Lab
+---
+org: Intelligent Vision Automation (IVA) Lab
+trace: IVA LAB
+roles:
+  - title: Image processing & AI/ML researcher
+    label: AI/ML RESEARCHER
+    short: AI/ML
+    start: 2025-08
+    end: 2026-04
+    summary: >
+      Migrated a 12k+ line MATLAB floor-plan parser to Python (NumPy, OpenCV, SciPy), focusing on
+      its image-processing core; built the door-detection pipeline and explored CNNs and keypoint
+      networks for it.
+    tags: [python, opencv, pytorch]
+---
 
 ## About
 
@@ -21,4 +35,3 @@ I am currently working on two things. The first is the door detection and parsin
 - Large-scale codebase conversion (12k+ LOC)
 - Image processing
 - Deep learning
-

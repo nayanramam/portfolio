@@ -1,4 +1,21 @@
-# Team Lead + Lead Researcher | Math Modeling Student Research Group
+---
+org: Math Modeling Student Research Group
+trace: MATH MOD
+roles:
+  - title: Team lead & lead researcher
+    label: TEAM LEAD & LEAD RESEARCHER
+    short: TEAM LEAD
+    start: 2024-08
+    end: 2026-04
+    summary: >
+      Led a student team on mechanistic interpretability: a framework for quantifying
+      polysemanticity in neural networks (feature visualization, ResNet embeddings, clustering, and
+      a scoring formula I developed). First-author paper in The Tower.
+    tags: [pytorch, interpretability]
+links:                             # extra buttons next to the write-up button
+  - label: Paper (PDF)
+    url: assets/experiences/Neuron_Interpretability_Paper-2.pdf
+---
 
 ## About
 
@@ -34,5 +51,4 @@ I was responsible for the majority of the work on this paper. My teammate presen
 - Research paper writing and publication
 
 ## Publications
-- <a href="../../assets/experiences/Neuron_Interpretability_Paper-2.pdf" target="_blank" rel="noopener noreferrer">Quantifying Polysemanticity in Convolutional Neural Networks</a> (Currently working towards publication in ICLR)
-
+- [Quantifying Polysemanticity in Convolutional Neural Networks](assets/experiences/Neuron_Interpretability_Paper-2.pdf) (Currently working towards publication in ICLR)

@@ -1,4 +1,29 @@
-# Teleoperated Pipe-Building Robot
+---
+title: Teleoperated pipe-building robot
+tag: ROBOTICS
+category: Robotics / embedded
+wave: pwm
+hint: ESP-NOW · RTSP · 2nd place
+image: assets/projects/robotech thumb.jpg
+image_alt: Pipe-building robot
+summary: >
+  Built with my roommates in 36 hours at IEEE Robotech, Georgia Tech’s space-themed robotics
+  hackathon, taking 2nd place in the controller track. The robot scales pipes and uses an arm to
+  retrieve and append pipe segments, operated fully remotely with live video and telemetry. My
+  focus: the GUI, communications (ESP-NOW, RTSP, USB serial), controls (joystick calibration, servo
+  smoothing), and the robot’s servo/motor control and power distribution.
+measurements:
+  Result: 2nd place · IEEE Robotech
+  MCU: ESP32 ×2 · Raspberry Pi 3B
+  Control: ESP-NOW · 100 Hz
+  Telemetry: 20 Hz → USB 921600 baud
+  Video: RTSP · 720p
+  Drive: PWM servos · H-bridge DC
+  Power: 4S LiPo · XT60 PDB
+video:
+  youtube: TjeHNoKsTlI
+  title: PIPE-BUILDING ROBOT · DEMO
+---
 
 ## About
 
@@ -8,9 +33,7 @@ My team decided to construct a robot that can scale pipes, using a robotic arm t
 
 We give a brief overview and demo in this video:
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 2rem 0;">
-<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/TjeHNoKsTlI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
+<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/TjeHNoKsTlI" title="Pipe-building robot demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
 
 The electrical, embedded systems, and software work was highly collaborative between one of my teammates and I. Below are all the features we implemented. My emphasis was on the GUI, communications (ESP-NOW, RTSP, USB serial), controls (joystick calibration + servo smoothing) and the electronics on the robot unit (servo/motor controls + power distribution).
 
@@ -40,7 +63,6 @@ The electrical, embedded systems, and software work was highly collaborative bet
     - 100 Hz control rate (takes priority over telemetry)
     - 20 Hz telemetry rate
     - data sent as binary packets with checksums
-
 - Telemetry data is sent from the controller to the laptop as JSON
     - USB serial @ 921600 baud
 
@@ -75,8 +97,6 @@ The electrical, embedded systems, and software work was highly collaborative bet
 - USB serial at high baud
 - GUI development for monitoring
 
-<div style="display: flex; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0;">
-<img src="../assets/projects/electrical_img_1.jpg" alt="Electrical build" style="flex: 1 1 0; min-width: 0; max-width: 100%; height: auto; border-radius: 8px; object-fit: contain;">
-<img src="../assets/projects/electrical_img_2.jpg" alt="Electrical build" style="flex: 1 1 0; min-width: 0; max-width: 100%; height: auto; border-radius: 8px; object-fit: contain;">
-<img src="../assets/projects/electrical_img_3.jpg" alt="Electrical build" style="flex: 1 1 0; min-width: 0; max-width: 100%; height: auto; border-radius: 8px; object-fit: contain;">
-</div>
+![Electrical build](assets/projects/electrical_img_1.jpg)
+![Electrical build](assets/projects/electrical_img_2.jpg)
+![Electrical build](assets/projects/electrical_img_3.jpg)

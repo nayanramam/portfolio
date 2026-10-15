@@ -1,4 +1,17 @@
-# Analog Mixed-Signal Researcher | Integrated Computational Electronics (ICE) Lab
+---
+org: Integrated Computational Electronics (ICE) Lab
+trace: ICE LAB
+roles:
+  - title: Undergraduate researcher
+    label: UNDERGRAD RESEARCHER
+    short: RESEARCHER
+    start: 2025-10
+    end: present
+    summary: >
+      Building an audio synthesis and signal-processing circuit library on a field-programmable
+      analog array (FPAA); designing a new FPAA on the GF180 PDK.
+    tags: [fpaa, gf180, xschem, ngspice, magic]
+---
 
 ## About
 
@@ -31,4 +44,3 @@ The lab has built a tool called RASP30 which allows for graphical circuit design
 - [FPAA Review/Overview](https://hasler.ece.gatech.edu/FPAA_IEEEXPlore_2020.pdf)
 - [RASP30](https://hasler.ece.gatech.edu/SoCFPAA/Highlevel_tools_jlpea_February2016.pdf)
 - [Floating Gate MOS](https://ieeexplore.ieee.org/document/913180)
-

@@ -1,12 +1,30 @@
-# AI Powered Virtual Synthesizer
+---
+title: AI-powered virtual synthesizer
+tag: AUDIO · ML
+category: Audio / machine learning
+wave: complex
+hint: JUCE · OpenAI-generated presets
+image: assets/projects/ai-synth.jpg
+image_alt: AI synthesizer plugin interface
+summary: >
+  A virtual synth with AI-generated presets for real-time synthesis and sound exploration. Built on
+  the JUCE C++ framework and wired to a Python script using the OpenAI API that writes every synth
+  parameter to a JSON preset the plugin can load. Built in late 2023, learning C++ along the way.
+measurements:
+  Framework: JUCE (C++)
+  AI: OpenAI API via Python
+  Presets: JSON
+  Built: Late 2023
+video:
+  youtube: xDC_JqnSIyE
+  title: AI-POWERED VIRTUAL SYNTHESIZER
+---
 
 ## About
 
 The intentions and applications of this project are best explained in this brief video:
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 2rem 0;">
-<iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/xDC_JqnSIyE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
+<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/xDC_JqnSIyE" title="AI-powered virtual synthesizer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
 
 ## Technical Details
 

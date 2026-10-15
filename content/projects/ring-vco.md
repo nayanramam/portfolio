@@ -1,4 +1,29 @@
-# Ring VCO in Cadence Virtuoso
+---
+title: Ring VCO design + layout
+tag: ANALOG IC                     # small label on the capture card
+category: Analog IC design
+wave: square                       # waveform drawn on the card (see content/README.md)
+hint: 500 MHz · <35 µW · Sky130    # one-line teaser on the card
+image: assets/projects/ring-vco.png
+image_alt: Ring VCO layout in Cadence Virtuoso
+summary: >
+  A current-starved ring-oscillator VCO in Cadence Virtuoso on the Sky130 PDK, the onboarding
+  project for Silicon Jackets’ analog mixed-signal team. I sized the starving transistors from the
+  required starve current, verified across ff/tt/ss corners and 0–70°C, designed an inverter buffer
+  to drive a 1 pF load, and iterated the layout until it passed DRC and LVS.
+measurements:
+  Tool: Cadence Virtuoso · Maestro · Pegasus
+  PDK: Sky130
+  f osc: 500 MHz
+  tr / tf: < 250 ps
+  P avg: < 35 µW
+  Corners: ff · tt · ss, 0–70 °C
+  Load: 1 pF via buffer
+  Signoff: DRC + LVS clean
+links:
+  - label: Design review (PDF)
+    url: assets/projects/Nayan Ramam AMS Onboarding Design Review-5.pdf
+---
 
 ## About
 
@@ -17,19 +42,17 @@ Typical ring oscillators use inverters chained together, where increasing the nu
 
 I sourced the specific design from a 2016 paper by Suman et al. I used it to build a schematic in Cadence Virtuoso with the Sky130 PDK.
 
-![AMS VCO Schematic](../assets/AMS%20VCO%20Schem.png)
+![AMS VCO Schematic](assets/AMS%20VCO%20Schem.png)
 
-I then calculated the required starve current and by proxy the W/L ratios to size the starving transistors based on my desired frequency of oscillation (500 MHz). The calculation can be seen in the design review attached at the bottom of the page.
+I then calculated the required starve current and by proxy the W/L ratios to size the starving transistors based on my desired frequency of oscillation (500 MHz). The calculation can be seen in the design review linked above.
 
 I simulated over the ff, tt and ss corners, did a temperature sweep from 0-70 C, and checked frequency and power draw under all conditions, ensuring my module met the spec. I also designed a buffer that allowed the VCO to drive 1 pF of load capacitance while meeting the power spec. The oscillator module itself remained well under 1 mW of power draw, but with only three inverting stages and transistors of the sizes that enable the module to meet the frequency spec, it is unable to drive the required capacitance. The buffer remedies this. It works simply by inverting the signal an even number of times, with each inverter sized larger and larger to increase the load it can drive.
 
 After simulating my schematic, I moved on to the layout phase of the project. I went through several design iterations, both to avoid spacing issues and to optimize the footprint. Eventually, after several iteration, I passed DRC and LVS. The final layout is below:
 
-![Layout](../assets/projects/ring-vco.png)
+![Layout](assets/projects/ring-vco.png)
 
-The final portion of the project was to create a design review slideshow documenting the design process, schematics, simulation results, and layout. The slides are attached below.
-
-<a href="../assets/projects/Nayan Ramam AMS Onboarding Design Review-5.pdf" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 0.5rem 1rem; background-color: #1a1a1a; color: #F5F0E8; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: background-color 0.2s ease; margin: 1rem 0;">Design Review Slides</a>
+The final portion of the project was to create a design review slideshow documenting the design process, schematics, simulation results, and layout: [Design Review Slides](assets/projects/Nayan%20Ramam%20AMS%20Onboarding%20Design%20Review-5.pdf).
 
 ## Tools Used
 - Cadence Virtuoso

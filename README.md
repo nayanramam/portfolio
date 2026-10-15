@@ -1,23 +1,14 @@
-# Nayan Ramam Portfolio Site
+# Nayan Ramam · portfolio
 
-## Customization
+The site is a vintage analog oscilloscope (`index.html`). All of its content lives in markdown in
+[`content/`](content/) — see [`content/README.md`](content/README.md) for how to edit it.
 
-### Colors
-Edit the Tailwind config in each HTML file:
-- `cream`: Main background color
-- `cream-dark`: Darker accent
-- `ink`: Primary text
-- `olive`: Accent/highlight color
+- `content/` — everything the site says (markdown + YAML front matter)
+- `assets/` — images, PDFs, and the scope itself (`assets/scope/`: styles, drawing, and the
+  markdown loader)
+- `acronymdb/` — separate acronym lookup tool
 
-### Fonts
-- **Libre Baskerville**: Headings (serif)
-- **DM Sans**: Body text (sans-serif)  
-- **JetBrains Mono**: Labels and UI elements (monospace)
+Preview locally with `python -m http.server` and open <http://localhost:8000>.
 
-## Adding New Projects
-
-1. Create a new markdown file in `content/projects/`
-2. Duplicate an existing project HTML file in `projects/`
-3. Update the fetch path in the new HTML file
-4. Add the project to `projects/index.html` and `index.html`
-
+Older versions of the site live on other branches: `legacy_plain` (the original plain site) and
+`legacy_notebook` (the notebook-style site).

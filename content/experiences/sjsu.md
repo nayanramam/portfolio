@@ -1,4 +1,18 @@
-# Digital Design/Hardware Systems Researcher | San José State University
+---
+org: San José State University
+trace: SUMMER
+roles:
+  - title: Digital design researcher
+    label: SJSU
+    short: SJSU
+    start: 2025-05
+    end: 2025-08
+    summary: >
+      Ported Analog Devices’ open-source JESD204B IP to a Lattice CertusPro-NX FPGA — writing new
+      link and physical layers — for high-throughput streaming to an NVIDIA Jetson through the
+      Holoscan Sensor Bridge, verified in simulation in Lattice Radiant.
+    tags: [verilog, fpga, serial]
+---
 
 ## About
 
@@ -15,4 +29,3 @@ I was tasked with enabling high-throughput data streaming to a host computer (NV
 - Verilog RTL design
 - IP core integration and adaptation
 - EDA toolflow (synthesis, place-&-route, timing analysis)
-
