@@ -816,10 +816,40 @@ body:not(.ready) .ro, .off .ro { opacity: 0; }
 .doc-roles b { color: var(--ph-hi); font-weight: 500; }
 .err { white-space: pre-wrap; color: var(--ph-hi); font-size: 13px; border: 1px solid var(--ph-line); padding: 8px 10px; }
 
+/* ============ desktop: the instrument fills the window edge to edge ============ */
+/* The case takes the whole viewport, the panel keeps its width, and the tube absorbs
+   every pixel that's left in both directions. */
+@media (min-width: 861px) {
+    body { display: block; padding: 0; }
+    .scope {
+        display: flex;
+        min-height: 100vh;
+        min-height: 100dvh;
+        border-radius: 0;
+        box-shadow:
+            inset 0 2px 0 rgba(255, 250, 230, .55),
+            inset 3px 0 0 rgba(255, 250, 230, .18),
+            inset -3px 0 0 rgba(70, 55, 25, .1),
+            inset 0 -4px 0 rgba(70, 55, 25, .18);
+    }
+    .scope::before, .scope::after { display: none; }
+    .face {
+        flex: 1;
+        min-width: 0;
+        grid-template-columns: minmax(0, 1fr) var(--side);
+        grid-template-rows: minmax(0, 1fr) auto;
+        min-height: calc(100vh - 42px);
+        min-height: calc(100dvh - 42px);
+    }
+    .screen-area { display: flex; align-self: stretch; min-height: 0; }
+    .bezel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .crt { flex: 1; width: 100%; height: auto; min-height: 340px; }
+}
+
 /* ============ phones: the scope adapts ============ */
 @media (max-width: 860px) {
-    body { padding: 0 0 18px; justify-content: flex-start; }
-    .scope { width: 100%; border-radius: 0 0 16px 16px; padding: 10px 10px 14px; }
+    body { padding: 0; justify-content: flex-start; }
+    .scope { width: 100%; min-height: 100vh; min-height: 100dvh; border-radius: 0; padding: 10px 10px 14px; }
     .scope::before, .scope::after, .screw.bl, .screw.br { display: none; }
     .screw.tl, .screw.tr { top: 6px; }
     .screw.tl { left: 6px; } .screw.tr { right: 6px; }
@@ -828,7 +858,7 @@ body:not(.ready) .ro, .off .ro { opacity: 0; }
     .plate .inst { font-size: 10px; }
     .brand .spec { display: none; }
     .bezel { padding: 8px 10px 12px; border-radius: 12px; }
-    .crt { width: 100%; height: max(400px, calc(100vh - 284px)); height: max(400px, calc(100dvh - 284px)); border-radius: 12px / 14px; }
+    .crt { width: 100%; height: max(400px, calc(100vh - 266px)); height: max(400px, calc(100dvh - 266px)); border-radius: 12px / 14px; }
     #view { inset: 30px 14px 28px; font-size: 14px; }
     .ro { font-size: 10.5px; }
     .ro.tl, .ro.bl { left: 13px; } .ro.tr, .ro.br { right: 13px; }
