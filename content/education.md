@@ -10,6 +10,7 @@ measurements:
   GPA: "3.91"
   Society: IEEE–Eta Kappa Nu
 
+coursework_heading: Coursework       # title above the course list
 coursework:
   ECE 4430: Analog IC Design
   ECE 3400: Analog Electronics
