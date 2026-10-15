@@ -10,18 +10,22 @@ photo_alt: A dashingly handsome young man :)
 specs:
   Status: 3rd-year EE · Georgia Tech
   Focus: ASIC design
-  Leading: SiliconJackets AMS design team
 
 # Tiles under the photo. `wave` is optional: square, complex, pulses, pwm, bitline, step
+# `link` is where a click goes: #projects/<file>, #experience/<file>, #experience/<file>/write-up, or a URL
 experience:
   - text: Transistor-level IC design & layout
     wave: step
+    link: "#projects/ring-vco"
   - text: RISC-V tapeout
     wave: pulses
+    link: "#experience/silicon-jackets-digital/write-up"
   - text: ASIC verification @ HPE
     wave: square
+    link: "#experience/hpe"
   - text: AI in hardware design & verification tooling
     wave: complex
+    link: "#experience/hpe"
 
 # Short tags along the bottom
 off_the_bench: [Guitar, Music production, Basketball, Speedcubing]

@@ -396,6 +396,11 @@ body:not(.ready) .ro, .off .ro { opacity: 0; }
 .xpt .xn { display: block; font-size: 10px; letter-spacing: .14em; color: var(--ph-dim); }
 .xpt .wave { height: 30px; margin: 4px 0 6px; }
 .xpt .xt { display: block; font-size: 13px; line-height: 1.4; color: var(--ph-hi); font-weight: 500; }
+a.xpt { position: relative; display: block; text-decoration: none !important; color: inherit; cursor: pointer; transition: border-color .15s, background .15s; }
+a.xpt:hover, a.xpt:focus-visible { border-color: var(--ph); background: rgba(110, 255, 160, .08); }
+a.xpt:hover .xt { text-decoration: underline; text-decoration-color: var(--ph-line); text-underline-offset: 3px; }
+.xpt .xa { position: absolute; top: 7px; right: 9px; font-size: 10px; color: var(--ph-dim); }
+a.xpt:hover .xa { color: var(--ph-hi); }
 /* off the bench */
 .bench { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 860px; margin: 0 auto 14px; }
 .bench .bl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ph-dim); margin-right: 4px; }

@@ -217,7 +217,8 @@ window.startScope = function (DATA) {
     // ================= HOME: the experience tiles, each with its own trace =================
     $('#home-xp').innerHTML = list(HOME.experience).map(function (x, i) {
         var text = typeof x === 'string' ? x : x.text, wave = (x && x.wave) || ['step', 'pulses', 'square', 'complex', 'pwm'][i % 5];
-        return '<div class="xpt"><span class="xn">' + pad2(i + 1) + '</span>' + waveSVG(WAVES[wave] || wave === 'bitline' ? wave : 'square') + '<span class="xt">' + mdInline(text) + '</span></div>';
+        var inner = '<span class="xn">' + pad2(i + 1) + '</span>' + waveSVG(WAVES[wave] || wave === 'bitline' ? wave : 'square') + '<span class="xt">' + mdInline(text) + '</span>';
+        return x && x.link ? '<a class="xpt go" href="' + esc(x.link) + '"' + ext(x.link) + '>' + inner + '<span class="xa" aria-hidden="true">▸</span></a>' : '<div class="xpt">' + inner + '</div>';
     }).join('');
 
     // ================= CH1: projects =================
