@@ -47,7 +47,7 @@ window.startScope = function (DATA) {
         var m = f.meta;
         return {
             id: f.id, n: i, tag: m.tag || '', title: m.title || f.id, cat: m.category || '', wave: m.wave || 'square',
-            hint: m.hint || '', img: m.image || '', imgAlt: m.image_alt || m.title || '', text: m.summary || '',
+            hint: m.hint || '', thumb: m.thumb || '', meta: m, img: m.image || '', banner: m.banner || '', split: m.banner_layout === 'split', imgAlt: m.image_alt || m.title || '', text: m.summary || '',
             meas: pairs(m.measurements),
             links: list(m.links).map(function (l) { return [l.label || l.url, l.url]; }),
             video: m.video && m.video.youtube ? [String(m.video.youtube), m.video.title || String(m.title || '').toUpperCase()] : null,
@@ -85,7 +85,7 @@ window.startScope = function (DATA) {
                 s0: s0, endM: end, e: end != null,
                 label: String(r.label || r.title || '').toUpperCase(), short: r.short ? String(r.short).toUpperCase() : '',
                 t: r.title || '', org: r.org || m.org || '', d: r.summary || '', tags: tagLine(r.tags),
-                links: list(r.links || m.links), doc: !!f.body
+                links: list(r.links || m.links), doc: !!f.body, tab: String(r.tab || r.title || '')
             });
         });
     });
@@ -160,7 +160,7 @@ window.startScope = function (DATA) {
     $('#s-probe').innerHTML =
         '<h2>' + esc(CON.heading || 'Probe out · Say hello') + '</h2>' +
         '<div class="cal"><svg viewBox="0 0 400 70" preserveAspectRatio="none" aria-hidden="true"><path id="calwave" d=""/></svg>' +
-            '<div class="lbl">PROBE COMP<br><b>1 kHz · 0.5 Vp-p</b><br>connect probe here ↘</div></div>' +
+            '<div class="lbl">PROBE COMP<br><b>1 kHz · 0.5 Vp-p</b></div></div>' +
         (DATA.contact.body ? '<div class="md">' + md(DATA.contact.body) + '</div>' : '') +
         '<ul class="term">' + list(CON.links).map(function (l) {
             var text = String(l.text || l.url || '');
@@ -214,10 +214,25 @@ window.startScope = function (DATA) {
         return '<svg class="wave" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">' + paths + '</svg>';
     }
 
-    // ================= HOME: the experience tiles, each with its own trace =================
+    // a card picture (project cards and home tiles). From front matter:
+    //   thumb: path · thumb_position: which part the crop keeps (left, right, top, bottom, center)
+    //   thumb_zoom: zoom toward that spot, e.g. 1.25 · thumb_fit: contain shows the whole picture (logos)
+    //   thumb_bg: colour behind a contained picture, e.g. "#fff" for a dark logo
+    function thumbHTML(m) {
+        if (!m || !m.thumb) return '';
+        var st = [], pos = m.thumb_position ? String(m.thumb_position) : '', zoom = Number(m.thumb_zoom) || 0;
+        if (pos) st.push('object-position:' + pos);
+        if (zoom > 1) st.push('transform:scale(' + zoom + ')', 'transform-origin:' + (pos || 'center'));
+        var fit = m.thumb_fit === 'contain';
+        return '<span class="cthumb' + (fit ? ' fit' : '') + '"' + (m.thumb_bg ? ' style="background:' + esc(String(m.thumb_bg)) + '"' : '') + '>' +
+            '<img src="' + esc(encodeURI(String(m.thumb))) + '" alt="" loading="lazy"' + (st.length ? ' style="' + esc(st.join(';')) + '"' : '') + '></span>';
+    }
+
+    // ================= HOME: the experience tiles, each with a picture (thumb:) or its own trace =================
     $('#home-xp').innerHTML = list(HOME.experience).map(function (x, i) {
         var text = typeof x === 'string' ? x : x.text, wave = (x && x.wave) || ['step', 'pulses', 'square', 'complex', 'pwm'][i % 5];
-        var inner = '<span class="xn">' + pad2(i + 1) + '</span>' + waveSVG(WAVES[wave] || wave === 'bitline' ? wave : 'square') + '<span class="xt">' + mdInline(text) + '</span>';
+        var pic = x && x.thumb ? thumbHTML(x) : waveSVG(WAVES[wave] || wave === 'bitline' ? wave : 'square');
+        var inner = '<span class="xn">' + pad2(i + 1) + '</span>' + pic + '<span class="xt">' + mdInline(text) + '</span>';
         return x && x.link ? '<a class="xpt go" href="' + esc(x.link) + '"' + ext(x.link) + '>' + inner + '<span class="xa" aria-hidden="true">▸</span></a>' : '<div class="xpt">' + inner + '</div>';
     }).join('');
 
@@ -225,7 +240,7 @@ window.startScope = function (DATA) {
     $('#caps').innerHTML = PROJECTS.map(function (p, i) {
         return '<button class="capc" type="button" data-proj="' + p.id + '">' +
             '<span class="cn"><span>CAPTURE ' + pad2(i + 1) + '</span><span>' + esc(p.tag) + '</span></span>' +
-            waveSVG(p.wave) +
+            (p.thumb ? thumbHTML(p.meta) : waveSVG(p.wave)) +
             '<span class="ct">' + esc(p.title) + '</span>' +
             '<span class="cs">' + esc(p.hint) + '</span></button>';
     }).join('');
@@ -237,13 +252,14 @@ window.startScope = function (DATA) {
         $('#s-proj').innerHTML =
             '<div class="pd-top"><button class="soft" type="button" data-go="ch1">◂ All captures</button><span class="dim" style="font-size:11.5px;letter-spacing:.1em">CAPTURE ' + pad2(p.n + 1) + ' / ' + pad2(PROJECTS.length) + '</span></div>' +
             '<h3>' + esc(p.title) + '</h3><div class="cat">' + esc(p.cat) + '</div>' +
-            waveSVG(p.wave) +
+            (p.banner ? (p.split ? '<div class="pd-split">' : '') + '<figure class="pd-banner"><img src="' + esc(p.banner) + '" alt="' + esc(p.imgAlt) + '"></figure>' +
+                (p.split ? measHTML(p.meas) + '</div>' : '') : waveSVG(p.wave)) +
             '<div class="pd-body' + (p.img ? '' : ' noimg') + '"><div>' +
-            measHTML(p.meas) +
+            (p.banner && p.split ? '' : measHTML(p.meas)) +
             (p.text ? '<p>' + mdInline(p.text) + '</p>' : '') + (links ? '<div class="pd-links">' + links + '</div>' : '') + '</div>' +
             (p.img ? '<figure class="phos" tabindex="0" aria-label="' + esc(p.imgAlt) + ' (hover for color)"><img src="' + esc(p.img) + '" alt="' + esc(p.imgAlt) + '"></figure>' : '') +
             '</div>' +
-            (p.body ? '<h2 class="wu">Write-up</h2><div class="md">' + md(p.body) + '</div>' : '') +
+            (p.body ? '<div class="md wu">' + md(p.body) + '</div>' : '') +
             (PROJECTS.length > 1 ? '<nav class="pd-nav" aria-label="Captures"><button class="soft" type="button" data-go="ch1:' + prev.id + '">◂ ' + esc(prev.title) + '</button>' +
             '<button class="soft" type="button" data-go="ch1:' + next.id + '">' + esc(next.title) + ' ▸</button></nav>' : '');
         fixLinks($('#s-proj'));
@@ -259,9 +275,57 @@ window.startScope = function (DATA) {
             '<h3>' + esc(f.meta.org || id) + '</h3>' +
             '<div class="doc-roles">' + rs.map(function (r) { return '<div><b>' + esc(r.t) + '</b> <span class="dim">' + startOf(r) + ' → ' + endOf(r) + '</span></div>'; }).join('') + '</div>' +
             (links ? '<div class="pd-links">' + links + '</div>' : '') +
-            '<div class="md">' + md(f.body) + '</div>';
+            docBody(f.body, ROLE[sel]);
         fixLinks($('#s-doc'));
     }
+    // a write-up can end in tabs: after a "<!-- tabs -->" line, each "## " heading starts one.
+    // The open tab is the one named by the selected role's `tab:` (its title by default).
+    var TABS_RE = /^<!--\s*tabs\b.*?-->\s*$/m;
+    // the open tab goes in the URL (#experience/<file>/write-up/<tab-slug>) so a reload keeps it
+    function tabSlug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+    function docHash(file) {
+        var r = ROLE[sel], tabbed = DOCS[file] && TABS_RE.test(DOCS[file].body || '');
+        return '#' + HASH.ch2 + '/' + file + '/write-up' + (tabbed && r && r.file === file ? '/' + tabSlug(r.tab) : '');
+    }
+    function docBody(body, role) {
+        var cut = TABS_RE.exec(body || '');
+        if (!cut) return '<div class="md">' + md(body) + '</div>';
+        var tabs = body.slice(cut.index + cut[0].length).split(/^## +/m).slice(1).map(function (chunk) {
+            var nl = chunk.indexOf('\n');
+            return { name: (nl < 0 ? chunk : chunk.slice(0, nl)).trim(), body: nl < 0 ? '' : chunk.slice(nl + 1) };
+        });
+        var want = role ? role.tab.toLowerCase() : '', on = 0;
+        tabs.forEach(function (t, i) { if (t.name.toLowerCase() === want) on = i; });
+        return '<div class="md">' + md(body.slice(0, cut.index)) + '</div>' +
+            '<div class="dtabs" role="tablist">' + tabs.map(function (t, i) {
+                return '<button class="soft dtab" type="button" role="tab" id="dtab-' + i + '" aria-controls="dpan-' + i + '" aria-selected="' + (i === on) + '" data-tab="' + i + '">' + esc(t.name) + '</button>';
+            }).join('') + '</div>' +
+            tabs.map(function (t, i) {
+                // "### " inside a tab is that tab's section heading, so it's drawn like a "## " section elsewhere
+                var body = md(t.body).replace(/<(\/?)h3\b/g, '<$1h2');
+                return '<div class="md dpan" role="tabpanel" id="dpan-' + i + '" aria-labelledby="dtab-' + i + '"' + (i === on ? '' : ' hidden') + '>' + body + '</div>';
+            }).join('');
+    }
+    $('#s-doc').addEventListener('click', function (e) {
+        var b = e.target.closest('.dtab');
+        // a link written as #tab/<tab name> inside a write-up switches to that tab
+        var a = !b && e.target.closest('a[href^="#tab/"]');
+        if (a) {
+            e.preventDefault();
+            var want = decodeURIComponent(a.getAttribute('href').slice(5)).trim().toLowerCase();
+            b = $$('#s-doc .dtab').filter(function (t) { return t.textContent.trim().toLowerCase() === want; })[0];
+            if (b) b.scrollIntoView({ block: 'nearest' });
+        }
+        if (!b) return;
+        var i = b.getAttribute('data-tab');
+        $$('#s-doc .dtab').forEach(function (t) { t.setAttribute('aria-selected', String(t === b)); });
+        $$('#s-doc .dpan').forEach(function (p) { p.hidden = p.id !== 'dpan-' + i; });
+        // remember the matching role, so going back to the timeline highlights it
+        var file = cur && cur.indexOf(':') > 0 ? cur.slice(cur.indexOf(':') + 1) : '';
+        var r = ROLES.filter(function (x) { return x.file === file && x.tab.toLowerCase() === b.textContent.toLowerCase(); })[0];
+        if (r) { sel = r.id; if (file) history.replaceState(null, '', docHash(file)); }
+        tick();
+    });
 
     // ================= CH2: experience timeline =================
     var AXIS_H = 24, LANE_H = 34;
@@ -354,15 +418,11 @@ window.startScope = function (DATA) {
             $('#tl-cur').innerHTML = c;
             if (scroll) {
                 var sc = $('#tl-scroll');
-                sc.scrollLeft = (xs + xe) / 2 - tl.vw / 2;
+                // 'ifneeded': only move when the pulse is out of view (hovering a card)
+                if (scroll !== 'ifneeded' || xe < sc.scrollLeft || xs > sc.scrollLeft + tl.vw) sc.scrollLeft = (xs + xe) / 2 - tl.vw / 2;
             }
         }
-        var ex = (r.doc ? '<button class="soft" type="button" data-go="ch2:' + esc(r.file) + '">Full write-up ▸</button>' : '') +
-                 r.links.map(function (l) { return '<a class="soft" href="' + esc(l.url) + '"' + ext(l.url) + '>' + esc(l.label || l.url) + ' ▸</a>'; }).join('');
-        $('#cbox').innerHTML =
-            '<div class="cb-head"><span>C1 <b>' + startOf(r) + '</b></span><span>C2 <b>' + endOf(r) + '</b></span><span>Δt <b>' + dur(r.e0 - r.s0) + '</b></span></div>' +
-            '<h3>' + esc(r.t) + '</h3><div class="org">' + esc(r.org) + '</div><p>' + mdInline(r.d) + '</p><div class="tags">' + esc(r.tags) + '</div>' +
-            '<div class="cb-nav"><button class="soft" type="button" data-step="-1" aria-label="Previous role">◂</button><span class="n">' + (ORDER.indexOf(r) + 1) + ' / ' + ORDER.length + '</span><button class="soft" type="button" data-step="1" aria-label="Next role">▸</button><span class="sp"></span>' + ex + '</div>';
+        $$('#xps .xpc').forEach(function (c) { c.classList.toggle('on', c.getAttribute('data-role') === id); });
         if (cur === 'ch2') readouts();
     }
     $('#tl-scroll').addEventListener('pointerover', function (e) {
@@ -371,13 +431,13 @@ window.startScope = function (DATA) {
     });
     $('#tl-scroll').addEventListener('click', function (e) {
         var h = e.target.closest && e.target.closest('.hit');
-        if (h) { tlSelect(h.getAttribute('data-role')); tick(); }
+        if (h) { openRole(h.getAttribute('data-role')); tick(); }
     });
     $('#tl-scroll').addEventListener('focusin', function (e) {
         if (e.target.classList && e.target.classList.contains('hit')) tlSelect(e.target.getAttribute('data-role'));
     });
     $('#tl-scroll').addEventListener('keydown', function (e) {
-        if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('hit')) { e.preventDefault(); tlSelect(e.target.getAttribute('data-role')); }
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('hit')) { e.preventDefault(); openRole(e.target.getAttribute('data-role')); }
     });
     $('#tl-lanes').addEventListener('click', function (e) {
         var l = e.target.closest('[data-lane]');
@@ -387,12 +447,47 @@ window.startScope = function (DATA) {
         var i = rs.indexOf(ROLE[sel]);
         tlSelect(rs[(i + 1) % rs.length].id, true);
     });
-    $('#cbox').addEventListener('click', function (e) {
-        var b = e.target.closest('[data-step]');
-        if (!b) return;
-        var i = ORDER.indexOf(ROLE[sel]) + (+b.getAttribute('data-step'));
-        tlSelect(ORDER[(i + ORDER.length) % ORDER.length].id, true);
-        tick();
+    // a role's write-up is its organization's file; roles without one just stay selected
+    function openRole(id) {
+        var r = ROLE[id];
+        if (!r) return;
+        tlSelect(id);
+        if (r.doc) go('ch2:' + r.file);
+    }
+
+    // the grid under the timeline: one card per role, each with its pulse on the shared time axis
+    function rolePulse(r) {
+        var span = AX1 - AX0 + 1, X = function (m) { return ((m - AX0) / span * 200).toFixed(1); };
+        var d = 'M0 44 H' + X(r.s0) + ' V16 H' + X(r.e0) + (r.e ? ' V44 H200' : '');
+        return '<svg class="wave" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true"><path class="ax" d="M0 44 H200"/><path d="' + d + '"/></svg>';
+    }
+    // card order: `cards:` in site.md (role ids: the file name, or file/2 for its 2nd role); unlisted roles follow, newest first
+    var CARDS = list(S.cards).map(function (id) { return ROLE[String(id)]; }).filter(Boolean);
+    CARDS = CARDS.concat(ORDER.filter(function (r) { return CARDS.indexOf(r) < 0; }));
+    $('#xps').innerHTML = CARDS.map(function (r, i) {
+        // org "Name · what it is": the name leads, the gloss sits under it, quieter
+        var oc = r.org.indexOf(' · '), oName = oc < 0 ? r.org : r.org.slice(0, oc), oGloss = oc < 0 ? '' : r.org.slice(oc + 3);
+        var inner = '<span class="xh"><span class="xd">' + startOf(r) + ' → ' + endOf(r) + '</span>' +
+                '<span class="xl">' + dur(r.e0 - r.s0) + '</span></span>' +
+            rolePulse(r) +
+            '<span class="ct">' + esc(r.t) + '</span>' +
+            '<span class="co"><span class="oname">' + esc(oName) + '</span>' + (oGloss ? '<span class="og">' + esc(oGloss) + '</span>' : '') + '</span>' +
+            (r.doc ? '' : '<span class="cd">' + mdInline(r.d) + '</span>');
+        return r.doc ? '<button class="capc xpc" type="button" data-role="' + esc(r.id) + '" data-go="ch2:' + esc(r.file) + '">' + inner + '</button>'
+                     : '<div class="capc xpc nodoc" data-role="' + esc(r.id) + '">' + inner + '</div>';
+    }).join('');
+    $('#xps').addEventListener('pointerover', function (e) {
+        var c = e.target.closest && e.target.closest('.xpc');
+        if (c && e.pointerType === 'mouse' && c.getAttribute('data-role') !== sel) tlSelect(c.getAttribute('data-role'), 'ifneeded');
+    });
+    $('#xps').addEventListener('focusin', function (e) {
+        var c = e.target.closest && e.target.closest('.xpc');
+        if (c) tlSelect(c.getAttribute('data-role'), 'ifneeded');
+    });
+    // runs before the document-level data-go handler, so the write-up remembers which role was picked
+    $('#xps').addEventListener('click', function (e) {
+        var c = e.target.closest('.xpc');
+        if (c) tlSelect(c.getAttribute('data-role'));
     });
 
     // ================= CH3: step response =================
@@ -438,7 +533,11 @@ window.startScope = function (DATA) {
         if (!k) return 'xy';
         if (k === 'ch1' && h[1] && PROJ[h[1]]) return 'ch1:' + h[1];
         if (k === 'ch2' && h[1]) {
-            if (h[h.length - 1] === 'write-up' && DOCS[h[1]] && DOCS[h[1]].body) return 'ch2:' + h[1];
+            if (h[2] === 'write-up' && DOCS[h[1]] && DOCS[h[1]].body) {
+                var tr = h[3] && ORDER.filter(function (r) { return r.file === h[1] && tabSlug(r.tab) === h[3]; })[0];
+                if (tr) sel = tr.id;
+                return 'ch2:' + h[1];
+            }
             var rid = h.slice(1).join('/'), first = ORDER.filter(function (r) { return r.file === h[1]; })[0];
             if (ROLE[rid]) sel = rid; else if (first) sel = first.id;
         }
@@ -466,6 +565,7 @@ window.startScope = function (DATA) {
         var k = base(key);
         if (typeof popDish === 'function') popDish(null);
         cur = key;
+        body.setAttribute('data-ch', k);   // the modern look colours each channel
         var sub = key.indexOf(':') > 0 ? key.slice(key.indexOf(':') + 1) : '';
         var secId = sub ? (k === 'ch1' ? 's-proj' : 's-doc') : 's-' + k;
         if (secId === 's-proj') renderProject(PROJ[sub]);
@@ -473,7 +573,7 @@ window.startScope = function (DATA) {
         $$('#view .scr').forEach(function (s) { s.hidden = s.id !== secId; });
         view.scrollTop = 0;
         $$('.key[data-go]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-go') === k)); });
-        var h = '#' + HASH[k] + (sub ? '/' + sub + (k === 'ch2' ? '/write-up' : '') : '');
+        var h = sub ? (k === 'ch2' ? docHash(sub) : '#' + HASH[k] + '/' + sub) : '#' + HASH[k];
         if (location.hash !== h) history.replaceState(null, '', h);
         document.title = (secId === 's-proj' ? PROJ[sub].title : secId === 's-doc' ? (DOCS[sub].meta.org || sub) : TITLE[k]) + ' · ' + (S.name || '');
         readouts();
@@ -531,18 +631,41 @@ window.startScope = function (DATA) {
         drawGrat();
     }
 
+    // ---- the two looks: what the canvas draws with. Each trace layer is [rgb, alpha, width];
+    // alphas are tiny because persistence stacks a layer up over many frames ----
+    var LOOKS = {
+        vintage: {
+            grat: 'rgba(120,255,170,.075)', gratDash: [], ticks: 'rgba(120,255,170,.15)',
+            trace: [['60,255,130', .012, 11], ['80,255,140', .024, 4.5], ['165,255,200', .4, 1.9]], pen: ['110,255,160', .016, 1],
+            dot: ['235,255,240', '120,255,170', '60,255,130'],
+            beam: [['90,255,150', .12, 7], ['235,255,242', .95, 2.2]]
+        },
+        modern: {
+            grat: 'rgba(170,180,195,.16)', gratDash: [1, 3], ticks: 'rgba(170,180,195,.34)',
+            trace: [['255,210,63', .006, 6], ['255,214,80', .5, 2]], pen: ['255,210,63', 0, 1],
+            dot: ['255,248,220', '255,210,63', '255,210,63'],
+            beam: [['255,210,63', .05, 5], ['255,244,200', .95, 2.2]]
+        }
+    };
+    var LOOK = LOOKS[document.documentElement.classList.contains('modern') ? 'modern' : 'vintage'];
+    function strokeLayers(layers, a) {
+        layers.forEach(function (l) { if (l[1]) { ctx.strokeStyle = 'rgba(' + l[0] + ',' + (l[1] * a) + ')'; ctx.lineWidth = l[2]; ctx.stroke(); } });
+    }
+
     // 10 x 8 division graticule, minor ticks on the centre axes
     function drawGrat() {
         var g = gctx, m = 12, gw = W - 2 * m, gh = H - 2 * m, dx = gw / 10, dy = gh / 8, i, x, y;
         g.clearRect(0, 0, W, H);
         g.lineWidth = 1;
-        g.strokeStyle = 'rgba(120,255,170,.075)';
+        g.strokeStyle = LOOK.grat;
+        g.setLineDash(LOOK.gratDash);
         g.beginPath();
         for (i = 0; i <= 10; i++) { x = Math.round(m + i * dx) + .5; g.moveTo(x, m); g.lineTo(x, m + gh); }
         for (i = 0; i <= 8; i++) { y = Math.round(m + i * dy) + .5; g.moveTo(m, y); g.lineTo(m + gw, y); }
         g.stroke();
+        g.setLineDash([]);
         var cx = Math.round(m + 5 * dx) + .5, cy = Math.round(m + 4 * dy) + .5;
-        g.strokeStyle = 'rgba(120,255,170,.15)';
+        g.strokeStyle = LOOK.ticks;
         g.beginPath();
         for (i = 0; i <= 50; i++) { x = Math.round(m + i * dx / 5) + .5; g.moveTo(x, cy - 3); g.lineTo(x, cy + 3); }
         for (i = 0; i <= 40; i++) { y = Math.round(m + i * dy / 5) + .5; g.moveTo(cx - 3, y); g.lineTo(cx + 3, y); }
@@ -612,18 +735,16 @@ window.startScope = function (DATA) {
         a = (a == null ? 1 : a) * I;
         ctx.lineJoin = 'round'; ctx.lineCap = 'round';
         polyline(pts, false);
-        ctx.strokeStyle = 'rgba(60,255,130,' + (.012 * a) + ')'; ctx.lineWidth = 11; ctx.stroke();
-        ctx.strokeStyle = 'rgba(80,255,140,' + (.024 * a) + ')'; ctx.lineWidth = 4.5; ctx.stroke();
-        ctx.strokeStyle = 'rgba(165,255,200,' + (.4 * a) + ')'; ctx.lineWidth = 1.9; ctx.stroke();
+        strokeLayers(LOOK.trace, a);
         polyline(pts, true);
-        ctx.strokeStyle = 'rgba(110,255,160,' + (.016 * a) + ')'; ctx.lineWidth = 1; ctx.stroke();
+        strokeLayers([LOOK.pen], a);
     }
     function dot(x, y, a) {
         a = clamp(a, 0, 1) * I;
         var g = ctx.createRadialGradient(x, y, 0, x, y, 12);
-        g.addColorStop(0, 'rgba(235,255,240,' + a + ')');
-        g.addColorStop(.25, 'rgba(120,255,170,' + (.5 * a) + ')');
-        g.addColorStop(1, 'rgba(60,255,130,0)');
+        g.addColorStop(0, 'rgba(' + LOOK.dot[0] + ',' + a + ')');
+        g.addColorStop(.25, 'rgba(' + LOOK.dot[1] + ',' + (.5 * a) + ')');
+        g.addColorStop(1, 'rgba(' + LOOK.dot[2] + ',0)');
         ctx.fillStyle = g;
         ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.fill();
     }
@@ -682,8 +803,7 @@ window.startScope = function (DATA) {
             ctx.lineCap = 'round';
             var drawSeg = function (a, b) {
                 polyline(pts, false, a, b + 1);
-                ctx.strokeStyle = 'rgba(90,255,150,' + (.12 * I) + ')'; ctx.lineWidth = 7; ctx.stroke();
-                ctx.strokeStyle = 'rgba(235,255,242,' + (.95 * I) + ')'; ctx.lineWidth = 2.2; ctx.stroke();
+                strokeLayers(LOOK.beam, I);
             };
             if (to >= from) drawSeg(from, to); else { drawSeg(from, N - 1); drawSeg(0, to); }
             if (!pts[to].d) dot(pts[to].x, pts[to].y, .8);
@@ -884,7 +1004,7 @@ window.startScope = function (DATA) {
         var map = { x: 'xy', '0': 'xy', '1': 'ch1', '2': 'ch2', '3': 'ch3', '4': 'ch4', p: 'probe' };
         var k = map[e.key.toLowerCase()];
         if (k) {
-            var b = $('.ctrls .key[data-go="' + k + '"]');
+            var b = $('.under .key[data-go="' + k + '"]');
             if (b) press(b);
             go(k);
         } else if (intro && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); skipIntro(); }
@@ -1089,6 +1209,22 @@ window.startScope = function (DATA) {
             n.o.forEach(function (o) { o.stop(t + .3); });
         }
     }
+    // ---- VINTAGE / MODERN: the same instrument in two looks (the head script applies the saved one) ----
+    function setLook(name, save) {
+        var modern = name === 'modern';
+        document.documentElement.classList.toggle('modern', modern);
+        LOOK = LOOKS[modern ? 'modern' : 'vintage'];
+        $$('.look [data-look]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-look') === name)); });
+        var tc = document.querySelector('meta[name="theme-color"]');
+        if (tc) tc.setAttribute('content', modern ? '#24282e' : '#1b1e21');
+        if (save) { try { localStorage.setItem('nr.look', name); } catch (e) {} }
+        if (W) { ctx.clearRect(0, 0, W, H); drawGrat(); kick(); }
+    }
+    setLook(document.documentElement.classList.contains('modern') ? 'modern' : 'vintage');
+    $$('.look [data-look]').forEach(function (b) {
+        b.addEventListener('click', function () { setLook(b.getAttribute('data-look'), true); tick(); });
+    });
+
     $('#sound').addEventListener('click', function () {
         soundOn = !soundOn;
         this.setAttribute('aria-pressed', String(soundOn));

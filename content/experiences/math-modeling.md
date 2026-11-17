@@ -30,17 +30,10 @@ We go into finer detail in our paper, but on a high level, our methodology is as
 3. Cluster the feature visualizations. Using KMeans clustering and the Bayesian Information Criterion as a stopping condition to pick cluster count, we split the visualizations (which are now embedded vectors) into like groups.
 4. Apply our scoring formula. We developed a custom formula that factors in cluster count and angular diversity (i.e. how different the clusters are and the distribution of the strength of features) to give a value between 0 and 1, with 0 being maximally monosemantic and 1 being maximally polysemantic.
 
-### My Role
+## My Role
 
 I was responsible for the majority of the work on this paper. My teammate presented the initial idea of generating feature visualizations, and I expanded the framework to include elbow detection, embedding, clustering, and scoring. I developed the formula from scratch, and implemented all of the aforementioned items in code. I also optimized the feature visualization code, adding in measures to ensure diversity. I developed a script to generate PDF reports with a compilation of relevant information that we used for debugging and output analysis. I also wrote scripts that allowed us to perform batch testing on an HPC, both for testing a range of possible parameters and bulk testing for evaluation of our metric's accuracy. Additionally, as the team lead I was responsible for assigning tasks to the team, coordinating meetings, and roadmapping the project.
 
-
-## Tools Used
-- Python
-- PyTorch
-- TransformerLens
-- OpenCLT
-- NumPy
 
 ## Skills Demonstrated
 - Research team leadership
@@ -49,6 +42,13 @@ I was responsible for the majority of the work on this paper. My teammate presen
 - Image embedding
 - KMeans/XMeans/GMeans clustering
 - Research paper writing and publication
+
+## Tools Used
+- Python
+- PyTorch
+- TransformerLens
+- OpenCLT
+- NumPy
 
 ## Publications
 - [Quantifying Polysemanticity in Convolutional Neural Networks](assets/experiences/Neuron_Interpretability_Paper-2.pdf) (Currently working towards publication in ICLR)

@@ -1,0 +1,85 @@
+/* Plain pass: strips the styling habits that make a site read as AI-generated.
+   Loaded last, after scope.css and modern.css, and only overrides them.
+   To undo all of it, delete the <link> to this file in index.html. */
+
+/* ---- flat backgrounds instead of radial / linear gradients ---- */
+body,
+html.modern body { background: var(--bench); }
+html.modern .scope { background: var(--case); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5); }
+html.modern .ctrls { background: var(--plate); }
+
+/* ---- channel colours: kept for coding, toned down a little from neon ---- */
+html.modern body,
+html.modern body[data-ch="ch1"] { --acc: #f1ca4c; }
+html.modern body[data-ch="ch2"] { --acc: #5ad08d; }
+html.modern body[data-ch="ch3"] { --acc: #6aabea; }
+html.modern body[data-ch="ch4"] { --acc: #e783bf; }
+html.modern body[data-ch="probe"] { --acc: #5cc9d4; }
+html.modern .key[data-go="ch1"] { --k: #f1ca4c; }
+html.modern .key[data-go="ch2"] { --k: #5ad08d; }
+html.modern .key[data-go="ch3"] { --k: #6aabea; }
+html.modern .key[data-go="ch4"] { --k: #e783bf; }
+html.modern .key[data-go="probe"] { --k: #5cc9d4; }
+
+/* ---- no glows or soft drop shadows ---- */
+html.modern .key[aria-pressed="true"] .cap,
+html.modern .key.dark[aria-pressed="true"] .cap { box-shadow: 0 1px 0 #121417, inset 0 1px 0 rgba(255, 255, 255, .25); }
+html.modern .key.blink .led,
+html.modern .ready .key[aria-pressed="true"] .led { box-shadow: none; }
+html.modern .pop { box-shadow: none; }
+
+/* ---- no negative letter-spacing ---- */
+html.modern .pd h3,
+html.modern .xpc .ct { letter-spacing: 0; }
+
+/* ---- mono only where a real scope would print it (screen readouts, the timeline, the
+        measurement keys); headings, card labels and captions go back to the text face ---- */
+html.modern :is(.scr h2, .capc .cn, .capc .cs, .xpt .xn, .bench .bl, .fullbio summary, .pd .cat,
+    .skills .k, .md h4, .tags, .doc-roles .dim, .xpc .xh) {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+/* ---- sentence case instead of spaced-out ALL CAPS subtitles ---- */
+.scr h2,
+.pd .cat,
+.md h4,
+.skills .k,
+.bench .bl,
+.fullbio summary { text-transform: none; letter-spacing: .01em; }
+.scr h2 { font-size: 14px; }
+.scr .md h2 { font-size: 16px; }   /* section headings inside write-ups */
+.pd .cat, .skills .k, .bench .bl, .fullbio summary, .md h4 { font-size: 13px; }
+
+/* ---- tags and pills become a plain comma-separated line ---- */
+.tagp { border: 0; border-radius: 0; padding: 0; font-size: 14px; }
+.tagp:not(:last-child)::after { content: ','; }
+.bench { gap: 6px; }
+.xpc .xl { border: 0; padding: 0; background: none !important; }
+
+/* ---- an empty line (e.g. off_the_bench: []) takes no space ---- */
+.bench:empty { display: none; }
+
+/* ---- home: the text beside the photo, as plain type (was a boxed MEASURE/ABOUT panel) ---- */
+.intro { display: flex; flex-direction: column; gap: 22px; }
+.intro-rows { display: flex; flex-direction: column; gap: 14px; }
+.intro-rows .k { display: block; font-size: 13px; color: var(--ph-dim); margin-bottom: 1px; }
+.intro-rows .v { display: block; font-size: 21px; line-height: 1.3; font-weight: 500; color: var(--ph-hi); }
+.intro-links { display: flex; flex-wrap: wrap; gap: 6px 24px; }
+.intro-links :is(button, a) {
+    all: unset;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--ph-hi);
+    text-decoration: underline;
+    text-decoration-color: var(--acc, var(--ph-dim));
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px;
+}
+#view .intro-links a { color: var(--ph-hi); text-decoration-color: var(--acc, var(--ph-dim)); }
+.intro-links :is(button, a):hover,
+#view .intro-links a:hover { color: var(--acc, var(--ph-hi)); }
+.intro-links :is(button, a):focus-visible { outline: 2px solid var(--acc, var(--ph)); outline-offset: 3px; }
+html.modern .intro :is(.k, .v, button, a) { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+
+/* ---- project cards: no keyword teaser line under the title (the hint: text stays in each project file) ---- */
+.capc .cs { display: none; }

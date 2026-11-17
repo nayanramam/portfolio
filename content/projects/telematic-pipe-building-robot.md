@@ -4,13 +4,13 @@ tag: ROBOTICS
 category: Robotics / embedded
 wave: pwm
 hint: ESP-NOW · RTSP · 2nd place
-image: assets/projects/robotech thumb.jpg
+thumb: assets/proj_thumbs/robotech thumb.jpg
+image: assets/proj_thumbs/robotech thumb.jpg
 image_alt: Pipe-building robot
 summary: >
   Built with my roommates in 36 hours at IEEE Robotech, Georgia Tech’s space-themed robotics
   hackathon, taking 2nd place in the controller track. The robot scales pipes and uses an arm to
-  retrieve and append pipe segments, operated fully remotely with live video and telemetry. My
-  focus: the GUI, communications (ESP-NOW, RTSP, USB serial), controls (joystick calibration, servo
+  retrieve and append pipe segments, operated fully remotely with live video and telemetry. I worked on the GUI, communications (ESP-NOW, RTSP, USB serial), controls (joystick calibration, servo
   smoothing), and the robot’s servo/motor control and power distribution.
 measurements:
   Result: 2nd place · IEEE Robotech
@@ -77,17 +77,6 @@ The electrical, embedded systems, and software work was highly collaborative bet
 - Telemetry data was displayed using a Python (PySide6) GUI and PySerial
 - Video was streamed and displayed using VLC player and RTSP protocol
 
-## Tools Used
-
-- ESP32
-- Raspberry Pi 3B
-- PlatformIO
-- C++
-- Python (PySide6, PySerial)
-- USB Serial, ESP-NOW, RTSP
-- Adafruit PWM Servo Driver library
-- Bounce2
-
 ## Skills Demonstrated
 
 - Telemetry systems & real-time monitoring
@@ -100,3 +89,14 @@ The electrical, embedded systems, and software work was highly collaborative bet
 ![Electrical build](assets/projects/electrical_img_1.jpg)
 ![Electrical build](assets/projects/electrical_img_2.jpg)
 ![Electrical build](assets/projects/electrical_img_3.jpg)
+
+## Tools Used
+
+- ESP32
+- Raspberry Pi 3B
+- PlatformIO
+- C++
+- Python (PySide6, PySerial)
+- USB Serial, ESP-NOW, RTSP
+- Adafruit PWM Servo Driver library
+- Bounce2

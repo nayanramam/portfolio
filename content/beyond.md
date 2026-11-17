@@ -31,7 +31,7 @@ cubing:
 
 cooking:
   heading: Cooking
-  hint: hover or tap a dish
+  hint: hover for details
   dishes:
     - name: bacon, egg & cheese croquettes
       photo: assets/hobbies/cooking/web/bacon_egg_cheese_croquettes.jpg
@@ -58,4 +58,4 @@ cooking:
 readouts: [CH4  BEYOND ENG., CURSORS  Δt, "", TRIG NORM]
 ---
 
-Other hobbies: guitar, producing music, and basketball.
+Other hobbies: guitar, music production, and basketball.

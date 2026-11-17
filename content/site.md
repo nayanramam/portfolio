@@ -15,14 +15,26 @@ projects:
 # CH2 · Experience — one file per organization in content/experiences/ (any order;
 # roles are sorted newest-first automatically)
 experience:
-  - silicon-jackets-analog
-  - silicon-jackets-digital
+  - siliconjackets
   - ice-lab
   - hpe
-  - sjsu
+  # - sjsu                       # hidden from the site; the file is kept
   - interactive-music-group
   - iva-lab
   - math-modeling
+
+# CH2 role cards under the timeline, in display order. Each is an experience file name;
+# for a file with several roles add /N for its Nth role (siliconjackets/1 = the first role listed).
+# Roles left out are added at the end, newest first.
+cards:
+  - siliconjackets/1               # AMS team lead
+  - hpe
+  - siliconjackets/3               # digital design engineer
+  - ice-lab
+  - siliconjackets/2               # AMS design engineer
+  - math-modeling
+  - interactive-music-group
+  - iva-lab
 
 # CH2 timeline rows, top to bottom. Each experience file names its row with `trace:`.
 # A trace that isn't listed here is added at the bottom.

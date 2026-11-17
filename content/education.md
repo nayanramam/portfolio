@@ -21,9 +21,9 @@ coursework:
   ECE 3043: Circuits Lab
 
 skills:
-  Languages: SystemVerilog, Verilog, VHDL, Python, C, assembly
+  Languages: SystemVerilog, Verilog, VHDL, Python, C, Assembly
   Hardware: FPAA, FPGA, oscilloscope, multimeter, function generator, spectrum analyzer
-  Software / platforms: Cadence Virtuoso / ADE / Spectre / Pegasus, SPICE, XSchem, Ngspice, Magic, KiCAD, Quartus, PyTorch, OpenCV, Linux, Git
+  Software / platforms: Cadence Virtuoso / Calibre / Pegasus, SPICE, XSchem, Ngspice, Magic, KiCAD, Quartus, Linux, Git
 
 readouts: [CH3  EDUCATION, STEP RESPONSE, GPA 3.91, SETTLE → DEC 2027]
 ---

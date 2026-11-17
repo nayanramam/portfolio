@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="modern">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Nayan Ramam</title>
-    <meta name="description" content="Nayan Ramam — electrical engineering at Georgia Tech. Analog mixed-signal design, audio, and machine learning, displayed on a vintage bench oscilloscope.">
-    <meta name="theme-color" content="#1b1e21">
+    <meta name="description" content="Nayan Ramam, electrical engineering at Georgia Tech. Analog mixed-signal design, audio, and machine learning, displayed on a vintage bench oscilloscope.">
+    <meta name="theme-color" content="#24282e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- ?v= is bumped whenever the code changes so browsers fetch the new version (content/*.md is always fetched fresh) -->
-    <link rel="stylesheet" href="assets/scope/scope.css?v=202610151241">
+    <link rel="stylesheet" href="assets/scope/scope.css?v=202611171600">
+    <link rel="stylesheet" href="assets/scope/modern.css?v=202611171600">
+    <!-- plain pass: removes AI-looking styling habits; delete this line to undo it -->
+    <link rel="stylesheet" href="assets/scope/plain.css?v=202611171600">
+    <!-- display style: modern (default) or vintage; ?look=modern|vintage sets and remembers it -->
+    <script>try { var q = new URLSearchParams(location.search).get('look'); if (q === 'modern' || q === 'vintage') localStorage.setItem('nr.look', q); if ((q || localStorage.getItem('nr.look')) === 'vintage') document.documentElement.classList.remove('modern'); } catch (e) {}</script>
 </head>
 <body class="off">
     <noscript><p style="color:#ddd;font:16px sans-serif;padding:20px">This page is an oscilloscope that needs JavaScript to run.</p></noscript>
@@ -25,7 +30,7 @@
                 <div class="bezel">
                     <div class="brand">
                         <div class="plate"><i class="rivet"></i><span class="inst" id="nameplate"></span><i class="rivet"></i></div>
-                        <div class="spec ink">20 MHz · 4 CH · X-Y</div>
+                        <div class="look" role="group" aria-label="Display style"><button type="button" data-look="modern" aria-pressed="true">Modern</button><button type="button" data-look="vintage" aria-pressed="false">Vintage</button></div>
                     </div>
                     <div class="crt" id="crt">
                         <div class="tube" id="tube">
@@ -40,20 +45,19 @@
                                     <div class="rest">
                                         <div class="hero">
                                             <figure class="phos photo"><img id="home-photo" src="" alt=""></figure>
-                                            <div class="spec">
-                                                <div class="spec-h"><span>MEASURE</span><span>ABOUT</span></div>
-                                                <div class="spec-rows" id="home-specs"></div>
-                                                <div class="quick">
-                                                    <button class="soft" type="button" data-go="ch1"><b>CH1</b> Projects</button>
-                                                    <button class="soft" type="button" data-go="ch2"><b>CH2</b> Experience</button>
-                                                    <a class="soft" href="#" target="_blank" rel="noopener" data-print><b>PRINT</b> Resume.pdf</a>
-                                                    <button class="soft" type="button" data-go="probe"><b>PROBE</b> Contact</button>
-                                                </div>
+                                            <div class="intro">
+                                                <div class="intro-rows" id="home-specs"></div>
+                                                <nav class="intro-links" aria-label="Sections">
+                                                    <button type="button" data-go="ch1">Projects</button>
+                                                    <button type="button" data-go="ch2">Experience</button>
+                                                    <a href="#" target="_blank" rel="noopener" data-print>Resume</a>
+                                                    <button type="button" data-go="probe">Contact</button>
+                                                </nav>
                                             </div>
                                         </div>
                                         <div class="xp-tiles" id="home-xp"></div>
                                         <div class="bench" id="home-bench"></div>
-                                        <details class="fullbio" id="home-full"><summary>Full bio</summary><div class="md" id="home-bio"></div></details>
+                                        <div class="fullbio" id="home-full"><div class="md" id="home-bio"></div></div>
                                     </div>
                                 </section>
 
@@ -64,12 +68,12 @@
                                 <section class="scr pd" id="s-proj" hidden></section>
 
                                 <section class="scr" id="s-ch2" hidden>
-                                    <h2>CH2 · Experience <span class="hint">hover or tap a pulse · TIME/DIV zooms</span></h2>
+                                    <h2>CH2 · Experience <span class="hint">hover a pulse · click for the write-up</span></h2>
                                     <div class="tl">
                                         <div class="tl-lanes" id="tl-lanes" aria-hidden="true"></div>
                                         <div class="tl-scroll" id="tl-scroll"></div>
                                     </div>
-                                    <div class="cbox" id="cbox"></div>
+                                    <div class="caps xps" id="xps"></div>
                                 </section>
                                 <section class="scr pd" id="s-doc" hidden></section>
 
@@ -102,68 +106,44 @@
 
             <!-- ============ under the screen ============ -->
             <div class="under">
+                <div class="u-side u-left">
                 <button class="power" id="power" type="button" aria-pressed="false" aria-label="Power">
                     <span class="pw"><span class="lamp"></span><span class="sw"></span></span>
                     <span class="lab silk">Power</span>
                 </button>
-                <div class="knob-w m-only m-hide" data-knob="timediv" data-size="sm"></div>
                 <div class="knob-w" data-knob="intensity" data-size="sm"></div>
                 <div class="knob-w" data-knob="focus" data-size="sm"></div>
-                <button class="key sound" id="sound" type="button" aria-pressed="false" aria-label="Sound (off)" title="Panel sounds — off by default">
+                <button class="key sound" id="sound" type="button" aria-pressed="false" aria-label="Sound (off)" title="Panel sounds (off by default)">
                     <span class="led"></span>
                     <span class="well"><span class="cap" style="width:38px;height:26px"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path d="M11 5.5c1 .8 1 4.2 0 5M12.8 4c1.8 1.6 1.8 6.4 0 8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span></span>
                     <span class="sub">Sound</span>
                 </button>
-                <span class="sp"></span>
+                </div>
+                <div class="keys" role="group" aria-label="Channels">
+                    <button class="key dark" type="button" data-go="xy" aria-pressed="false" title="Home (X)"><span class="led"></span><span class="well"><span class="cap">HOME</span></span><span class="sub">About</span></button>
+                    <button class="key" type="button" data-go="ch1" aria-pressed="false" title="Projects (1)"><span class="led"></span><span class="well"><span class="cap">CH1</span></span><span class="sub">Projects</span></button>
+                    <button class="key" type="button" data-go="ch2" aria-pressed="false" title="Experience (2)"><span class="led"></span><span class="well"><span class="cap">CH2</span></span><span class="sub">Experience</span></button>
+                    <button class="key" type="button" data-go="ch3" aria-pressed="false" title="Education (3)"><span class="led"></span><span class="well"><span class="cap">CH3</span></span><span class="sub">Education</span></button>
+                    <button class="key" type="button" data-go="ch4" aria-pressed="false" title="Beyond engineering (4)"><span class="led"></span><span class="well"><span class="cap">CH4</span></span><span class="sub">Beyond Eng.</span></button>
+                    <button class="key dark" type="button" data-go="probe" aria-pressed="false" title="Contact (P)"><span class="led"></span><span class="well"><span class="cap">PROBE</span></span><span class="sub">Contact</span></button>
+                    <a class="key dark print" href="#" target="_blank" rel="noopener" data-print title="Resume PDF"><span class="led"></span><span class="well"><span class="cap">PRINT</span></span><span class="sub">Resume</span></a>
+                </div>
+                <div class="u-side u-right">
                 <div class="legend" aria-label="Keyboard shortcuts">
                     <span class="lt ink">Keyboard</span>
                     <span class="li"><kbd>1</kbd>–<kbd>4</kbd><span class="ink">Channels</span></span>
                     <span class="li"><kbd>X</kbd><span class="ink">Home</span></span>
+                    <span class="li"><kbd>P</kbd><span class="ink">Contact</span></span>
+                </div>
                 </div>
             </div>
 
-            <!-- ============ front-panel controls ============ -->
-            <div class="ctrls" role="group" aria-label="Front panel">
-                <div class="group">
-                    <span class="gl silk">Vertical</span>
-                    <div class="vert">
-                        <div class="keys4">
-                            <button class="key" type="button" data-go="ch1" aria-pressed="false" title="Projects (1)"><span class="led"></span><span class="well"><span class="cap">CH1</span></span><span class="sub">Projects</span></button>
-                            <button class="key" type="button" data-go="ch2" aria-pressed="false" title="Experience (2)"><span class="led"></span><span class="well"><span class="cap">CH2</span></span><span class="sub">Experience</span></button>
-                            <button class="key" type="button" data-go="ch3" aria-pressed="false" title="Education (3)"><span class="led"></span><span class="well"><span class="cap">CH3</span></span><span class="sub">Education</span></button>
-                            <button class="key" type="button" data-go="ch4" aria-pressed="false" title="Beyond engineering (4)"><span class="led"></span><span class="well"><span class="cap">CH4</span></span><span class="sub">Beyond Eng.</span></button>
-                        </div>
-                        <div class="knob-w" data-knob="position"></div>
-                    </div>
-                </div>
-                <div class="group">
-                    <span class="gl silk">Horizontal</span>
-                    <div class="gwrap mid">
-                        <button class="key dark" type="button" data-go="xy" aria-pressed="false" title="Home (X)"><span class="led"></span><span class="well"><span class="cap">HOME</span></span></button>
-                        <div class="knob-w" data-knob="timediv"></div>
-                    </div>
-                </div>
-                <div class="group">
-                    <span class="gl silk">Probe · Hardcopy</span>
-                    <div class="gwrap">
-                        <button class="key dark" type="button" data-go="probe" aria-pressed="false" title="Contact (P)"><span class="led"></span><span class="well"><span class="cap">PROBE</span></span><span class="sub">Out · Contact</span></button>
-                        <a class="calt" href="#contact" data-go="probe" aria-label="Probe compensation terminal: contact"><i></i><span>CAL<br>0.5V ⊓</span></a>
-                        <a class="key dark print" href="#" target="_blank" rel="noopener" data-print title="Resume PDF"><span class="led"></span><span class="well"><span class="cap">PRINT</span></span><span class="sub">Resume</span></a>
-                    </div>
-                </div>
-                <div class="inputs" aria-hidden="true">
-                    <div class="jack"><i class="bnc"></i><span class="ink">CH1 · X</span></div>
-                    <div class="jack"><i class="bnc"></i><span class="ink">CH2 · Y</span></div>
-                    <div class="jack"><i class="bnc"></i><span class="ink">Ext trig</span></div>
-                    <div class="warn ink">⚠ 1 MΩ · 25 pF · 400 V pk max</div>
-                </div>
-            </div>
         </div>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-    <script src="assets/scope/content.js?v=202610151241"></script>
-    <script src="assets/scope/scope.js?v=202610151241"></script>
+    <script src="assets/scope/content.js?v=202611171600"></script>
+    <script src="assets/scope/scope.js?v=202611171600"></script>
 </body>
 </html>

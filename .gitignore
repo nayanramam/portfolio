@@ -28,3 +28,6 @@ ENV/
 # Node
 node_modules/
 
+
+# Copyrighted papers kept locally for reference - do not publish
+assets/projects/sram_paper.pdf

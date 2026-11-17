@@ -8,13 +8,11 @@ links:
     text: nramam3@gatech.edu
     url: mailto:nramam3@gatech.edu
   - label: LINKEDIN
-    text: linkedin.com/in/nayan-ramam-788334279
-    url: https://www.linkedin.com/in/nayan-ramam-788334279/
+    text: linkedin.com/in/nramam/
+    url: https://www.linkedin.com/in/nramam/
   - label: RESUME
     text: Nayan_Ramam_Resume.pdf
     url: assets/Nayan_Ramam_Resume_Analog_IC-9.pdf
 
 readouts: [PROBE OUT, CAL 1 kHz  0.5 Vp-p, LINK READY, TRIG ↑]
 ---
-
-I'm always happy to talk analog design, audio hardware, research, or cubing.

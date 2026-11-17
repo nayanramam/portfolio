@@ -25,16 +25,16 @@ I was the project manager, so much of the task assignment and roadmapping was a 
 
 
 
-## Tools Used
-- KiCAD
-- Daisy Seed Microcontroller
-- C++
-- SPI/I2C Protocols
-- Daisy Compiler
-
 ## Skills Demonstrated
 - Project management and team leadership
 - PCB design and layout
 - Embedded systems development
 - Hardware interfacing (SPI/I2C)
 - AI software development
+
+## Tools Used
+- KiCAD
+- Daisy Seed Microcontroller
+- C++
+- SPI/I2C Protocols
+- Daisy Compiler

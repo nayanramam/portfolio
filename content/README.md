@@ -18,7 +18,7 @@ tags: [a, b, c]
 
 | File | Screen |
 |---|---|
-| `site.md` | Your name, the nameplate, the resume PDF, and the **order** of projects, experience files and timeline rows |
+| `site.md` | Your name, the nameplate, the resume PDF, and the **order** of projects, experience files, timeline rows and the role cards under the timeline |
 | `home.md` | HOME (X-Y): tagline lines, photo, bio (the body) |
 | `projects/<name>.md` | One CH1 capture each. The body is the full write-up shown on the project's page |
 | `experiences/<name>.md` | One organization each, with its roles on the CH2 timeline. The body is the "Full write-up" |
@@ -42,7 +42,7 @@ tags: [a, b, c]
 **Change your resume:** put the PDF in `assets/` and update `resume:` in `site.md`.
 
 **Images:** put them in `assets/...` and write paths from the site root, e.g.
-`![Layout](assets/projects/ring-vco.png)`. Spaces in file names work in front matter; in markdown
+`![Layout](assets/proj_thumbs/ring-vco.png)`. Spaces in file names work in front matter; in markdown
 image links write them as `%20`.
 
 **Videos:** in front matter use the YouTube id (the part after `v=` or `youtu.be/`). In a write-up
@@ -54,6 +54,8 @@ body, paste this and change the id:
 
 **Link between write-ups:** `[Ring VCO](#projects/ring-vco)` or
 `[ICE Lab](#experience/ice-lab/write-up)`.
+To jump to another tab of the same write-up, link to `#tab/` plus the tab heading:
+`[AMS Team Lead](#tab/AMS%20Team%20Lead)` (write spaces as `%20`).
 
 ## Field reference
 
@@ -66,7 +68,14 @@ body, paste this and change the id:
 | `category` | Line under the title on the project page |
 | `wave` | Waveform drawn on the card: `square`, `complex`, `pulses`, `pwm`, `bitline` |
 | `hint` | One-line teaser on the card |
+| `thumb` | Picture on the card, in place of the waveform (optional) |
+| `thumb_position` | Which part of the thumbnail the card keeps when it crops: `left`, `right`, `top`, `bottom`, `center` (default) |
+| `thumb_zoom` | Zoom the card thumbnail in toward `thumb_position`, e.g. `1.25` (optional) |
+| `thumb_fit` | `contain` shows the whole picture with a border around it instead of cropping (good for logos) |
+| `thumb_bg` | Colour behind a `contain` picture, e.g. `"#ffffff"` for a dark logo |
 | `image`, `image_alt` | Picture beside the summary (optional) |
+| `banner` | Picture shown at the top of the project page in place of the waveform (optional; uses `image_alt`) |
+| `banner_layout` | `split` puts the banner on the left half and the measurements on the right (optional) |
 | `summary` | The short paragraph at the top of the project page |
 | `measurements` | `Label: value` rows shown as scope readouts |
 | `links` | Extra buttons: a list of `label` + `url` |
@@ -84,7 +93,14 @@ body, paste this and change the id:
 Each role: `title`, `label` (printed on the pulse), `short` (used when the pulse is too narrow),
 `start` and `end` as `YYYY-MM` (or `end: present`), `summary`, and `tags` as a list.
 
+A role can also set its own `trace` (to sit on a different timeline row) and `tab` (see below).
+
 If the file has no body, the "Full write-up" button doesn't appear.
+
+**Tabs in a write-up** (one organization, several positions): everything above a line
+`<!-- tabs -->` is shown to everyone; below it, each `## Heading` becomes a tab. A role opens the
+tab whose heading matches its `tab:` (or its `title` if it has none). Use `###` for headings inside
+a tab; inside a tab they look the same as `##` headings do elsewhere. See `experiences/siliconjackets.md`.
 
 ### Readouts
 

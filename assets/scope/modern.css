@@ -1,0 +1,223 @@
+/* The modern look: a current digital bench scope. Flat LCD, neutral text, colour-coded channels.
+   Everything here is scoped to html.modern and loaded after scope.css; the vintage look is
+   untouched. Toggle with the MODERN / VINTAGE switch by the nameplate, or ?look=modern. */
+
+/* the switch itself, in both looks */
+.look { display: inline-flex; flex: none; margin-left: auto; padding: 2px; border-radius: 4px; border: 1.2px solid var(--silk-line); }
+.look button {
+    all: unset;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font: 700 10px/1.3 'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--silk-2);
+}
+.look button[aria-pressed="true"] { background: var(--silk); color: var(--case-hi); }
+.look button:focus-visible { outline: 2px solid rgba(192, 57, 31, .7); outline-offset: 1px; }
+.lk-m { display: none; }
+@media (max-width: 860px) { .look { margin-left: auto; } }
+
+html.modern {
+    --bench: #0f1114;
+    --case: #24282e;
+    --case-hi: #2c3138;
+    --case-lo: #1c1f24;
+    --plate: #1b1e23;
+    --plate-lo: #16191d;
+    --silk: #c9d0d9;
+    --silk-2: #8d97a4;
+    --silk-line: rgba(201, 208, 217, .2);
+
+    --glass: #0a0c0f;
+    --ph-rgb: 150, 162, 178;            /* neutral lines, borders and fills */
+    --glow-rgb: 0, 0, 0;
+    --ph: #dde3ea;                      /* body text: ~14:1 on the screen */
+    --ph-hi: #ffffff;
+    --ph-dim: #a3adba;                  /* labels: ~8:1 */
+    --ph-line: rgba(150, 162, 178, .28);
+    --ph-faint: rgba(150, 162, 178, .08);
+    --ts: none;
+    --phos: none;
+    --unphos: none;
+    --acc: #ffd23f;                     /* the active channel's colour (set per screen below) */
+    color-scheme: dark;
+}
+/* channel colours, as on the front panel keys */
+html.modern body { --acc: #ffd23f; }
+html.modern body[data-ch="ch1"] { --acc: #ffd23f; }
+html.modern body[data-ch="ch2"] { --acc: #45e08d; }
+html.modern body[data-ch="ch3"] { --acc: #5aafff; }
+html.modern body[data-ch="ch4"] { --acc: #ff78cb; }
+html.modern body[data-ch="probe"] { --acc: #45d9e8; }
+html.modern .key[data-go="xy"], html.modern .key.print { --k: #e9edf2; }
+html.modern .key[data-go="ch1"] { --k: #ffd23f; }
+html.modern .key[data-go="ch2"] { --k: #45e08d; }
+html.modern .key[data-go="ch3"] { --k: #5aafff; }
+html.modern .key[data-go="ch4"] { --k: #ff78cb; }
+html.modern .key[data-go="probe"] { --k: #45d9e8; }
+
+html.modern .lk-v { display: none; }
+html.modern .lk-m { display: inline; }
+html.modern .look { border-color: rgba(255, 255, 255, .16); background: rgba(0, 0, 0, .25); }
+html.modern .look button { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; letter-spacing: .08em; color: #9aa4b1; }
+html.modern .look button[aria-pressed="true"] { background: #e9edf2; color: #15181c; }
+
+/* ---- the case: dark, clean, no wear ---- */
+html.modern body { background: radial-gradient(ellipse 80% 60% at 50% 38%, #1a1d22 0%, var(--bench) 72%) fixed, var(--bench); }
+html.modern .scope {
+    background: linear-gradient(175deg, var(--case-hi) 0%, var(--case) 40%, var(--case-lo) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 0 0 1px rgba(0, 0, 0, .5), 0 30px 60px -20px rgba(0, 0, 0, .8);
+}
+html.modern .scope::before, html.modern .scope::after { background: #0a0b0d; }
+html.modern .screw { background: radial-gradient(circle at 40% 35%, #4a5059, #22262b); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .6); }
+html.modern .screw::after { background: rgba(0, 0, 0, .7); }
+html.modern :is(.gl, .lab, .ink, .calt span, .knob .tk, .legend kbd) { -webkit-mask-image: none; mask-image: none; }
+
+html.modern .plate { background: none; box-shadow: none; padding: 0; color: #f2f4f7; }
+html.modern .plate .rivet { display: none; }
+html.modern .plate .inst { font: 600 13px/1 'IBM Plex Sans', sans-serif; letter-spacing: .22em; opacity: 1; }
+html.modern .brand .spec { font: 500 12.5px/1 'IBM Plex Sans', sans-serif; letter-spacing: .06em; color: #9aa4b1; border: 0; background: none; }
+
+/* ---- the screen: a flat LCD ---- */
+html.modern .bezel { background: #15181c; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 0 0 1px rgba(0, 0, 0, .6); }
+html.modern .crt {
+    border-radius: 4px;
+    background: var(--glass);
+    box-shadow: 0 0 0 1px #2c323a, 0 0 0 4px #0c0e10;
+}
+html.modern .glass { display: none; }
+html.modern #view {
+    font: 400 clamp(15px, .5vw + 8px, 17px)/1.65 'IBM Plex Sans', system-ui, sans-serif;
+    color: var(--ph);
+    inset: 34px 28px 32px;
+}
+html.modern .ro { font-size: 12px; color: var(--ph-dim); }
+html.modern .ro.tl { color: var(--acc); font-weight: 600; }
+html.modern #flash { background: #1b1f25; border-color: #3a414b; }
+html.modern #skip { border-color: #3a414b; }
+
+/* small labels stay monospaced, like on-screen softkey text */
+html.modern :is(.scr h2, .capc .cn, .capc .cs, .meas .k, .spec-h, .spec-rows .k, .xpt .xn, .bench .bl, .fullbio summary,
+    .tl-lanes, .cur-p .ev, .term .k, .cb-head, .step-cap, .cal .lbl, .tags, .pd .cat, .skills .k, .md h4, .pop .ph, .doc-roles .dim) {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+html.modern .capc { font-family: inherit; text-shadow: none; }
+html.modern .scr h2 { color: var(--acc); font-weight: 600; border-bottom-color: rgba(150, 162, 178, .25); }
+html.modern .scr h2 .hint { color: var(--ph-dim); font-weight: 400; }
+html.modern .scr h3 { color: #fff; }
+html.modern .pd h3 { font-size: 24px; letter-spacing: -.005em; }
+html.modern .md h2, html.modern .md h3 { color: #fff; }
+html.modern .md em { color: var(--ph-dim); }
+html.modern #view a { color: #fff; text-decoration-color: var(--acc); text-decoration-thickness: 1.5px; }
+html.modern #view a:hover { color: var(--acc); }
+html.modern #view :focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+/* softkeys and cards: solid panels instead of glowing outlines */
+html.modern .soft { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; letter-spacing: .06em; border-radius: 3px; border-color: #3a414b; background: #1a1e23; color: #f2f4f7; }
+html.modern .soft:hover { border-color: var(--acc); background: #222831; }
+html.modern .soft b { color: var(--acc); }
+html.modern :is(.capc, .xpt, .cur-p, #view .spec, .cbox) { background: #12151a; border-color: #2c323a; border-radius: 4px; }
+html.modern :is(.capc, a.xpt):is(:hover, :focus-visible), html.modern .xpc.on { border-color: var(--acc); background: #171b21; }
+html.modern .capc .ct, html.modern .xpt .xt { color: #fff; }
+html.modern .xpc .xh { font-family: 'IBM Plex Mono', ui-monospace, monospace; color: #c9d0d9; }
+html.modern .xpc .xd .now { color: var(--acc); }
+html.modern .xpc .xl { border-color: #3a414b; background: #1a1e23; color: #e9edf2; }
+html.modern .xpc .ct { font-size: 18px; letter-spacing: -.005em; }
+html.modern .xpc .co .oname { color: #e9edf2; font-size: 14.5px; }
+html.modern .xpc .co .og { font-size: 13px; }
+html.modern #view .spec { overflow: hidden; }
+html.modern .spec-h { background: var(--acc); color: #111; }
+html.modern .spec-rows .v { color: #fff; }
+html.modern .tagp { border-color: #3a414b; color: var(--ph); }
+html.modern .meas { border-top-color: #2c323a; }
+html.modern .meas .v { color: #fff; }
+html.modern .dtab[aria-selected="true"] { background: #222831; border-color: var(--acc); color: #fff; box-shadow: inset 0 -2px 0 var(--acc); }
+html.modern .dtab[aria-selected="false"] { color: var(--ph-dim); }
+html.modern .md table th { color: var(--ph-dim); }
+html.modern .md code { background: #1d2228; }
+html.modern .md img { border-color: #2c323a; }
+
+/* traces: the channel colour, crisp, no bloom */
+html.modern :is(.wave path, .tl-svg .tr, .tl-svg .trs, .tl-svg .head, .step .resp, .cal svg path) { filter: none; }
+html.modern .wave path, html.modern .cal svg path, html.modern .step .resp { stroke: var(--acc); }
+html.modern .wave .ax { stroke: rgba(150, 162, 178, .25); }
+html.modern .tl-svg .tr { stroke: var(--acc); opacity: .55; }
+html.modern .tl-svg .trs { stroke: var(--acc); stroke-width: 2.6; }
+html.modern .tl-svg .head { fill: var(--acc); }
+html.modern .tl-svg .pl { fill: #c3cbd5; }
+html.modern .tl-svg .pl.on { fill: #fff; font-weight: 600; }
+html.modern .tl-svg .cur { stroke: #fff; opacity: .45; }
+html.modern .tl-svg .hit:hover, html.modern .tl-svg .hit:focus-visible { fill: rgba(255, 255, 255, .05); }
+html.modern .tl-lanes div.on { color: var(--acc); }
+html.modern .cur-p svg line { stroke: var(--acc); }
+
+/* photos in full colour */
+html.modern .phos { background: #000; border-color: #2c323a; }
+html.modern .phos img { filter: none; }
+html.modern .phos::after { display: none; }
+
+/* pop-ups and the video player */
+html.modern .pop { background: #171b20; border-color: var(--acc); box-shadow: 0 8px 24px rgba(0, 0, 0, .5); }
+html.modern .pop .ph { background: var(--acc); color: #111; }
+html.modern .pop .lead { background: var(--acc); }
+html.modern .player { background: rgba(8, 10, 12, .92); }
+
+/* ---- the front panel: dark plate, backlit rubber keys ---- */
+html.modern .ctrls { background: linear-gradient(180deg, #1f2328, var(--plate)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05), inset 0 1px 0 rgba(255, 255, 255, .04); border-radius: 8px; }
+html.modern .group { border-color: rgba(255, 255, 255, .1); border-radius: 6px; }
+html.modern .group > .gl { background: #1d2126; color: #aeb7c3; font-family: 'IBM Plex Sans', sans-serif; letter-spacing: .14em; }
+html.modern .key .well { background: #0f1113; border-radius: 7px; padding: 2px; box-shadow: inset 0 1px 2px rgba(0, 0, 0, .8); }
+html.modern .key .cap,
+html.modern .key.dark .cap {
+    background: linear-gradient(#3b4048, #2e3239);
+    color: #eef1f5;
+    border-radius: 5px;
+    filter: none;
+    transform: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    letter-spacing: .08em;
+    box-shadow: 0 2px 0 #121417, inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(0, 0, 0, .35);
+}
+html.modern .key .cap { box-shadow: 0 2px 0 #121417, inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(0, 0, 0, .35), inset 0 -3px 0 color-mix(in srgb, var(--k, #e9edf2) 70%, transparent); }
+html.modern .key .sub, html.modern .sound .sub { color: #aeb7c3; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; }
+html.modern .key[aria-pressed="true"] .cap,
+html.modern .key.dark[aria-pressed="true"] .cap {
+    transform: translateY(1px);
+    background: var(--k, #e9edf2);
+    color: #111;
+    box-shadow: 0 1px 0 #121417, 0 0 14px color-mix(in srgb, var(--k, #e9edf2) 45%, transparent), inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+html.modern .key.down .cap, html.modern .key:active .cap { transform: translateY(2px); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .5); }
+/* the LED becomes a slim status bar above the key */
+html.modern .key .led { width: 20px; height: 3px; border-radius: 2px; background: #2b3036; box-shadow: none; }
+html.modern .key.blink .led,
+html.modern .ready .key[aria-pressed="true"] .led { background: var(--k, #e9edf2); box-shadow: 0 0 6px var(--k, #e9edf2); }
+html.modern .key:focus-visible .well { box-shadow: 0 0 0 2px #e9edf2; }
+html.modern .sound[aria-pressed="true"] .cap { --k: #e9edf2; }
+
+/* knobs: black, knurled, white pointer */
+html.modern .knob .rot { background: repeating-conic-gradient(#30353c 0 4deg, #1a1d21 4deg 8deg); box-shadow: 0 3px 5px rgba(0, 0, 0, .6), 0 0 0 1px #0b0c0e; transform: rotate(var(--a)); }
+html.modern .knob .rot::before { background: radial-gradient(circle at 42% 36%, #434952, #2a2e34 60%, #202328); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 0 0 1px rgba(0, 0, 0, .5); }
+html.modern .knob .rot::after { background: #f2f4f7; opacity: 1; }
+html.modern .knob::after { background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .1), transparent 46%); }
+html.modern .knob .tk { background: #8d97a4; }
+html.modern .knob:focus-visible { box-shadow: 0 0 0 2px #e9edf2; }
+html.modern .lab, html.modern .knob-w .lab { color: #aeb7c3; }
+
+html.modern .power .sw { background: linear-gradient(#41464e, #2e3238); filter: none; transform: none; box-shadow: 0 0 0 2px #0e1012, 0 3px 0 2px #08090a, inset 0 1px 0 rgba(255, 255, 255, .12); }
+html.modern .power:active .sw, html.modern .power.down .sw { transform: translateY(2px); box-shadow: 0 0 0 2px #0e1012, 0 1px 0 2px #08090a; }
+html.modern .power .lamp { box-shadow: 0 0 0 2px #3a3f46, inset 0 0 3px rgba(0, 0, 0, .8); }
+html.modern .power[aria-pressed="true"] .lamp { box-shadow: 0 0 0 2px #3a3f46, 0 0 10px 3px rgba(110, 240, 90, .45); }
+html.modern .legend { border-color: rgba(255, 255, 255, .14); color: #c9d0d9; }
+html.modern .legend .lt { color: #8d97a4; border-color: rgba(255, 255, 255, .12); }
+html.modern .legend kbd { border-color: #8d97a4; color: #e9edf2; font-family: 'IBM Plex Sans', sans-serif; }
+html.modern .calt span { color: #8d97a4; }
+html.modern .bnc { box-shadow: 0 0 0 1px #000, 0 2px 3px rgba(0, 0, 0, .6); }
+html.modern .warn, html.modern .jack span { color: #8d97a4; }
+
+@media (max-width: 860px) {
+    html.modern #view { inset: 32px 16px 30px; font-size: 15px; }
+}
