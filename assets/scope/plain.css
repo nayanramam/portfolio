@@ -64,7 +64,7 @@ html.modern :is(.scr h2, .capc .cn, .capc .cs, .xpt .xn, .bench .bl, .fullbio su
 .intro-rows { display: flex; flex-direction: column; gap: 14px; }
 .intro-rows .k { display: block; font-size: 13px; color: var(--ph-dim); margin-bottom: 1px; }
 .intro-rows .v { display: block; font-size: 21px; line-height: 1.3; font-weight: 500; color: var(--ph-hi); }
-.intro-links { display: flex; flex-wrap: wrap; gap: 6px 24px; }
+.intro-links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 24px; }
 .intro-links :is(button, a) {
     all: unset;
     cursor: pointer;
@@ -75,6 +75,7 @@ html.modern :is(.scr h2, .capc .cn, .capc .cs, .xpt .xn, .bench .bl, .fullbio su
     text-decoration-thickness: 1.5px;
     text-underline-offset: 4px;
 }
+#view .intro-links :is(button, a) { line-height: 1.5; text-underline-offset: 4px; }   /* the Resume <a> otherwise takes #view a's 3px offset */
 #view .intro-links a { color: var(--ph-hi); text-decoration-color: var(--acc, var(--ph-dim)); }
 .intro-links :is(button, a):hover,
 #view .intro-links a:hover { color: var(--acc, var(--ph-hi)); }
