@@ -853,6 +853,14 @@ a.xpt:hover .xa { color: var(--ph-hi); }
 .bnc::before { left: 1px; }
 .bnc::after { right: 1px; }
 
+/* ---- PRINT: the resume, page by page ---- */
+.rs-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.rs-pages { display: flex; flex-direction: column; gap: 14px; max-width: 900px; margin: 0 auto 8px; }
+.rs-pages canvas { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--ph-line); }
+/* vintage: the page shown as phosphor, green on black */
+html:not(.modern) .rs-pages canvas { filter: invert(1) sepia(1) hue-rotate(76deg) saturate(2.4) brightness(.95) contrast(1.05); }
+.rs-msg { color: var(--ph-dim); }
+
 /* ============ markdown from content/, drawn on the tube ============ */
 .md h3 { font-size: 16px; margin: 16px 0 6px; }
 .md h4 { font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--ph-dim); margin: 12px 0 4px; }

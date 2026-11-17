@@ -167,6 +167,15 @@ window.startScope = function (DATA) {
             return '<li><span class="k" data-type="' + esc(l.label || '') + '"></span><a href="' + esc(l.url || '#') + '"' + ext(l.url || '') +
                 ' aria-label="' + esc((l.label || '') + ': ' + text) + '"><span data-type="' + esc(text) + '" aria-hidden="true"></span></a></li>';
         }).join('') + '</ul>';
+
+    // PRINT: the resume drawn on the screen, with a download button
+    var RESUME_FILE = (String(S.name || 'Resume').replace(/\s+/g, '_')) + '_Resume.pdf';
+    $('#s-print').innerHTML =
+        '<h2>Print · Resume <span class="hint">' + (RESUME ? 'the PDF, drawn on the screen' : '') + '</span></h2>' +
+        (RESUME ? '<div class="rs-bar"><a class="soft" href="' + esc(RESUME) + '" download="' + esc(RESUME_FILE) + '">Download PDF</a>' +
+            '<a class="soft" href="' + esc(RESUME) + '" target="_blank" rel="noopener">Open in new tab</a></div>' +
+            '<div class="rs-pages" id="rs-pages"><p class="rs-msg">Loading resume…</p></div>'
+            : '<p class="rs-msg">No resume set. Add <code>resume:</code> to content/site.md.</p>');
     fixLinks($('#view'));
 
     // ================= small helpers =================
@@ -522,9 +531,9 @@ window.startScope = function (DATA) {
     // ================= screens, readouts, routing =================
     var crt = $('#crt'), tube = $('#tube'), view = $('#view');
     var cur = null;
-    var HASH = { xy: 'about', ch1: 'projects', ch2: 'experience', ch3: 'education', ch4: 'beyond', probe: 'contact' };
-    var FROM = { about: 'xy', projects: 'ch1', experience: 'ch2', education: 'ch3', beyond: 'ch4', contact: 'probe' };
-    var TITLE = { xy: 'About', ch1: 'Projects', ch2: 'Experience', ch3: 'Education', ch4: 'Beyond engineering', probe: 'Contact' };
+    var HASH = { xy: 'about', ch1: 'projects', ch2: 'experience', ch3: 'education', ch4: 'beyond', probe: 'contact', print: 'resume' };
+    var FROM = { about: 'xy', projects: 'ch1', experience: 'ch2', education: 'ch3', beyond: 'ch4', contact: 'probe', resume: 'print' };
+    var TITLE = { xy: 'About', ch1: 'Projects', ch2: 'Experience', ch3: 'Education', ch4: 'Beyond engineering', probe: 'Contact', print: 'Resume' };
 
     function base(key) { return key.split(':')[0]; }
     function fromHash() {
@@ -556,6 +565,7 @@ window.startScope = function (DATA) {
         else if (k === 'ch2') { var sr = ROLE[sel]; r = ['CH2  EXPERIENCE', sr ? startOf(sr) + ' → ' + endOf(sr) : '', ROLES.length + ' ROLES · ' + LANES.length + ' TRACES', CTL.timediv.vals[CTL.timediv.i] + ' mo/div']; }
         else if (k === 'ch3') r = ro(EDU.readouts, ['CH3  EDUCATION', 'STEP RESPONSE', '', '']);
         else if (k === 'ch4') r = ro(BEY.readouts, ['CH4  BEYOND ENG.', 'CURSORS  Δt', '', 'TRIG NORM']);
+        else if (k === 'print') r = ['PRINT  RESUME', rsPages ? rsPages + ' PAGE' + (rsPages === 1 ? '' : 'S') : '', 'PDF', 'STORED'];
         else r = ro(CON.readouts, ['PROBE OUT', 'CAL 1 kHz  0.5 Vp-p', 'LINK READY', 'TRIG ↑']);
         $('#ro-tl').textContent = r[0]; $('#ro-tr').textContent = r[1];
         $('#ro-bl').textContent = r[2]; $('#ro-br').textContent = r[3];
@@ -573,6 +583,7 @@ window.startScope = function (DATA) {
         $$('#view .scr').forEach(function (s) { s.hidden = s.id !== secId; });
         view.scrollTop = 0;
         $$('.key[data-go]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-go') === k)); });
+        $$('.key.print').forEach(function (b) { b.setAttribute('aria-pressed', String(k === 'print')); });
         var h = sub ? (k === 'ch2' ? docHash(sub) : '#' + HASH[k] + '/' + sub) : '#' + HASH[k];
         if (location.hash !== h) history.replaceState(null, '', h);
         document.title = (secId === 's-proj' ? PROJ[sub].title : secId === 's-doc' ? (DOCS[sub].meta.org || sub) : TITLE[k]) + ' · ' + (S.name || '');
@@ -584,6 +595,47 @@ window.startScope = function (DATA) {
         if (k === 'ch2') tlRender();
         if (k === 'ch3') { var st = $('#step'); st.classList.remove('draw'); if (!reduced) { void st.getBoundingClientRect(); st.classList.add('draw'); } }
         if (k === 'probe') typeContact(); else typeGen++;
+        if (k === 'print') renderResume();
+    }
+
+    // PDF.js is only fetched the first time the resume screen opens
+    var rsState = '', rsPages = 0;
+    var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+    function renderResume() {
+        if (!RESUME || rsState) return;
+        rsState = 'loading';
+        var box = $('#rs-pages');
+        function fail() {
+            rsState = '';
+            box.innerHTML = '<p class="rs-msg">Couldn\'t draw the resume here. Use the buttons above to download or open the PDF.</p>';
+        }
+        function draw() {
+            var lib = window.pdfjsLib;
+            if (!lib) return fail();
+            lib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js';
+            lib.getDocument(encodeURI(RESUME)).promise.then(function (pdf) {
+                rsPages = pdf.numPages;
+                box.innerHTML = '';
+                var w = Math.min(box.clientWidth || 800, 900), dpr = Math.min(window.devicePixelRatio || 1, 2), chain = Promise.resolve();
+                for (var n = 1; n <= pdf.numPages; n++) (function (n) {
+                    chain = chain.then(function () { return pdf.getPage(n); }).then(function (page) {
+                        var vp = page.getViewport({ scale: w * dpr / page.getViewport({ scale: 1 }).width });
+                        var c = document.createElement('canvas');
+                        c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+                        c.setAttribute('role', 'img');
+                        c.setAttribute('aria-label', 'Resume, page ' + n + ' of ' + pdf.numPages);
+                        box.appendChild(c);
+                        return page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+                    });
+                })(n);
+                return chain.then(function () { rsState = 'done'; if (base(cur || '') === 'print') readouts(); moreCheck(); });
+            }).catch(fail);
+        }
+        if (window.pdfjsLib) return draw();
+        var sc = document.createElement('script');
+        sc.src = PDFJS + 'pdf.min.js';
+        sc.onload = draw; sc.onerror = fail;
+        document.head.appendChild(sc);
     }
 
     function moreCheck() {
@@ -967,10 +1019,13 @@ window.startScope = function (DATA) {
             return;
         }
         var pr = e.target.closest('[data-print]');
-        if (pr) {
-            if (pr.classList.contains('key')) { press(pr); pr.classList.add('blink'); setTimeout(function () { pr.classList.remove('blink'); }, 700); }
-            flash('PRINT → RESUME.PDF');
-            return;   // the link opens the PDF in a new tab
+        if (pr && RESUME) {
+            // a plain click opens the resume screen; ctrl/cmd/shift-click and middle-click still open the PDF itself
+            if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+            e.preventDefault();
+            if (pr.classList.contains('key')) press(pr); else tick();
+            go('print');
+            return;
         }
         var p = e.target.closest('[data-proj]');
         if (p) { tick(); go('ch1:' + p.getAttribute('data-proj')); return; }
@@ -1001,10 +1056,10 @@ window.startScope = function (DATA) {
         var t = e.target;
         if (t && (t.isContentEditable || /input|textarea|select/i.test(t.tagName))) return;
         if (t && t.classList && t.classList.contains('knob')) return;
-        var map = { x: 'xy', '0': 'xy', '1': 'ch1', '2': 'ch2', '3': 'ch3', '4': 'ch4', p: 'probe' };
+        var map = { x: 'xy', '0': 'xy', '1': 'ch1', '2': 'ch2', '3': 'ch3', '4': 'ch4', p: 'probe', r: 'print' };
         var k = map[e.key.toLowerCase()];
         if (k) {
-            var b = $('.under .key[data-go="' + k + '"]');
+            var b = $('.under .key[data-go="' + k + '"]') || (k === 'print' && $('.under .key.print'));
             if (b) press(b);
             go(k);
         } else if (intro && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); skipIntro(); }

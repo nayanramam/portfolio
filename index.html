@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- ?v= is bumped whenever the code changes so browsers fetch the new version (content/*.md is always fetched fresh) -->
-    <link rel="stylesheet" href="assets/scope/scope.css?v=202611171800">
-    <link rel="stylesheet" href="assets/scope/modern.css?v=202611171800">
+    <link rel="stylesheet" href="assets/scope/scope.css?v=202611171900">
+    <link rel="stylesheet" href="assets/scope/modern.css?v=202611171900">
     <!-- plain pass: removes AI-looking styling habits; delete this line to undo it -->
-    <link rel="stylesheet" href="assets/scope/plain.css?v=202611171800">
+    <link rel="stylesheet" href="assets/scope/plain.css?v=202611171900">
     <!-- display style: modern (default) or vintage; ?look=modern|vintage sets and remembers it -->
     <script>try { var q = new URLSearchParams(location.search).get('look'); if (q === 'modern' || q === 'vintage') localStorage.setItem('nr.look', q); if ((q || localStorage.getItem('nr.look')) === 'vintage') document.documentElement.classList.remove('modern'); } catch (e) {}</script>
 </head>
@@ -80,6 +80,7 @@
                                 <section class="scr" id="s-ch3" hidden></section>
                                 <section class="scr" id="s-ch4" hidden></section>
                                 <section class="scr" id="s-probe" hidden></section>
+                                <section class="scr" id="s-print" hidden></section>
                             </div>
 
                             <canvas id="beam" aria-hidden="true"></canvas>
@@ -126,7 +127,7 @@
                     <button class="key" type="button" data-go="ch3" aria-pressed="false" title="Education (3)"><span class="led"></span><span class="well"><span class="cap">CH3</span></span><span class="sub">Education</span></button>
                     <button class="key" type="button" data-go="ch4" aria-pressed="false" title="Beyond engineering (4)"><span class="led"></span><span class="well"><span class="cap">CH4</span></span><span class="sub">Beyond Eng.</span></button>
                     <button class="key dark" type="button" data-go="probe" aria-pressed="false" title="Contact (P)"><span class="led"></span><span class="well"><span class="cap">PROBE</span></span><span class="sub">Contact</span></button>
-                    <a class="key dark print" href="#" target="_blank" rel="noopener" data-print title="Resume PDF"><span class="led"></span><span class="well"><span class="cap">PRINT</span></span><span class="sub">Resume</span></a>
+                    <a class="key dark print" href="#" target="_blank" rel="noopener" data-print aria-pressed="false" title="Resume (R)"><span class="led"></span><span class="well"><span class="cap">PRINT</span></span><span class="sub">Resume</span></a>
                 </div>
                 <div class="u-side u-right">
                 <div class="legend" aria-label="Keyboard shortcuts">
@@ -134,6 +135,7 @@
                     <span class="li"><kbd>1</kbd>–<kbd>4</kbd><span class="ink">Channels</span></span>
                     <span class="li"><kbd>X</kbd><span class="ink">Home</span></span>
                     <span class="li"><kbd>P</kbd><span class="ink">Contact</span></span>
+                    <span class="li"><kbd>R</kbd><span class="ink">Resume</span></span>
                 </div>
                 </div>
             </div>
@@ -143,7 +145,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-    <script src="assets/scope/content.js?v=202611171800"></script>
-    <script src="assets/scope/scope.js?v=202611171800"></script>
+    <script src="assets/scope/content.js?v=202611171900"></script>
+    <script src="assets/scope/scope.js?v=202611171900"></script>
 </body>
 </html>
