@@ -9,9 +9,9 @@ roles:
     start: 2026-08
     end: present
     summary: >
-      Leading the 20+ member AMS IC design team on a PLL, SRAM, standard cells and SerDes;
+      Leading the 60+ member AMS IC design team on a PLL, SRAM, standard cells and SerDes;
       architecting co-simulation and PnR integration of analog blocks into the club’s digital
-      tape-outs; running onboarding for 15+ new members with video lectures and weekly help sessions.
+      tape-outs; running onboarding for 45+ new members with video lectures and weekly help sessions.
     tags: [virtuoso, pll, sram, serdes, leadership]
   - title: Analog mixed-signal design engineer
     label: DESIGN ENGINEER
@@ -49,11 +49,11 @@ SiliconJackets is Georgia Tech's chip design club. The club has digital design, 
 
 ### Onboarding
 
-My first task as lead was onboarding ~50 new members. I guided them through an onboarding project, which was my [Ring VCO project](#projects/ring-vco) with a few small modifications. The group ranged from first-year undergrads who didn't know what a MOSFET was to PhD students with more knowledge than me, so I held weekly lectures that started with device physics and basic circuit analysis and built up to tutorials on simulation and layout in Cadence Virtuoso.
+My first task as lead was onboarding 45+ new members. I guided them through an onboarding project, which was my [Ring VCO project](#projects/ring-vco) with a few small modifications. The group ranged from first-year undergrads who didn't know what a MOSFET was to PhD students with more knowledge than me, so I held weekly lectures that started with device physics and basic circuit analysis and built up to tutorials on simulation and layout in Cadence Virtuoso.
 
 ### Growing the Team
 
-Before this wave of new members, we had fewer than a dozen active members, so the team grew by roughly a factor of 10 in a few weeks. We're in our second full semester of operation, and I'm leading our first tapeout effort. On top of our existing projects (SRAM, a PLL, and a bandgap reference), I coordinated the team taking on several new modules:
+Before this wave of new members, we had around a dozen active members, so the team grew to 60+ in a few weeks. We're in our second full semester of operation, and I'm leading our first tapeout effort, targeting integration into SiliconJackets' Fall 2027 tapeout on SKY130. On top of our existing projects (SRAM, a PLL, and a bandgap reference), I coordinated the team taking on several new modules:
 
 - Amplifiers: 5T, 9T and 11T OTAs, a folded cascode, and a two-stage Miller-compensated amp
 - SerDes

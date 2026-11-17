@@ -15,9 +15,9 @@ roles:
 ## Overview
 
 - Migrated our team's entire post-silicon test suite for a networking switch from the legacy test framework to the new hybrid one: 115 working tests, plus a few that were already failing on legacy and now fail identically on hybrid
-- Built an agentic AI pipeline that converts each test, verifies it against the legacy version, and debugs failures, which surfaced bugs in the hybrid modeling engine and topo builder along the way
+- Built an agentic AI pipeline that converts each test, verifies it against the legacy version, and debugs failures, root-causing defects in the packet-modeling engine, scoreboards, and topo builder across L2/L3, LAG, ECMP, and 15+ other feature areas
 - Made it safe to run unattended overnight with deterministic checks, a strict per-test file allowlist, and escalation documents for anything outside that scope
-- The team estimated that converting by hand would have taken several engineers a few months. Converting a test now takes one prompt to Copilot
+- The team estimated that converting by hand would have taken several engineers a few months (4000+ engineer-hours). Converting a test now takes one prompt to Copilot
 
 ## Background
 
@@ -33,7 +33,7 @@ For each conversion, the working legacy test served as a golden baseline. Genera
 
 ## Agent Pipeline
 
-I approached the migration and the infrastructure debugging as one effort. I built an agentic AI pipeline that converts legacy tests to the hybrid architecture and verifies them, and in the process it caught bugs in the modeling engine and topo builder and attempted to debug them safely.
+I approached the migration and the infrastructure debugging as one effort. I built an agentic AI pipeline that converts legacy tests to the hybrid architecture and verifies them, and in the process it caught bugs in the packet-modeling engine, the scoreboards, and topo builder, across L2/L3, LAG, ECMP, and 15+ other feature areas, and attempted to debug them safely.
 
 Scaling this to an entire test suite meant handing off the triage and debugging to AI without case-by-case approval. To do that safely, I made the process as rigid and deterministic as possible:
 
@@ -47,9 +47,9 @@ This let me run the agent safely overnight and come back in the morning to a few
 
 The pipeline converted the entire working legacy test suite: 115 tests, plus a few extras that were still failing on legacy and were converted equivalently, producing the exact same errors on hybrid.
 
-I was also intentional about leaving behind thorough documentation and keeping the interface extremely simple. It's one prompt to Copilot, after which it clearly points to any escalation documents or failing logs that need an engineer's eyes, so anyone on the team can easily convert more legacy tests in the future.
+I was also intentional about leaving behind thorough documentation and keeping the interface extremely simple. It's one prompt to Copilot, after which it clearly points to any escalation documents or failing logs that need an engineer's eyes, so anyone on the team can easily convert more legacy tests in the future. The same agent infrastructure also automates regression runs, triages test logs, and generates documentation for the converted tests.
 
-My work was critical to the team's move to the hybrid test framework. By their estimates, they would otherwise have dedicated several engineers across a few months to converting the tests by hand. That's a lot of time saved on the initial conversion, and more saved on any tests they convert later on.
+My work was critical to the team's move to the hybrid test framework. By their estimates, they would otherwise have dedicated several engineers across a few months to converting the tests by hand, which works out to 4000+ engineer-hours. That's a lot of time saved on the initial conversion, and more saved on any tests they convert later on.
 
 ## Skills Demonstrated
 - Post-silicon validation
@@ -60,6 +60,8 @@ My work was critical to the team's move to the hybrid test framework. By their e
 - Technical documentation
 
 ## Tools Used
+- Python
 - GitHub Copilot
+- HPE's internal test, modeling, and regression tools (proprietary)
 
 
