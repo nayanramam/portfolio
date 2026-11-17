@@ -25,7 +25,7 @@ tags: [a, b, c]
 | `education.md` | CH3: school, measurements, coursework, skills |
 | `beyond.md` | CH4: cubing records + videos, cooking dishes. The body is the line at the bottom |
 | `contact.md` | PROBE OUT: the links typed by the beam. The body is the intro line |
-| `resume.md` | PRINT: the resume as text on the screen (keep it in step with the PDF). A heading written `Title | Date` puts the date on the right |
+| `resume.md` | PRINT: the resume as text on the screen (keep it in step with the PDF). Ending a heading with a vertical bar and the dates puts the dates on the right (see the comment in the file) |
 
 ## Common tasks
 
