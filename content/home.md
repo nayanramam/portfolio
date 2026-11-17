@@ -1,14 +1,14 @@
 ---
 # X-Y / HOME screen.
 tagline:
-  - Electrical Engineering @ Georgia Tech
-  - ASIC Design · Analog/Mixed-Signal · Digital · AI Tooling
+  # - Electrical Engineering @ Georgia Tech
+  # - ASIC Design · Analog/Mixed-Signal · Digital · AI Tooling
 photo: assets/river_face.jpg
 photo_alt: A dashingly handsome young man :)
 
 # The readout beside the photo (label: value)
 specs:
-  Status: 3rd-year EE · Georgia Tech
+  Status: 3rd-year EE @ Georgia Tech
   Focus: ASIC design
 
 # Tiles under the photo. Each shows a picture (`thumb:`, same options as project cards:
