@@ -43,9 +43,10 @@ window.loadContent = (function () {
             return Promise.all([
                 Promise.all((s.projects || []).map(function (id) { return load('projects/' + id); })),
                 Promise.all((s.experience || []).map(function (id) { return load('experiences/' + id); })),
-                load('home'), load('education'), load('beyond'), load('contact')
+                load('home'), load('education'), load('beyond'), load('contact'),
+                load('resume').catch(function () { return null; })   // optional: the PRINT screen
             ]).then(function (r) {
-                return { site: s, projects: r[0], experience: r[1], home: r[2], education: r[3], beyond: r[4], contact: r[5] };
+                return { site: s, projects: r[0], experience: r[1], home: r[2], education: r[3], beyond: r[4], contact: r[5], resume: r[6] };
             });
         });
     };

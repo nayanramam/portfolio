@@ -168,14 +168,22 @@ window.startScope = function (DATA) {
                 ' aria-label="' + esc((l.label || '') + ': ' + text) + '"><span data-type="' + esc(text) + '" aria-hidden="true"></span></a></li>';
         }).join('') + '</ul>';
 
-    // PRINT: the resume drawn on the screen, with a download button
+    // PRINT: the resume as text (content/resume.md), with the PDF download at the top
+    var RES = (DATA.resume && DATA.resume.meta) || {}, RES_BODY = (DATA.resume && DATA.resume.body) || '';
     var RESUME_FILE = (String(S.name || 'Resume').replace(/\s+/g, '_')) + '_Resume.pdf';
     $('#s-print').innerHTML =
-        '<h2>Print · Resume <span class="hint">' + (RESUME ? 'the PDF, drawn on the screen' : '') + '</span></h2>' +
-        (RESUME ? '<div class="rs-bar"><a class="soft" href="' + esc(RESUME) + '" download="' + esc(RESUME_FILE) + '">Download PDF</a>' +
-            '<a class="soft" href="' + esc(RESUME) + '" target="_blank" rel="noopener">Open in new tab</a></div>' +
-            '<div class="rs-pages" id="rs-pages"><p class="rs-msg">Loading resume…</p></div>'
-            : '<p class="rs-msg">No resume set. Add <code>resume:</code> to content/site.md.</p>');
+        '<h2>' + esc(RES.heading || 'Print · Resume') + '</h2>' +
+        (RESUME ? '<div class="rs-bar"><a class="soft" href="' + esc(RESUME) + '" download="' + esc(RESUME_FILE) + '">Download PDF</a></div>' : '') +
+        '<div class="rs">' +
+            '<h3 class="rs-name">' + esc(S.name || '') + '</h3>' +
+            (RES.contact ? '<p class="rs-contact">' + mdInline(RES.contact) + '</p>' : '') +
+            (RES_BODY ? '<div class="md">' + md(RES_BODY) + '</div>' : '<p class="rs-contact">Add content/resume.md to show the resume here.</p>') +
+        '</div>';
+    // "Title | Date" headings: the date sits on the right, as on the PDF
+    $$('#s-print .md :is(h3, h4)').forEach(function (h) {
+        var i = h.innerHTML.lastIndexOf(' | ');
+        if (i > 0) h.innerHTML = '<span>' + h.innerHTML.slice(0, i) + '</span><span class="rs-date">' + h.innerHTML.slice(i + 3) + '</span>';
+    });
     fixLinks($('#view'));
 
     // ================= small helpers =================
@@ -565,7 +573,7 @@ window.startScope = function (DATA) {
         else if (k === 'ch2') { var sr = ROLE[sel]; r = ['CH2  EXPERIENCE', sr ? startOf(sr) + ' → ' + endOf(sr) : '', ROLES.length + ' ROLES · ' + LANES.length + ' TRACES', CTL.timediv.vals[CTL.timediv.i] + ' mo/div']; }
         else if (k === 'ch3') r = ro(EDU.readouts, ['CH3  EDUCATION', 'STEP RESPONSE', '', '']);
         else if (k === 'ch4') r = ro(BEY.readouts, ['CH4  BEYOND ENG.', 'CURSORS  Δt', '', 'TRIG NORM']);
-        else if (k === 'print') r = ['PRINT  RESUME', rsPages ? rsPages + ' PAGE' + (rsPages === 1 ? '' : 'S') : '', 'PDF', 'STORED'];
+        else if (k === 'print') r = ro(RES.readouts, ['PRINT  RESUME', '', '', 'STORED']);
         else r = ro(CON.readouts, ['PROBE OUT', 'CAL 1 kHz  0.5 Vp-p', 'LINK READY', 'TRIG ↑']);
         $('#ro-tl').textContent = r[0]; $('#ro-tr').textContent = r[1];
         $('#ro-bl').textContent = r[2]; $('#ro-br').textContent = r[3];
@@ -595,47 +603,6 @@ window.startScope = function (DATA) {
         if (k === 'ch2') tlRender();
         if (k === 'ch3') { var st = $('#step'); st.classList.remove('draw'); if (!reduced) { void st.getBoundingClientRect(); st.classList.add('draw'); } }
         if (k === 'probe') typeContact(); else typeGen++;
-        if (k === 'print') renderResume();
-    }
-
-    // PDF.js is only fetched the first time the resume screen opens
-    var rsState = '', rsPages = 0;
-    var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
-    function renderResume() {
-        if (!RESUME || rsState) return;
-        rsState = 'loading';
-        var box = $('#rs-pages');
-        function fail() {
-            rsState = '';
-            box.innerHTML = '<p class="rs-msg">Couldn\'t draw the resume here. Use the buttons above to download or open the PDF.</p>';
-        }
-        function draw() {
-            var lib = window.pdfjsLib;
-            if (!lib) return fail();
-            lib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js';
-            lib.getDocument(encodeURI(RESUME)).promise.then(function (pdf) {
-                rsPages = pdf.numPages;
-                box.innerHTML = '';
-                var w = Math.min(box.clientWidth || 800, 900), dpr = Math.min(window.devicePixelRatio || 1, 2), chain = Promise.resolve();
-                for (var n = 1; n <= pdf.numPages; n++) (function (n) {
-                    chain = chain.then(function () { return pdf.getPage(n); }).then(function (page) {
-                        var vp = page.getViewport({ scale: w * dpr / page.getViewport({ scale: 1 }).width });
-                        var c = document.createElement('canvas');
-                        c.width = Math.round(vp.width); c.height = Math.round(vp.height);
-                        c.setAttribute('role', 'img');
-                        c.setAttribute('aria-label', 'Resume, page ' + n + ' of ' + pdf.numPages);
-                        box.appendChild(c);
-                        return page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-                    });
-                })(n);
-                return chain.then(function () { rsState = 'done'; if (base(cur || '') === 'print') readouts(); moreCheck(); });
-            }).catch(fail);
-        }
-        if (window.pdfjsLib) return draw();
-        var sc = document.createElement('script');
-        sc.src = PDFJS + 'pdf.min.js';
-        sc.onload = draw; sc.onerror = fail;
-        document.head.appendChild(sc);
     }
 
     function moreCheck() {
