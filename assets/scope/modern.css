@@ -118,7 +118,7 @@ html.modern #view :focus-visible { outline: 2px solid var(--acc); outline-offset
 html.modern .soft { font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; letter-spacing: .06em; border-radius: 3px; border-color: #3a414b; background: #1a1e23; color: #f2f4f7; }
 html.modern .soft:hover { border-color: var(--acc); background: #222831; }
 html.modern .soft b { color: var(--acc); }
-html.modern :is(.capc, .xpt, .cur-p, #view .spec, .cbox) { background: #12151a; border-color: #2c323a; border-radius: 4px; }
+html.modern :is(.capc, .xpt, .cur-p, .cbox) { background: #12151a; border-color: #2c323a; border-radius: 4px; }
 html.modern :is(.capc, a.xpt):is(:hover, :focus-visible), html.modern .xpc.on { border-color: var(--acc); background: #171b21; }
 html.modern .capc .ct, html.modern .xpt .xt { color: #fff; }
 html.modern .xpc .xh { font-family: 'IBM Plex Mono', ui-monospace, monospace; color: #c9d0d9; }
@@ -127,7 +127,6 @@ html.modern .xpc .xl { border-color: #3a414b; background: #1a1e23; color: #e9edf
 html.modern .xpc .ct { font-size: 18px; letter-spacing: -.005em; }
 html.modern .xpc .co .oname { color: #e9edf2; font-size: 14.5px; }
 html.modern .xpc .co .og { font-size: 13px; }
-html.modern #view .spec { overflow: hidden; }
 html.modern .spec-h { background: var(--acc); color: #111; }
 html.modern .spec-rows .v { color: #fff; }
 html.modern .tagp { border-color: #3a414b; color: var(--ph); }
