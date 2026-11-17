@@ -2,7 +2,7 @@
 # Site-wide settings. Everything between the two --- lines is YAML.
 name: Nayan Ramam
 nameplate: Nayan Ramam            # the little aluminum badge above the screen
-resume: assets/Nayan_Ramam_Resume_Analog_IC-9.pdf
+resume: assets/resume.pdf
 
 # CH1 · Projects — one file per project in content/projects/, listed in display order
 projects:

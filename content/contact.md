@@ -12,7 +12,7 @@ links:
     url: https://www.linkedin.com/in/nramam/
   - label: RESUME
     text: Nayan_Ramam_Resume.pdf
-    url: assets/Nayan_Ramam_Resume_Analog_IC-9.pdf
+    url: assets/resume.pdf
 
 readouts: [PROBE OUT, CAL 1 kHz  0.5 Vp-p, LINK READY, TRIG ↑]
 ---
